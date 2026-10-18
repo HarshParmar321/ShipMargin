@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShippingCalculator from './ShippingCalculator.astro';
+
+interface Props {
+  title: string;
+  heading: string;
+  description: string;
+  eyebrow: string;
+  defaultTab?: 'single' | 'batch';
+  showMargin?: boolean;
+  formula?: string;
+  explanation: string[];
+  path: string;
+}
+
+const { title, heading, description, eyebrow, defaultTab = 'single', showMargin = false, formula, explanation, path } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalPath={path}>
+  <header class="tool-hero">
+    <div class="crumbs"><a href="/">ShipMargin</a> / Free tool</div>
+    <span class="eyebrow">{eyebrow}</span>
+    <h1>{heading}</h1>
+    <p>{description}</p>
+  </header>
+  <ShippingCalculator defaultTab={defaultTab} showMargin={showMargin} compactIntro />
+  <article class="content-section">
+    <h2>One answer, with the assumptions visible.</h2>
+    {explanation.map((paragraph) => <p>{paragraph}</p>)}
+    {formula && <div class="formula-box">{formula}</div>}
+    <div class="notice"><strong>Important:</strong> ShipMargin provides a planning estimate. Carrier rules, service thresholds, contracts and measurement methods can change. Confirm the current rule before purchasing a label or quoting a customer.</div>
+    <h2>Why sellers check this before shipping</h2>
+    <ul>
+      <li>See whether the scale or the carton size controls the billed weight.</li>
+      <li>Understand how much of the charge comes from empty package volume.</li>
+      <li>Test a smaller box before changing packaging or product pricing.</li>
+      <li>Copy or share a reproducible result without creating an account.</li>
+    </ul>
+  </article>
+</BaseLayout>

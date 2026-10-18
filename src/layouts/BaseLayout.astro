@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+}
+
+const { title, description, canonicalPath = Astro.url.pathname } = Astro.props;
+const canonical = new URL(canonicalPath, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f3f1e8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'ShipMargin',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Any',
+      url: canonical.toString(),
+      description,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    })} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to calculator</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="ShipMargin home">
+        <span class="brand-mark" aria-hidden="true">↗</span>
+        <span>ShipMargin</span>
+      </a>
+      <nav aria-label="Main navigation">
+        <a href="/dimensional-weight-calculator/">DIM weight</a>
+        <a href="/shipping-margin-calculator/">Margin</a>
+        <a href="/batch-shipping-audit/">Batch audit</a>
+      </nav>
+      <span class="privacy-pill"><i></i> Runs locally</span>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <a class="brand footer-brand" href="/"><span class="brand-mark" aria-hidden="true">↗</span>ShipMargin</a>
+        <p>Clear shipping math for sellers everywhere.</p>
+      </div>
+      <div class="footer-links">
+        <a href="/methodology/">Methodology</a>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <a href="/about/">About</a>
+        <a href="/contact/">Contact</a>
+      </div>
+      <p class="fine-print">Planning estimates only. Confirm current rules and rates with your carrier or contract.</p>
+    </footer>
+  </body>
+</html>

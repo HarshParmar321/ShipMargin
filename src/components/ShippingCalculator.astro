@@ -1,0 +1,348 @@
+---
+interface Props {
+  defaultTab?: 'single' | 'batch';
+  showMargin?: boolean;
+  compactIntro?: boolean;
+}
+
+const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astro.props;
+---
+
+<section class="calculator-shell" data-workspace data-default-tab={defaultTab} data-show-margin={String(showMargin)}>
+  {!compactIntro && (
+    <div class="workspace-intro">
+      <span class="eyebrow">Free · no sign-up · private by design</span>
+      <h2>Audit one package—or a whole catalogue.</h2>
+      <p>Your measurements and CSV stay in this browser. The result updates as you type.</p>
+    </div>
+  )}
+
+  <div class="workspace-card">
+    <div class="workspace-tabs" role="tablist" aria-label="Audit mode">
+      <button class="tab-button" type="button" role="tab" data-tab-target="single">Single package</button>
+      <button class="tab-button" type="button" role="tab" data-tab-target="batch">Batch CSV audit <span>Free</span></button>
+    </div>
+
+    <div class="workspace-panel" data-panel="single">
+      <form class="input-panel" data-calculator-form>
+        <div class="panel-heading">
+          <div>
+            <span class="step-label">01 / Package</span>
+            <h3>What are you shipping?</h3>
+          </div>
+          <button class="text-button" type="button" data-reset>Reset</button>
+        </div>
+
+        <fieldset class="segmented-control">
+          <legend class="sr-only">Measurement system</legend>
+          <label><input type="radio" name="unit" value="imperial" checked /> Imperial <small>in · lb</small></label>
+          <label><input type="radio" name="unit" value="metric" /> Metric <small>cm · kg</small></label>
+        </fieldset>
+
+        <label class="field full-field">
+          <span>Calculation rule <button class="info-dot" type="button" aria-label="About divisors" title="Carriers divide package volume by a rule-specific divisor.">?</button></span>
+          <select name="preset">
+            <option value="imperial139">Common parcel · 139 in³/lb</option>
+            <option value="imperial166">Retail / legacy · 166 in³/lb</option>
+            <option value="metric5000">Express metric · 5,000 cm³/kg</option>
+            <option value="metric6000">Air metric · 6,000 cm³/kg</option>
+            <option value="custom">Custom rule</option>
+          </select>
+        </label>
+
+        <div class="dimension-grid">
+          <label class="field"><span>Length <b data-dimension-unit>in</b></span><input name="length" inputmode="decimal" type="number" min="0" step="0.1" value="18" /></label>
+          <label class="field"><span>Width <b data-dimension-unit>in</b></span><input name="width" inputmode="decimal" type="number" min="0" step="0.1" value="14" /></label>
+          <label class="field"><span>Height <b data-dimension-unit>in</b></span><input name="height" inputmode="decimal" type="number" min="0" step="0.1" value="12" /></label>
+        </div>
+
+        <div class="two-column-fields">
+          <label class="field"><span>Scale weight <b data-weight-unit>lb</b></span><input name="actualWeight" inputmode="decimal" type="number" min="0" step="0.1" value="8" /></label>
+          <label class="field"><span>Packages</span><input name="quantity" inputmode="numeric" type="number" min="1" step="1" value="1" /></label>
+        </div>
+
+        <details class="advanced" data-margin-details>
+          <summary>Profit and cost details <span>Optional</span></summary>
+          <div class="currency-row">
+            <label class="field"><span>Currency</span><select name="currency"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>BRL</option><option>CAD</option><option>AUD</option></select></label>
+            <label class="field"><span>Selling price</span><input name="salePrice" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+          </div>
+          <div class="cost-grid">
+            <label class="field"><span>Product cost</span><input name="productCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>Packaging</span><input name="packagingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>Label / carrier cost</span><input name="shippingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>Marketplace fees</span><input name="fees" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+          </div>
+        </details>
+
+        <details class="advanced">
+          <summary>Advanced calculation settings</summary>
+          <div class="two-column-fields advanced-fields">
+            <label class="field"><span>Custom divisor</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value="139" /></label>
+            <label class="field"><span>Weight rounding</span><select name="billableStep"><option value="1">Next whole unit</option><option value="0.5">Next 0.5 unit</option><option value="0.1">Next 0.1 unit</option></select></label>
+          </div>
+          <label class="check-field"><input name="roundDimensions" type="checkbox" checked /> Round each outside dimension up before calculating</label>
+        </details>
+      </form>
+
+      <aside class="result-panel" aria-live="polite">
+        <div class="result-kicker"><span>Live audit</span><span class="status-dot">Ready</span></div>
+        <div class="primary-result">
+          <span>Estimated billable weight</span>
+          <strong><b data-result="billable">22</b> <em data-weight-unit>lb</em></strong>
+          <p data-result="basis">Dimensional weight controls this shipment.</p>
+        </div>
+
+        <div class="air-card" data-air-card>
+          <div class="air-visual" aria-hidden="true"><span data-air-bar></span></div>
+          <div>
+            <span>You may be paying for</span>
+            <strong><b data-result="airWeight">14</b> <em data-weight-unit>lb</em> of air</strong>
+            <small><b data-result="airPercent">64</b>% of billable weight</small>
+          </div>
+        </div>
+
+        <dl class="result-grid">
+          <div><dt>Scale weight</dt><dd><span data-result="actual">8</span> <em data-weight-unit>lb</em></dd></div>
+          <div><dt>DIM weight</dt><dd><span data-result="dim">22</span> <em data-weight-unit>lb</em></dd></div>
+          <div><dt>Package volume</dt><dd><span data-result="volume">3,024</span> <em data-volume-unit>in³</em></dd></div>
+          <div><dt>Length + girth</dt><dd><span data-result="girth">70</span> <em data-dimension-unit>in</em></dd></div>
+        </dl>
+
+        <div class="recommendation" data-recommendation>
+          <span class="recommendation-icon">↘</span>
+          <div><strong>A smaller carton can help.</strong><p>To reach scale weight, target roughly <b data-result="target">13.5 × 10.5 × 9 in</b>.</p></div>
+        </div>
+
+        <div class="profit-card" data-profit-card hidden>
+          <span>Estimated order profit</span>
+          <strong><span data-result="profit">0.00</span></strong>
+          <small><span data-result="margin">0</span>% margin before tax</small>
+        </div>
+
+        <div class="result-actions">
+          <button class="primary-button" type="button" data-copy>Copy result</button>
+          <button class="secondary-button" type="button" data-share>Share link</button>
+          <button class="icon-button" type="button" data-print aria-label="Print result">⌘P</button>
+        </div>
+        <p class="result-note">Planning estimate. Confirm the rule in your carrier agreement before buying a label.</p>
+      </aside>
+    </div>
+
+    <div class="workspace-panel batch-panel" data-panel="batch" hidden>
+      <div class="batch-input">
+        <span class="step-label">Batch audit</span>
+        <h3>Paste a product or package list.</h3>
+        <p>Use six columns: <code>sku,length,width,height,weight,quantity</code>. Everything stays on this device.</p>
+        <textarea data-csv-input rows="10" spellcheck="false" aria-label="CSV package data" placeholder="sku,length,width,height,weight,quantity&#10;TSHIRT-M,12,10,3,1.2,24&#10;MUG-RED,8,6,5,2.1,12"></textarea>
+        <div class="batch-controls">
+          <label class="file-button">Choose CSV<input data-csv-file type="file" accept=".csv,text/csv" /></label>
+          <button class="text-button" type="button" data-sample>Load example</button>
+          <button class="primary-button" type="button" data-run-batch>Audit packages</button>
+        </div>
+        <p class="privacy-line"><span>◆</span> CSV contents are processed locally and are never uploaded.</p>
+      </div>
+      <div class="batch-results">
+        <div class="batch-summary">
+          <div><span>Valid rows</span><strong data-batch="rows">0</strong></div>
+          <div><span>DIM-controlled</span><strong data-batch="dimRows">0</strong></div>
+          <div><span>Total air weight</span><strong><b data-batch="air">0</b> <em data-weight-unit>lb</em></strong></div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>SKU</th><th>Scale</th><th>DIM</th><th>Billable</th><th>Signal</th></tr></thead>
+            <tbody data-batch-body><tr><td colspan="5" class="empty-cell">Paste CSV data to see the audit.</td></tr></tbody>
+          </table>
+        </div>
+        <button class="secondary-button download-button" type="button" data-download disabled>Download audited CSV</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck -- DOM controls are progressively enhanced and guarded at runtime.
+  import { PRESETS, calculatePackage, escapeCsv, formatNumber, parseAuditCsv } from '../lib/shipping.mjs';
+
+  const getValue = (form, name) => form.elements.namedItem(name)?.value ?? '';
+
+  document.querySelectorAll('[data-workspace]').forEach((workspace) => {
+    const form = workspace.querySelector('[data-calculator-form]');
+    if (!(form instanceof HTMLFormElement)) return;
+    const tabs = workspace.querySelectorAll('[data-tab-target]');
+    const panels = workspace.querySelectorAll('[data-panel]');
+    const preset = form.elements.namedItem('preset');
+    const divisor = form.elements.namedItem('divisor');
+    const unitRadios = form.elements.namedItem('unit');
+    let batchRows = [];
+
+    const activateTab = (name) => {
+      tabs.forEach((tab) => {
+        const selected = tab.getAttribute('data-tab-target') === name;
+        tab.setAttribute('aria-selected', String(selected));
+        tab.classList.toggle('is-active', selected);
+      });
+      panels.forEach((panel) => { panel.hidden = panel.getAttribute('data-panel') !== name; });
+    };
+
+    const setUnitLabels = (unit) => {
+      workspace.querySelectorAll('[data-dimension-unit]').forEach((el) => { el.textContent = unit === 'metric' ? 'cm' : 'in'; });
+      workspace.querySelectorAll('[data-weight-unit]').forEach((el) => { el.textContent = unit === 'metric' ? 'kg' : 'lb'; });
+      workspace.querySelectorAll('[data-volume-unit]').forEach((el) => { el.textContent = unit === 'metric' ? 'cm³' : 'in³'; });
+    };
+
+    const collect = () => ({
+      unit: getValue(form, 'unit'),
+      length: getValue(form, 'length'),
+      width: getValue(form, 'width'),
+      height: getValue(form, 'height'),
+      actualWeight: getValue(form, 'actualWeight'),
+      quantity: getValue(form, 'quantity'),
+      divisor: getValue(form, 'divisor'),
+      billableStep: getValue(form, 'billableStep'),
+      roundDimensions: form.elements.namedItem('roundDimensions')?.checked,
+      currency: getValue(form, 'currency'),
+      salePrice: getValue(form, 'salePrice'),
+      productCost: getValue(form, 'productCost'),
+      packagingCost: getValue(form, 'packagingCost'),
+      shippingCost: getValue(form, 'shippingCost'),
+      fees: getValue(form, 'fees'),
+    });
+
+    const put = (name, value) => workspace.querySelectorAll(`[data-result="${name}"]`).forEach((el) => { el.textContent = String(value); });
+
+    const calculate = () => {
+      const result = calculatePackage(collect());
+      setUnitLabels(result.unit);
+      put('billable', formatNumber(result.billableWeight));
+      put('basis', result.isDimensional ? 'Dimensional weight controls this shipment.' : 'Scale weight controls this shipment.');
+      put('airWeight', formatNumber(result.airWeight));
+      put('airPercent', formatNumber(result.airPercent, 0));
+      put('actual', formatNumber(result.actualWeight));
+      put('dim', formatNumber(result.dimWeight));
+      put('volume', formatNumber(result.volume, 0));
+      put('girth', formatNumber(result.lengthPlusGirth));
+      put('target', `${result.targetDimensions.map((n) => formatNumber(n, 1)).join(' × ')} ${result.unit === 'metric' ? 'cm' : 'in'}`);
+      const airBar = workspace.querySelector('[data-air-bar]');
+      if (airBar instanceof HTMLElement) airBar.style.height = `${Math.max(5, Math.min(100, result.airPercent))}%`;
+      const recommendation = workspace.querySelector('[data-recommendation]');
+      if (recommendation instanceof HTMLElement) recommendation.hidden = !result.canShrink;
+      const airCard = workspace.querySelector('[data-air-card]');
+      airCard?.classList.toggle('is-clear', !result.isDimensional);
+      const profitCard = workspace.querySelector('[data-profit-card]');
+      const hasPrice = Number(result.salePrice) > 0;
+      if (profitCard instanceof HTMLElement) profitCard.hidden = !hasPrice;
+      if (hasPrice) {
+        const money = new Intl.NumberFormat('en', { style: 'currency', currency: result.currency, maximumFractionDigits: 2 }).format(result.profit);
+        put('profit', money);
+        put('margin', formatNumber(result.marginPercent, 1));
+        profitCard?.classList.toggle('is-loss', result.profit < 0);
+      }
+      return result;
+    };
+
+    const updatePreset = () => {
+      const selected = PRESETS[preset?.value];
+      if (!selected) return;
+      if (divisor instanceof HTMLInputElement) divisor.value = String(selected.divisor);
+      const radio = form.querySelector(`input[name="unit"][value="${selected.unit}"]`);
+      if (radio instanceof HTMLInputElement) radio.checked = true;
+      const rounding = form.elements.namedItem('billableStep');
+      if (rounding instanceof HTMLSelectElement) rounding.value = selected.unit === 'metric' ? '0.5' : '1';
+      calculate();
+    };
+
+    const shareUrl = () => {
+      const data = collect();
+      const url = new URL(window.location.href);
+      const map = { length: 'l', width: 'w', height: 'h', actualWeight: 'wt', unit: 'u', divisor: 'd' };
+      Object.entries(map).forEach(([key, query]) => url.searchParams.set(query, String(data[key])));
+      return url.toString();
+    };
+
+    const loadQuery = () => {
+      const query = new URLSearchParams(window.location.search);
+      const map = { l: 'length', w: 'width', h: 'height', wt: 'actualWeight', d: 'divisor' };
+      Object.entries(map).forEach(([key, field]) => {
+        const value = query.get(key);
+        const control = form.elements.namedItem(field);
+        if (value && control instanceof HTMLInputElement) control.value = value;
+      });
+      const unit = query.get('u');
+      if (unit === 'metric' || unit === 'imperial') {
+        const radio = form.querySelector(`input[name="unit"][value="${unit}"]`);
+        if (radio instanceof HTMLInputElement) radio.checked = true;
+      }
+    };
+
+    const runBatch = () => {
+      const input = workspace.querySelector('[data-csv-input]');
+      if (!(input instanceof HTMLTextAreaElement)) return;
+      const settings = collect();
+      batchRows = parseAuditCsv(input.value).map((row) => ({ ...row, result: calculatePackage({ ...settings, ...row }) }));
+      const body = workspace.querySelector('[data-batch-body]');
+      if (body) {
+        body.innerHTML = batchRows.length ? batchRows.map(({ sku, result }) => `<tr><td>${String(sku).replaceAll('<', '&lt;')}</td><td>${formatNumber(result.actualWeight)}</td><td>${formatNumber(result.dimWeight)}</td><td><strong>${formatNumber(result.billableWeight)}</strong></td><td><span class="signal ${result.isDimensional ? 'warn' : 'good'}">${result.isDimensional ? 'Paying for air' : 'Scale-led'}</span></td></tr>`).join('') : '<tr><td colspan="5" class="empty-cell">No valid rows found. Check the six-column format.</td></tr>';
+      }
+      const dimRows = batchRows.filter(({ result }) => result.isDimensional).length;
+      const air = batchRows.reduce((sum, { result }) => sum + result.airWeight * result.quantity, 0);
+      workspace.querySelector('[data-batch="rows"]').textContent = String(batchRows.length);
+      workspace.querySelector('[data-batch="dimRows"]').textContent = String(dimRows);
+      workspace.querySelector('[data-batch="air"]').textContent = formatNumber(air);
+      const download = workspace.querySelector('[data-download]');
+      if (download instanceof HTMLButtonElement) download.disabled = !batchRows.length;
+    };
+
+    tabs.forEach((tab) => tab.addEventListener('click', () => activateTab(tab.getAttribute('data-tab-target'))));
+    form.addEventListener('input', calculate);
+    preset?.addEventListener('change', updatePreset);
+    unitRadios?.forEach?.((radio) => radio.addEventListener('change', () => {
+      if (preset instanceof HTMLSelectElement) preset.value = radio.value === 'metric' ? 'metric5000' : 'imperial139';
+      updatePreset();
+    }));
+    workspace.querySelector('[data-reset]')?.addEventListener('click', () => { form.reset(); updatePreset(); });
+    workspace.querySelector('[data-copy]')?.addEventListener('click', async (event) => {
+      const result = calculate();
+      const unit = result.unit === 'metric' ? 'kg' : 'lb';
+      await navigator.clipboard.writeText(`ShipMargin audit: ${formatNumber(result.billableWeight)} ${unit} billable; ${formatNumber(result.airWeight)} ${unit} air weight; ${formatNumber(result.lengthPlusGirth)} ${result.unit === 'metric' ? 'cm' : 'in'} length + girth.`);
+      event.currentTarget.textContent = 'Copied';
+      setTimeout(() => { event.currentTarget.textContent = 'Copy result'; }, 1400);
+    });
+    workspace.querySelector('[data-share]')?.addEventListener('click', async (event) => {
+      const url = shareUrl();
+      if (navigator.share) await navigator.share({ title: 'ShipMargin package audit', url });
+      else await navigator.clipboard.writeText(url);
+      event.currentTarget.textContent = navigator.share ? 'Shared' : 'Link copied';
+      setTimeout(() => { event.currentTarget.textContent = 'Share link'; }, 1400);
+    });
+    workspace.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+    workspace.querySelector('[data-sample]')?.addEventListener('click', () => {
+      const input = workspace.querySelector('[data-csv-input]');
+      if (input instanceof HTMLTextAreaElement) input.value = 'sku,length,width,height,weight,quantity\nTSHIRT-M,12,10,3,1.2,24\nMUG-RED,8,6,5,2.1,12\nLAMP-01,24,18,16,7.5,4';
+      runBatch();
+    });
+    workspace.querySelector('[data-run-batch]')?.addEventListener('click', runBatch);
+    workspace.querySelector('[data-csv-file]')?.addEventListener('change', async (event) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const input = workspace.querySelector('[data-csv-input]');
+      if (input instanceof HTMLTextAreaElement) input.value = await file.text();
+      runBatch();
+    });
+    workspace.querySelector('[data-download]')?.addEventListener('click', () => {
+      if (!batchRows.length) return;
+      const rows = ['sku,actual_weight,dim_weight,billable_weight,air_weight,billing_basis'];
+      batchRows.forEach(({ sku, result }) => rows.push([sku, result.actualWeight, result.dimWeight, result.billableWeight, result.airWeight, result.isDimensional ? 'dimensional' : 'scale'].map(escapeCsv).join(',')));
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv' }));
+      link.download = 'shipmargin-audit.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
+
+    loadQuery();
+    if (workspace.getAttribute('data-show-margin') === 'true') workspace.querySelector('[data-margin-details]')?.setAttribute('open', '');
+    activateTab(workspace.getAttribute('data-default-tab') || 'single');
+    calculate();
+  });
+</script>

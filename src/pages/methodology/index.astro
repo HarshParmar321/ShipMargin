@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Calculation methodology | ShipMargin" description="How ShipMargin calculates dimensional, billable and margin estimates." canonicalPath="/methodology/">
+  <header class="tool-hero"><span class="eyebrow">Transparent calculations</span><h1>Methodology</h1><p>Every answer should be reproducible. These are the assumptions used by the current free tools.</p></header>
+  <article class="content-section">
+    <h2>Package measurements</h2><p>Enter the finished outside dimensions of the packed carton, including bulges or protective material. When dimension rounding is enabled, each side is rounded upward before volume is calculated.</p>
+    <h2>Dimensional weight</h2><div class="formula-box">length × width × height ÷ divisor</div><p>The selected divisor is a planning preset, not a promise that a named carrier will use it for every service. Users can enter their own contract divisor and rounding increment.</p>
+    <h2>Billable weight</h2><p>The calculator compares the rounded physical weight and the rounded dimensional weight and displays the greater value. Real invoices can include service thresholds, minimums, negotiated rules and surcharges not represented here.</p>
+    <h2>Profit estimate</h2><p>Estimated order profit subtracts product, packaging, shipping and marketplace fees from selling price. Taxes, returns, discounts, overhead and currency conversion are outside this simplified estimate.</p>
+    <p class="notice">Rule data will include a review date before public production launch. Please report a suspected error through the contact page.</p>
+  </article>
+</BaseLayout>

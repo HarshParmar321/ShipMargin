@@ -1,0 +1,15 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+---
+<ToolPage
+  title="Package Length and Girth Calculator | ShipMargin"
+  heading="Package girth calculator"
+  eyebrow="Oversize planning"
+  description="Calculate the longest side plus package girth while checking dimensional and billable weight in the same workspace."
+  formula="Length + girth = longest side + 2 × (width + height)"
+  explanation={[
+    'Length plus girth is commonly used when services classify large or irregular shipments. For a rectangular carton, identify the longest side and measure around the two remaining sides.',
+    'Service thresholds are not universal. Use this result to identify a package worth checking, then compare it with the current limits for the exact carrier, service and destination.',
+  ]}
+  path="/package-girth-calculator/"
+/>

@@ -1,0 +1,4 @@
+sku,length,width,height,actual_weight,shipping_price,shipping_cost
+TSHIRT-001,12,10,2,1.2,8.99,5.40
+MUG-002,8,8,6,2.1,11.99,8.25
+LAMP-003,24,18,14,9.5,28.00,31.75

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ShippingCalculator from '../components/ShippingCalculator.astro';
+---
+
+<BaseLayout title="ShipMargin — Know what your package really costs" description="Free dimensional-weight, shipping-margin and batch package audit tools for sellers. No sign-up; package data stays in your browser." canonicalPath="/">
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Shipping clarity for every seller</span>
+      <h1>Stop paying to ship <span>empty space.</span></h1>
+      <p>Measure the package, compare scale and dimensional weight, protect your margin—and share the answer. Free, fast and private.</p>
+    </div>
+    <aside class="hero-proof">
+      <strong>Built for a decision, not a lesson.</strong>
+      <p>Enter one package and immediately see what controls the billed weight and what to change.</p>
+      <div class="proof-row"><span>No account</span><span>Metric + imperial</span><span>Local CSV</span></div>
+    </aside>
+  </section>
+
+  <ShippingCalculator />
+
+  <section class="value-section">
+    <header>
+      <div><span class="eyebrow">From measurement to margin</span><h2>The useful answer is not just a number.</h2></div>
+      <p>ShipMargin shows why the billed weight changed, how costly the empty space is and what action you can test next.</p>
+    </header>
+    <div class="value-grid">
+      <article class="value-card"><span>01</span><div><h3>See the billing basis</h3><p>Compare scale, dimensional and billable weight without decoding carrier language.</p></div></article>
+      <article class="value-card"><span>02</span><div><h3>Protect the order margin</h3><p>Add the sale and cost details to see whether shipping quietly turned profit into loss.</p></div></article>
+      <article class="value-card"><span>03</span><div><h3>Share the evidence</h3><p>Copy the audit, download a clean CSV or send a privacy-safe calculation link.</p></div></article>
+    </div>
+  </section>
+</BaseLayout>

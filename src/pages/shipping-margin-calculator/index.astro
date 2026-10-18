@@ -1,0 +1,16 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+---
+<ToolPage
+  title="Shipping Margin Calculator — Check Order Profit | ShipMargin"
+  heading="Shipping margin calculator"
+  eyebrow="Order profit after shipping"
+  description="Combine package measurements with product, packaging, shipping and marketplace costs to see the estimated profit left on an order."
+  formula="Profit = sale price − product − packaging − shipping − fees"
+  explanation={[
+    'A sale can look profitable until packaging, carrier cost and marketplace fees are included. Enter the known costs to see an order-level estimate alongside the package audit.',
+    'This is a planning workspace, not an accounting or tax report. Use actual settled costs for financial reporting, and consider returns, discounts, duties and taxes separately.',
+  ]}
+  showMargin
+  path="/shipping-margin-calculator/"
+/>
