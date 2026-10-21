@@ -114,3 +114,95 @@ export function escapeCsv(value) {
   const text = String(value ?? '');
   return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
+
+export function parseBoxes(text) {
+  const lines = String(text || '').trim().split(/\r?\n/).filter(Boolean);
+  if (!lines.length) return [];
+  const split = (line) => line.split(',').map((cell) => cell.trim().replace(/^"|"$/g, ''));
+  const first = split(lines[0]).map((cell) => cell.toLowerCase().replaceAll(' ', '_'));
+  const hasHeader = first.some((cell) => ['name', 'box', 'length', 'width', 'height', 'cost', 'packaging_cost'].includes(cell));
+  const header = hasHeader ? first : ['name', 'length', 'width', 'height', 'cost'];
+  return lines.slice(hasHeader ? 1 : 0).map((line, index) => {
+    const cells = split(line);
+    const row = Object.fromEntries(header.map((key, cellIndex) => [key, cells[cellIndex] ?? '']));
+    return {
+      name: row.name || row.box || `Box ${index + 1}`,
+      length: number(row.length),
+      width: number(row.width),
+      height: number(row.height),
+      cost: number(row.cost ?? row.packaging_cost),
+    };
+  }).filter((box) => box.length > 0 && box.width > 0 && box.height > 0);
+}
+
+export function boxFits(productDimensions = [], boxDimensions = []) {
+  const product = productDimensions.map((value) => number(value)).sort((a, b) => a - b);
+  const box = boxDimensions.map((value) => number(value)).sort((a, b) => a - b);
+  return product.length === 3 && box.length === 3 && product.every((value, index) => value <= box[index]);
+}
+
+export function optimizeBoxes(input = {}) {
+  const settings = {
+    unit: input.unit,
+    divisor: input.divisor,
+    billableStep: input.billableStep,
+    roundDimensions: input.roundDimensions,
+    actualWeight: input.actualWeight,
+  };
+  const productDimensions = [input.productLength, input.productWidth, input.productHeight].map((value) => number(value));
+  const costPerWeight = number(input.costPerWeight);
+  const monthlyOrders = Math.max(1, Math.floor(number(input.monthlyOrders, 1)));
+  const currentPackagingCost = number(input.currentPackagingCost);
+  const current = calculatePackage({
+    ...settings,
+    length: input.currentLength,
+    width: input.currentWidth,
+    height: input.currentHeight,
+  });
+  const currentShippingCost = current.billableWeight * costPerWeight;
+  const currentTotalCost = currentShippingCost + currentPackagingCost;
+  const candidates = (Array.isArray(input.boxes) ? input.boxes : []).map((box) => {
+    const fits = boxFits(productDimensions, [box.length, box.width, box.height]);
+    const result = calculatePackage({ ...settings, length: box.length, width: box.width, height: box.height });
+    const shippingCost = result.billableWeight * costPerWeight;
+    const packagingCost = number(box.cost);
+    return {
+      ...box,
+      fits,
+      result,
+      shippingCost,
+      packagingCost,
+      totalCost: shippingCost + packagingCost,
+    };
+  });
+  const valid = candidates.filter((candidate) => candidate.fits).sort((a, b) => {
+    const primary = costPerWeight > 0
+      ? a.totalCost - b.totalCost
+      : a.result.billableWeight - b.result.billableWeight;
+    return primary || (a.result.billableWeight - b.result.billableWeight) || (a.result.volume - b.result.volume);
+  });
+  const best = valid[0] ?? null;
+  const savingsPerOrder = best ? Math.round((Math.max(0, currentTotalCost - best.totalCost) + Number.EPSILON) * 100) / 100 : 0;
+  const weightSavings = best ? Math.max(0, current.billableWeight - best.result.billableWeight) : 0;
+  const monthlySavings = Math.round((savingsPerOrder * monthlyOrders + Number.EPSILON) * 100) / 100;
+  const targetMargin = Math.min(number(input.targetMargin), 99.9);
+  const baseCosts = number(input.productCost) + number(input.feesPerOrder) + (best?.totalCost ?? currentTotalCost);
+  const minimumSellingPrice = targetMargin > 0 ? baseCosts / (1 - targetMargin / 100) : baseCosts;
+
+  return {
+    productDimensions,
+    current,
+    currentShippingCost,
+    currentTotalCost,
+    candidates,
+    validCount: valid.length,
+    best,
+    costPerWeight,
+    monthlyOrders,
+    savingsPerOrder,
+    weightSavings,
+    monthlySavings,
+    targetMargin,
+    minimumSellingPrice,
+  };
+}

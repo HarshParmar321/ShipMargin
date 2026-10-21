@@ -186,6 +186,54 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
 .footer-links { display: flex; flex-wrap: wrap; gap: 22px; font-size: .78rem; font-weight: 700; }
 .fine-print { grid-column: 1 / -1; padding-top: 20px; border-top: 1px solid var(--border); }
 
+.optimizer-callout { max-width: 1350px; margin: 0 auto 30px; padding: 28px 32px; border-radius: var(--radius); background: var(--ink); color: white; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+.optimizer-callout .eyebrow { color: var(--acid); }
+.optimizer-callout h2 { margin-top: 8px; font-size: clamp(1.7rem, 3vw, 2.8rem); }
+.optimizer-callout p { margin: 8px 0 0; color: rgba(255,255,255,.68); }
+.optimizer-callout .primary-button { flex: 0 0 auto; }
+.optimizer-shell { max-width: 1500px; margin: 0 auto; padding: 0 5vw 54px; }
+.optimizer-card { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(390px, .92fr); border: 1px solid var(--border); border-radius: 22px; overflow: hidden; background: var(--surface); box-shadow: 0 14px 46px rgba(43,48,35,.1); }
+.optimizer-input { padding: clamp(26px, 4vw, 48px); }
+.optimizer-heading h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); }
+.optimizer-units { margin-bottom: 24px; }
+.form-group-label { display: block; margin-bottom: 8px; color: #435044; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+.spaced-label { margin-top: 22px; }
+.optimizer-core-fields { margin-top: 12px; }
+.optimizer-catalogue-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-top: 26px; }
+.optimizer-catalogue-heading .form-group-label { margin: 0; }
+.optimizer-catalogue-heading small { display: block; margin-top: 3px; color: var(--ink-soft); font-size: .67rem; }
+.box-catalogue { min-height: 132px; margin-top: 10px; resize: vertical; font: 500 .78rem/1.55 ui-monospace, SFMono-Regular, monospace; }
+.optimizer-submit { width: 100%; margin-top: 22px; background: var(--ink); color: white; font-size: .88rem; }
+.optimizer-result { padding: clamp(26px, 4vw, 48px); background: var(--ink); color: white; }
+.optimizer-winner { padding: 30px 0 24px; border-bottom: 1px solid rgba(255,255,255,.14); }
+.optimizer-winner > span { color: rgba(255,255,255,.56); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+.optimizer-winner h2 { margin: 6px 0 10px; color: var(--acid); font-size: clamp(2.6rem, 5vw, 5rem); }
+.optimizer-winner p { margin: 0; color: rgba(255,255,255,.68); }
+.optimizer-savings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+.optimizer-savings article { padding: 15px; border-radius: 14px; background: rgba(216,255,112,.1); border: 1px solid rgba(216,255,112,.16); }
+.optimizer-savings span, .optimizer-savings small { display: block; color: rgba(255,255,255,.58); font-size: .67rem; }
+.optimizer-savings strong { display: block; margin: 4px 0; color: var(--acid); font-size: 1.35rem; }
+.optimizer-savings strong small { display: inline; }
+.optimizer-compare { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; padding: 16px; border-radius: 14px; background: rgba(255,255,255,.06); }
+.optimizer-compare > span { color: rgba(255,255,255,.35); }
+.optimizer-compare div > span { display: block; color: rgba(255,255,255,.52); font-size: .65rem; }
+.optimizer-compare strong { font-size: 1.2rem; }
+.optimizer-compare div:last-child { text-align: right; }
+.minimum-price-card { margin: 16px 0; padding: 16px; border-radius: 14px; background: var(--violet); }
+.minimum-price-card > span, .minimum-price-card > small { display: block; color: rgba(255,255,255,.72); font-size: .67rem; }
+.minimum-price-card > strong { display: block; margin: 4px 0; font-size: 1.8rem; }
+.candidate-list { display: grid; gap: 7px; margin-top: 16px; }
+.candidate-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 1px solid rgba(255,255,255,.11); border-radius: 11px; }
+.candidate-row div { display: grid; }
+.candidate-row small { color: rgba(255,255,255,.48); font-size: .63rem; }
+.candidate-row > span { font-size: .72rem; font-weight: 800; }
+.candidate-row.is-best { border-color: var(--acid); background: rgba(216,255,112,.08); }
+.candidate-row.does-not-fit { opacity: .46; }
+.optimizer-empty { margin: 22px 0; padding: 18px; border-radius: 14px; background: rgba(240,154,91,.13); border: 1px solid rgba(240,154,91,.28); }
+.optimizer-empty p { margin: 5px 0 0; color: rgba(255,255,255,.65); }
+.optimizer-copy { width: 100%; margin-top: 18px; }
+.optimizer-content { padding-top: 10px; }
+
 @media (max-width: 980px) {
   .site-header { grid-template-columns: 1fr auto; }
   .site-header nav { display: none; }
@@ -196,6 +244,7 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
   .value-section > header { display: block; }
   .value-grid { grid-template-columns: 1fr; }
   .value-card { min-height: 190px; }
+  .optimizer-card { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 620px) {
@@ -204,6 +253,7 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
   .privacy-pill { font-size: 0; padding: 9px; }
   .privacy-pill i { margin: 0; }
   .quick-hero, .tool-hero, .calculator-shell, .value-section, .content-section { padding-left: 12px; padding-right: 12px; }
+  .optimizer-shell { padding-left: 12px; padding-right: 12px; }
   .quick-hero { padding-top: 22px; padding-bottom: 16px; gap: 10px; }
   .quick-hero h1 { font-size: clamp(2rem, 9.8vw, 2.75rem); margin-top: 7px; }
   .quick-hero p { margin-top: 9px; font-size: .9rem; line-height: 1.42; }
@@ -247,6 +297,17 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
   .value-section h2 { font-size: 2.1rem; }
   .site-footer { grid-template-columns: 1fr; padding: 34px 16px 22px; }
   .fine-print { grid-column: 1; }
+  .optimizer-callout { margin: 0 12px 24px; padding: 22px 18px; display: grid; }
+  .optimizer-callout h2 { font-size: 1.7rem; }
+  .optimizer-callout p { font-size: .82rem; }
+  .optimizer-callout .primary-button { text-align: center; }
+  .optimizer-input, .optimizer-result { padding: 20px 14px; }
+  .optimizer-heading { margin-bottom: 16px; }
+  .optimizer-heading h2 { font-size: 1.45rem; }
+  .optimizer-catalogue-heading { align-items: start; }
+  .box-catalogue { min-height: 155px; }
+  .optimizer-savings { grid-template-columns: 1fr 1fr; }
+  .optimizer-result { scroll-margin-top: 58px; }
 }
 
 @media print {

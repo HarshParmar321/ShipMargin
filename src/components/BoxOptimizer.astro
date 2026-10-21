@@ -1,0 +1,191 @@
+---
+---
+
+<section class="optimizer-shell" data-box-optimizer>
+  <div class="optimizer-card">
+    <form class="optimizer-input" data-optimizer-form>
+      <div class="panel-heading optimizer-heading">
+        <div><span class="step-label">01 / Compare boxes</span><h2>Product and current package</h2></div>
+        <button class="text-button" type="reset">Reset</button>
+      </div>
+
+      <fieldset class="segmented-control optimizer-units">
+        <legend class="sr-only">Measurement system</legend>
+        <label><input type="radio" name="unit" value="imperial" checked /> Imperial <small>in · lb</small></label>
+        <label><input type="radio" name="unit" value="metric" /> Metric <small>cm · kg</small></label>
+      </fieldset>
+
+      <span class="form-group-label">Product size</span>
+      <div class="dimension-grid">
+        <label class="field"><span>Length <b data-opt-dimension-unit>in</b></span><input name="productLength" inputmode="decimal" type="number" min="0" step="0.1" value="11" /></label>
+        <label class="field"><span>Width <b data-opt-dimension-unit>in</b></span><input name="productWidth" inputmode="decimal" type="number" min="0" step="0.1" value="8" /></label>
+        <label class="field"><span>Height <b data-opt-dimension-unit>in</b></span><input name="productHeight" inputmode="decimal" type="number" min="0" step="0.1" value="2" /></label>
+      </div>
+
+      <span class="form-group-label spaced-label">Current package</span>
+      <div class="dimension-grid">
+        <label class="field"><span>Length <b data-opt-dimension-unit>in</b></span><input name="currentLength" inputmode="decimal" type="number" min="0" step="0.1" value="18" /></label>
+        <label class="field"><span>Width <b data-opt-dimension-unit>in</b></span><input name="currentWidth" inputmode="decimal" type="number" min="0" step="0.1" value="14" /></label>
+        <label class="field"><span>Height <b data-opt-dimension-unit>in</b></span><input name="currentHeight" inputmode="decimal" type="number" min="0" step="0.1" value="12" /></label>
+      </div>
+      <div class="two-column-fields optimizer-core-fields">
+        <label class="field"><span>Scale weight <b data-opt-weight-unit>lb</b></span><input name="actualWeight" inputmode="decimal" type="number" min="0" step="0.1" value="8" /></label>
+        <label class="field"><span>Shipping per billed <b data-opt-weight-unit>lb</b></span><input name="costPerWeight" inputmode="decimal" type="number" min="0" step="0.01" value="1" /></label>
+      </div>
+
+      <div class="optimizer-catalogue-heading">
+        <div><span class="form-group-label">Available boxes</span><small>Name, length, width, height, packaging cost</small></div>
+        <button class="text-button" type="button" data-load-boxes>Load example</button>
+      </div>
+      <textarea class="box-catalogue" name="boxes" rows="5" spellcheck="false" aria-label="Available box catalogue">name,length,width,height,cost
+Slim mailer,12,10,3,0.65
+Small box,14,10,6,0.90
+Medium box,18,14,12,1.20</textarea>
+
+      <details class="advanced optimizer-business">
+        <summary>Business and margin details <span>Optional</span></summary>
+        <div class="cost-grid">
+          <label class="field"><span>Currency</span><select name="currency"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>BRL</option><option>CAD</option><option>AUD</option></select></label>
+          <label class="field"><span>Monthly orders</span><input name="monthlyOrders" inputmode="numeric" type="number" min="1" step="1" value="100" /></label>
+          <label class="field"><span>Current packaging cost</span><input name="currentPackagingCost" inputmode="decimal" type="number" min="0" step="0.01" value="1.20" /></label>
+          <label class="field"><span>Product cost</span><input name="productCost" inputmode="decimal" type="number" min="0" step="0.01" value="20" /></label>
+          <label class="field"><span>Other fees / order</span><input name="feesPerOrder" inputmode="decimal" type="number" min="0" step="0.01" value="4" /></label>
+          <label class="field"><span>Target margin</span><input name="targetMargin" inputmode="decimal" type="number" min="0" max="99" step="0.1" value="30" /></label>
+        </div>
+      </details>
+
+      <details class="advanced optimizer-business">
+        <summary>Carrier calculation settings</summary>
+        <div class="two-column-fields advanced-fields">
+          <label class="field"><span>Calculation rule</span><select name="preset"><option value="imperial139">Common parcel · 139</option><option value="imperial166">Retail / legacy · 166</option><option value="metric5000">Express metric · 5,000</option><option value="metric6000">Air metric · 6,000</option></select></label>
+          <label class="field"><span>Custom divisor</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value="139" /></label>
+        </div>
+        <label class="check-field"><input name="roundDimensions" type="checkbox" checked /> Round package dimensions up before calculating</label>
+      </details>
+
+      <button class="primary-button optimizer-submit" type="button" data-optimize>Find my best box</button>
+    </form>
+
+    <aside class="optimizer-result" aria-live="polite" data-optimizer-result>
+      <div class="result-kicker"><span>Best valid option</span><span class="status-dot">Local result</span></div>
+      <div class="optimizer-winner">
+        <span>Use</span>
+        <h2 data-opt-result="name">Slim mailer</h2>
+        <p><b data-opt-result="billable">8</b> <span data-opt-weight-unit>lb</span> billable · <b data-opt-result="validCount">3</b> boxes fit</p>
+      </div>
+
+      <div class="optimizer-savings">
+        <article><span>Weight avoided</span><strong><b data-opt-result="weightSavings">14</b> <small data-opt-weight-unit>lb</small></strong><small>per shipment</small></article>
+        <article><span>Estimated savings</span><strong data-opt-result="monthlySavings">$1,455</strong><small>per month</small></article>
+      </div>
+
+      <div class="optimizer-compare">
+        <div><span>Current package</span><strong><b data-opt-result="currentBillable">22</b> <small data-opt-weight-unit>lb</small></strong></div>
+        <span aria-hidden="true">→</span>
+        <div><span>Recommended box</span><strong><b data-opt-result="bestBillable">8</b> <small data-opt-weight-unit>lb</small></strong></div>
+      </div>
+
+      <div class="minimum-price-card">
+        <span>Minimum selling price for <b data-opt-result="targetMargin">30</b>% target margin</span>
+        <strong data-opt-result="minimumPrice">$46.64</strong>
+        <small>Includes product, selected packaging, estimated shipping and entered fees.</small>
+      </div>
+
+      <div class="candidate-list" data-candidate-list></div>
+      <div class="optimizer-empty" data-optimizer-empty hidden><strong>No listed box fits the product.</strong><p>Add a larger box or check the product dimensions.</p></div>
+
+      <button class="secondary-button optimizer-copy" type="button" data-copy-optimizer>Copy recommendation</button>
+      <p class="result-note">Savings are planning estimates based on the cost per billed weight you entered. Confirm carrier rules and actual label rates.</p>
+    </aside>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck -- browser-only progressive enhancement.
+  import { PRESETS, formatNumber, optimizeBoxes, parseBoxes } from '../lib/shipping.mjs';
+
+  document.querySelectorAll('[data-box-optimizer]').forEach((root) => {
+    const form = root.querySelector('[data-optimizer-form]');
+    if (!(form instanceof HTMLFormElement)) return;
+    let lastResult;
+    const value = (name) => form.elements.namedItem(name)?.value ?? '';
+    const put = (name, output) => root.querySelectorAll(`[data-opt-result="${name}"]`).forEach((el) => { el.textContent = String(output); });
+    const currency = () => String(value('currency') || 'USD').toUpperCase();
+    const money = (amount) => new Intl.NumberFormat('en', { style: 'currency', currency: currency(), maximumFractionDigits: 2 }).format(amount || 0);
+
+    const collect = () => ({
+      unit: value('unit'), productLength: value('productLength'), productWidth: value('productWidth'), productHeight: value('productHeight'),
+      currentLength: value('currentLength'), currentWidth: value('currentWidth'), currentHeight: value('currentHeight'), actualWeight: value('actualWeight'),
+      costPerWeight: value('costPerWeight'), monthlyOrders: value('monthlyOrders'), currentPackagingCost: value('currentPackagingCost'),
+      productCost: value('productCost'), feesPerOrder: value('feesPerOrder'), targetMargin: value('targetMargin'),
+      divisor: value('divisor'), billableStep: value('unit') === 'metric' ? 0.5 : 1, roundDimensions: form.elements.namedItem('roundDimensions')?.checked,
+      boxes: parseBoxes(value('boxes')),
+    });
+
+    const render = () => {
+      lastResult = optimizeBoxes(collect());
+      const unit = lastResult.current.unit === 'metric' ? 'kg' : 'lb';
+      const dimensionUnit = lastResult.current.unit === 'metric' ? 'cm' : 'in';
+      root.querySelectorAll('[data-opt-weight-unit]').forEach((el) => { el.textContent = unit; });
+      root.querySelectorAll('[data-opt-dimension-unit]').forEach((el) => { el.textContent = dimensionUnit; });
+      put('validCount', lastResult.validCount);
+      put('currentBillable', formatNumber(lastResult.current.billableWeight));
+      put('weightSavings', formatNumber(lastResult.weightSavings));
+      put('monthlySavings', money(lastResult.monthlySavings));
+      put('targetMargin', formatNumber(lastResult.targetMargin, 1));
+      put('minimumPrice', money(lastResult.minimumSellingPrice));
+      const empty = root.querySelector('[data-optimizer-empty]');
+      const resultBody = root.querySelector('.optimizer-winner');
+      const savings = root.querySelector('.optimizer-savings');
+      const compare = root.querySelector('.optimizer-compare');
+      const price = root.querySelector('.minimum-price-card');
+      [resultBody, savings, compare, price].forEach((el) => { if (el instanceof HTMLElement) el.hidden = !lastResult.best; });
+      if (empty instanceof HTMLElement) empty.hidden = Boolean(lastResult.best);
+      if (lastResult.best) {
+        put('name', lastResult.best.name);
+        put('billable', formatNumber(lastResult.best.result.billableWeight));
+        put('bestBillable', formatNumber(lastResult.best.result.billableWeight));
+      }
+      const list = root.querySelector('[data-candidate-list]');
+      if (list) list.innerHTML = lastResult.candidates.map((box) => `<article class="candidate-row ${box === lastResult.best ? 'is-best' : ''} ${box.fits ? '' : 'does-not-fit'}"><div><strong>${String(box.name).replaceAll('<', '&lt;')}</strong><small>${formatNumber(box.length)} × ${formatNumber(box.width)} × ${formatNumber(box.height)} ${dimensionUnit}</small></div><span>${box.fits ? `${formatNumber(box.result.billableWeight)} ${unit}` : 'Does not fit'}</span></article>`).join('');
+      return lastResult;
+    };
+
+    const updatePreset = () => {
+      const selected = PRESETS[value('preset')];
+      if (!selected) return;
+      const divisor = form.elements.namedItem('divisor');
+      if (divisor instanceof HTMLInputElement) divisor.value = String(selected.divisor);
+      const radio = form.querySelector(`input[name="unit"][value="${selected.unit}"]`);
+      if (radio instanceof HTMLInputElement) radio.checked = true;
+      render();
+    };
+
+    form.addEventListener('input', render);
+    form.addEventListener('reset', () => setTimeout(updatePreset));
+    form.elements.namedItem('preset')?.addEventListener('change', updatePreset);
+    form.querySelectorAll('input[name="unit"]').forEach((radio) => radio.addEventListener('change', () => {
+      const preset = form.elements.namedItem('preset');
+      if (preset instanceof HTMLSelectElement) preset.value = radio.value === 'metric' ? 'metric5000' : 'imperial139';
+      updatePreset();
+    }));
+    root.querySelector('[data-load-boxes]')?.addEventListener('click', () => {
+      const boxes = form.elements.namedItem('boxes');
+      if (boxes instanceof HTMLTextAreaElement) boxes.value = 'name,length,width,height,cost\nSlim mailer,12,10,3,0.65\nSmall box,14,10,6,0.90\nMedium box,18,14,12,1.20';
+      render();
+    });
+    root.querySelector('[data-optimize]')?.addEventListener('click', () => {
+      render();
+      if (matchMedia('(max-width: 760px)').matches) root.querySelector('[data-optimizer-result]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    root.querySelector('[data-copy-optimizer]')?.addEventListener('click', async (event) => {
+      const result = render();
+      if (!result.best) return;
+      const unit = result.current.unit === 'metric' ? 'kg' : 'lb';
+      await navigator.clipboard.writeText(`ShipMargin recommends ${result.best.name}: ${formatNumber(result.best.result.billableWeight)} ${unit} billable, saving about ${formatNumber(result.weightSavings)} ${unit} and ${money(result.monthlySavings)} per month.`);
+      event.currentTarget.textContent = 'Copied';
+      setTimeout(() => { event.currentTarget.textContent = 'Copy recommendation'; }, 1400);
+    });
+    render();
+  });
+</script>
