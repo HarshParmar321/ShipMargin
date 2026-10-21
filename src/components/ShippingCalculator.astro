@@ -39,17 +39,6 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
           <label><input type="radio" name="unit" value="metric" /> Metric <small>cm · kg</small></label>
         </fieldset>
 
-        <label class="field full-field">
-          <span>Calculation rule <button class="info-dot" type="button" aria-label="About divisors" title="Carriers divide package volume by a rule-specific divisor.">?</button></span>
-          <select name="preset">
-            <option value="imperial139">Common parcel · 139 in³/lb</option>
-            <option value="imperial166">Retail / legacy · 166 in³/lb</option>
-            <option value="metric5000">Express metric · 5,000 cm³/kg</option>
-            <option value="metric6000">Air metric · 6,000 cm³/kg</option>
-            <option value="custom">Custom rule</option>
-          </select>
-        </label>
-
         <div class="dimension-grid">
           <label class="field"><span>Length <b data-dimension-unit>in</b></span><input name="length" inputmode="decimal" type="number" min="0" step="0.1" value="18" /></label>
           <label class="field"><span>Width <b data-dimension-unit>in</b></span><input name="width" inputmode="decimal" type="number" min="0" step="0.1" value="14" /></label>
@@ -60,6 +49,23 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
           <label class="field"><span>Scale weight <b data-weight-unit>lb</b></span><input name="actualWeight" inputmode="decimal" type="number" min="0" step="0.1" value="8" /></label>
           <label class="field"><span>Packages</span><input name="quantity" inputmode="numeric" type="number" min="1" step="1" value="1" /></label>
         </div>
+
+        <div class="mobile-live-result" aria-hidden="true">
+          <span>Billable weight</span>
+          <strong><b data-result="billable">22</b> <em data-weight-unit>lb</em></strong>
+          <small data-result="basis">Dimensional weight controls this shipment.</small>
+        </div>
+
+        <label class="field full-field rule-field">
+          <span>Calculation rule <button class="info-dot" type="button" aria-label="About divisors" title="Carriers divide package volume by a rule-specific divisor.">?</button></span>
+          <select name="preset">
+            <option value="imperial139">Common parcel · 139 in³/lb</option>
+            <option value="imperial166">Retail / legacy · 166 in³/lb</option>
+            <option value="metric5000">Express metric · 5,000 cm³/kg</option>
+            <option value="metric6000">Air metric · 6,000 cm³/kg</option>
+            <option value="custom">Custom rule</option>
+          </select>
+        </label>
 
         <details class="advanced" data-margin-details>
           <summary>Profit and cost details <span>Optional</span></summary>
