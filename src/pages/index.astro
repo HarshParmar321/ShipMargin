@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShippingCalculator from '../components/ShippingCalculator.astro';
+import { languagePaths } from '../lib/locales';
 ---
 
-<BaseLayout title="ShipMargin — Know what your package really costs" description="Free dimensional-weight, shipping-margin and batch package audit tools for sellers. No sign-up; package data stays in your browser." canonicalPath="/">
+<BaseLayout title="ShippingMath — Know what your package really costs" description="Free dimensional-weight, shipping-margin and batch package audit tools for sellers. No sign-up; package data stays in your browser." canonicalPath="/" languagePaths={languagePaths.home}>
   <section class="quick-hero">
     <div>
       <span class="eyebrow">Free shipping audit</span>

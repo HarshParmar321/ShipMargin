@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languagePaths } from '../../lib/locales';
 ---
-<BaseLayout title="Calculation methodology | ShipMargin" description="How ShipMargin calculates dimensional, billable and margin estimates." canonicalPath="/methodology/">
+<BaseLayout title="Calculation methodology | ShippingMath" description="How ShippingMath calculates dimensional, billable and margin estimates." canonicalPath="/methodology/" languagePaths={languagePaths.methodology}>
   <header class="tool-hero"><span class="eyebrow">Transparent calculations</span><h1>Methodology</h1><p>Every answer should be reproducible. These are the assumptions used by the current free tools.</p></header>
   <article class="content-section">
     <h2>Package measurements</h2><p>Enter the finished outside dimensions of the packed carton, including bulges or protective material. When dimension rounding is enabled, each side is rounded upward before volume is calculated.</p>

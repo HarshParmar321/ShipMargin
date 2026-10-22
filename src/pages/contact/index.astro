@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languagePaths } from '../../lib/locales';
 ---
-<BaseLayout title="Contact ShipMargin" description="Contact ShipMargin about calculation corrections, feedback and partnerships." canonicalPath="/contact/">
+<BaseLayout title="Contact ShippingMath" description="Contact ShippingMath about calculation corrections, feedback and partnerships." canonicalPath="/contact/" languagePaths={languagePaths.contact}>
   <header class="tool-hero"><span class="eyebrow">Feedback improves the tool</span><h1>Found a rule we should check?</h1><p>We welcome calculation corrections, workflow feedback and partnership enquiries.</p></header>
   <article class="content-section"><h2>Before production launch</h2><p>The public support address will be added with the production domain so users can report incorrect rules and include the carrier, service, country and source documentation.</p><div class="notice"><strong>Please protect customer privacy.</strong> Never send names, addresses, tracking numbers, invoices or unredacted order exports when reporting a calculator issue.</div></article>
 </BaseLayout>

@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BoxOptimizer from '../../components/BoxOptimizer.astro';
+import { languagePaths } from '../../lib/locales';
 ---
 
-<BaseLayout title="Box & Margin Optimizer — Compare Shipping Boxes | ShipMargin" description="Compare available shipping boxes, reduce billable weight, estimate monthly savings and calculate the selling price needed for your target margin." canonicalPath="/box-margin-optimizer/">
+<BaseLayout title="Box & Margin Optimizer — Compare Shipping Boxes | ShippingMath" description="Compare available shipping boxes, reduce billable weight, estimate monthly savings and calculate the selling price needed for your target margin." canonicalPath="/box-margin-optimizer/" languagePaths={languagePaths.optimizer}>
   <header class="tool-hero optimizer-hero">
-    <div class="crumbs"><a href="/">ShipMargin</a> / Box optimizer</div>
+    <div class="crumbs"><a href="/">ShippingMath</a> / Box optimizer</div>
     <span class="eyebrow">Free · local · mobile-first</span>
     <h1>Pick the box that protects your margin.</h1>
     <p>Compare your available cartons by fit, billable weight and total packaging cost. See the best valid option immediately.</p>
@@ -13,7 +14,7 @@ import BoxOptimizer from '../../components/BoxOptimizer.astro';
   <BoxOptimizer />
   <article class="content-section optimizer-content">
     <h2>Why the cheapest box is not always the cheapest shipment</h2>
-    <p>A low-cost carton can still increase dimensional weight. ShipMargin compares packaging cost and estimated shipping cost together, while rejecting boxes that cannot fit the product even after rotation.</p>
+    <p>A low-cost carton can still increase dimensional weight. ShippingMath compares packaging cost and estimated shipping cost together, while rejecting boxes that cannot fit the product even after rotation.</p>
     <h2>What the estimate includes</h2>
     <ul>
       <li>The greater of scale weight and calculated dimensional weight.</li>

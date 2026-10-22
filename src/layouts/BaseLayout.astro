@@ -1,18 +1,58 @@
 ---
 import '../styles/global.css';
 
+type Locale = 'en' | 'pt-br' | 'es';
+
 interface Props {
   title: string;
   description: string;
   canonicalPath?: string;
+  locale?: Locale;
+  languagePaths?: Partial<Record<Locale, string>>;
 }
 
-const { title, description, canonicalPath = Astro.url.pathname } = Astro.props;
+const {
+  title,
+  description,
+  canonicalPath = Astro.url.pathname,
+  locale = 'en',
+  languagePaths,
+} = Astro.props;
+
+const localeTags: Record<Locale, string> = { en: 'en', 'pt-br': 'pt-BR', es: 'es' };
+const homePaths: Record<Locale, string> = { en: '/', 'pt-br': '/pt-br/', es: '/es/' };
+const copy = {
+  en: {
+    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Runs locally',
+    nav: [['Box optimizer', '/box-margin-optimizer/'], ['DIM weight', '/dimensional-weight-calculator/'], ['Margin', '/shipping-margin-calculator/'], ['Batch audit', '/batch-shipping-audit/']],
+    tagline: 'Clear shipping math for sellers everywhere.',
+    footer: [['Box optimizer', '/box-margin-optimizer/'], ['Methodology', '/methodology/'], ['Privacy', '/privacy/'], ['Terms', '/terms/'], ['About', '/about/'], ['Contact', '/contact/']],
+    fine: 'Planning estimates only. Confirm current rules and rates with your carrier or contract.',
+  },
+  'pt-br': {
+    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Processado localmente',
+    nav: [['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/'], ['Privacidade', '/pt-br/privacidade/']],
+    tagline: 'Cálculos de frete claros para vendedores em qualquer lugar.',
+    footer: [['Otimizador', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/'], ['Privacidade', '/pt-br/privacidade/'], ['Termos', '/pt-br/termos/'], ['Sobre', '/pt-br/sobre/'], ['Contato', '/pt-br/contato/']],
+    fine: 'Estimativas para planejamento. Confirme as regras e tarifas atuais com a transportadora ou no seu contrato.',
+  },
+  es: {
+    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Procesado localmente',
+    nav: [['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/'], ['Privacidad', '/es/privacidad/']],
+    tagline: 'Cálculos de envío claros para vendedores de todo el mundo.',
+    footer: [['Optimizador', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/'], ['Privacidad', '/es/privacidad/'], ['Términos', '/es/terminos/'], ['Acerca de', '/es/acerca-de/'], ['Contacto', '/es/contacto/']],
+    fine: 'Estimaciones para planificación. Confirma las reglas y tarifas actuales con el transportista o tu contrato.',
+  },
+} as const;
+
+const labels: Record<Locale, string> = { en: 'EN', 'pt-br': 'PT', es: 'ES' };
+const t = copy[locale];
 const canonical = new URL(canonicalPath, Astro.site ?? Astro.url.origin);
+const switchPaths = { ...homePaths, ...(languagePaths ?? {}) };
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={localeTags[locale]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -20,55 +60,60 @@ const canonical = new URL(canonicalPath, Astro.site ?? Astro.url.origin);
     <meta name="theme-color" content="#f3f1e8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
+    {languagePaths && (Object.entries(languagePaths) as [Locale, string][]).map(([code, path]) => (
+      <link rel="alternate" hreflang={localeTags[code]} href={new URL(path, Astro.site ?? Astro.url.origin)} />
+    ))}
+    {languagePaths?.en && <link rel="alternate" hreflang="x-default" href={new URL(languagePaths.en, Astro.site ?? Astro.url.origin)} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={localeTags[locale].replace('-', '_')} />
     <meta name="twitter:card" content="summary" />
     <title>{title}</title>
     <script type="application/ld+json" set:html={JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'ShipMargin',
+      name: 'ShippingMath',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Any',
+      inLanguage: localeTags[locale],
       url: canonical.toString(),
       description,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     })} />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to calculator</a>
+    <a class="skip-link" href="#main">{t.skip}</a>
     <header class="site-header">
-      <a class="brand" href="/" aria-label="ShipMargin home">
+      <a class="brand" href={homePaths[locale]} aria-label={t.home}>
         <span class="brand-mark" aria-hidden="true">↗</span>
-        <span>ShipMargin</span>
+        <span>ShippingMath</span>
       </a>
       <nav aria-label="Main navigation">
-        <a href="/box-margin-optimizer/">Box optimizer</a>
-        <a href="/dimensional-weight-calculator/">DIM weight</a>
-        <a href="/shipping-margin-calculator/">Margin</a>
-        <a href="/batch-shipping-audit/">Batch audit</a>
+        {t.nav.map(([label, href]) => <a href={href}>{label}</a>)}
       </nav>
-      <span class="privacy-pill"><i></i> Runs locally</span>
+      <div class="header-actions">
+        <span class="privacy-pill"><i></i> {t.local}</span>
+        <nav class="language-switcher" aria-label="Language">
+          {(Object.keys(labels) as Locale[]).map((code) => (
+            <a href={switchPaths[code]} hreflang={localeTags[code]} lang={localeTags[code]} aria-current={code === locale ? 'page' : undefined}>{labels[code]}</a>
+          ))}
+        </nav>
+      </div>
     </header>
     <main id="main">
       <slot />
     </main>
     <footer class="site-footer">
       <div>
-        <a class="brand footer-brand" href="/"><span class="brand-mark" aria-hidden="true">↗</span>ShipMargin</a>
-        <p>Clear shipping math for sellers everywhere.</p>
+        <a class="brand footer-brand" href={homePaths[locale]}><span class="brand-mark" aria-hidden="true">↗</span>ShippingMath</a>
+        <p>{t.tagline}</p>
       </div>
       <div class="footer-links">
-        <a href="/box-margin-optimizer/">Box optimizer</a>
-        <a href="/methodology/">Methodology</a>
-        <a href="/privacy/">Privacy</a>
-        <a href="/terms/">Terms</a>
-        <a href="/about/">About</a>
-        <a href="/contact/">Contact</a>
+        {t.footer.map(([label, href]) => <a href={href}>{label}</a>)}
       </div>
-      <p class="fine-print">Planning estimates only. Confirm current rules and rates with your carrier or contract.</p>
+      <p class="fine-print">{t.fine}</p>
     </footer>
   </body>
 </html>

@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languagePaths, localizedSites } from '../../lib/locales';
+
+export function getStaticPaths() {
+  return Object.entries(localizedSites).map(([locale, site]) => ({ params: { locale }, props: { site } }));
+}
+
+const { site } = Astro.props;
+const t = site.home;
+---
+
+<BaseLayout title={t.title} description={t.description} canonicalPath={site.homePath} locale={site.locale} languagePaths={languagePaths.home}>
+  <section class="quick-hero localized-hero">
+    <div>
+      <span class="eyebrow">{t.eyebrow}</span>
+      <h1>{t.heading}</h1>
+      <p>{t.intro}</p>
+      <a class="primary-button localized-cta" href={site.optimizerPath}>{t.cta}</a>
+    </div>
+    <div class="quick-trust" aria-label="Product benefits">{t.trust.map((item) => <span>✓ {item}</span>)}</div>
+  </section>
+
+  <section class="value-section localized-value-section">
+    <header>
+      <div><span class="eyebrow">{t.sectionEyebrow}</span><h2>{t.sectionHeading}</h2></div>
+      <p>{t.sectionIntro}</p>
+    </header>
+    <div class="value-grid">
+      {t.cards.map(([heading, text], index) => <article class="value-card"><span>0{index + 1}</span><div><h3>{heading}</h3><p>{text}</p></div></article>)}
+    </div>
+  </section>
+</BaseLayout>

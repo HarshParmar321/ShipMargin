@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BoxOptimizer from '../../components/BoxOptimizer.astro';
+import { languagePaths, localizedSites } from '../../lib/locales';
+
+export function getStaticPaths() {
+  const routes = [];
+  for (const [locale, site] of Object.entries(localizedSites)) {
+    const optimizerSlug = locale === 'pt-br' ? 'otimizador-de-caixas' : 'optimizador-de-cajas';
+    routes.push({ params: { locale, slug: optimizerSlug }, props: { site, pageType: 'optimizer' } });
+    for (const [slug, page] of Object.entries(site.info)) {
+      routes.push({ params: { locale, slug }, props: { site, pageType: 'info', page, slug } });
+    }
+  }
+  return routes;
+}
+
+const { site, pageType, page, slug } = Astro.props;
+const alternateKey = pageType === 'optimizer'
+  ? 'optimizer'
+  : slug === 'metodologia' ? 'methodology'
+  : slug === 'privacidade' || slug === 'privacidad' ? 'privacy'
+  : slug === 'termos' || slug === 'terminos' ? 'terms'
+  : slug === 'sobre' || slug === 'acerca-de' ? 'about'
+  : 'contact';
+const alternates = languagePaths[alternateKey];
+const canonicalPath = pageType === 'optimizer' ? site.optimizerPath : `${site.homePath}${slug}/`;
+---
+
+{pageType === 'optimizer' ? (
+  <BaseLayout title={site.optimizer.title} description={site.optimizer.description} canonicalPath={site.optimizerPath} locale={site.locale} languagePaths={alternates}>
+    <header class="tool-hero optimizer-hero">
+      <div class="crumbs"><a href={site.homePath}>ShippingMath</a> / {site.optimizer.crumb}</div>
+      <span class="eyebrow">{site.optimizer.eyebrow}</span>
+      <h1>{site.optimizer.heading}</h1>
+      <p>{site.optimizer.intro}</p>
+    </header>
+    <BoxOptimizer locale={site.locale} />
+    <article class="content-section optimizer-content">
+      <h2>{site.optimizer.why}</h2>
+      <p>{site.optimizer.whyText}</p>
+      <h2>{site.optimizer.includes}</h2>
+      <ul>{site.optimizer.bullets.map((item) => <li>{item}</li>)}</ul>
+      <div class="notice"><strong>{site.optimizer.noticeTitle}</strong> {site.optimizer.notice}</div>
+    </article>
+  </BaseLayout>
+) : (
+  <BaseLayout title={page.title} description={page.description} canonicalPath={canonicalPath} locale={site.locale} languagePaths={alternates}>
+    <header class="tool-hero"><span class="eyebrow">{page.eyebrow}</span><h1>{page.heading}</h1><p>{page.intro}</p></header>
+    <article class="content-section">
+      {(page.sections as readonly (readonly [string, string])[]).map(([heading, text]) => <><h2>{heading}</h2><p>{text}</p></>)}
+    </article>
+  </BaseLayout>
+)}

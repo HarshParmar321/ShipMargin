@@ -1,10 +1,11 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languagePaths } from '../../lib/locales';
 ---
-<BaseLayout title="Privacy | ShipMargin" description="ShipMargin privacy information and local-processing principles." canonicalPath="/privacy/">
+<BaseLayout title="Privacy | ShippingMath" description="ShippingMath privacy information and local-processing principles." canonicalPath="/privacy/" languagePaths={languagePaths.privacy}>
   <header class="tool-hero"><span class="eyebrow">Privacy by design</span><h1>Your shipment data stays yours.</h1><p>The calculator and batch CSV audit are designed to run in your browser without uploading package data.</p></header>
   <article class="content-section">
-    <h2>Local calculations</h2><p>Measurements, weights, prices and CSV contents are processed on the device running the page. The free version does not require an account or store submitted calculator data on a ShipMargin server.</p>
+    <h2>Local calculations</h2><p>Measurements, weights, prices and CSV contents are processed on the device running the page. The free version does not require an account or store submitted calculator data on a ShippingMath server.</p>
     <h2>Share links</h2><p>A generated link may include basic measurements, measurement system and divisor in its URL. Do not include customer information or confidential data. CSV contents, filenames, SKUs and cost fields are not included automatically.</p>
     <h2>Analytics and advertising</h2><p>Before public launch, this notice will identify the exact analytics and advertising providers in use. Product analytics must not contain measurements, prices, filenames, SKUs or CSV contents. Consent controls will be provided where legally required.</p>
     <h2>Contact</h2><p>Questions about privacy can be sent through the contact details published on the production site.</p>

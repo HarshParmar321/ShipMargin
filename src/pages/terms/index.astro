@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languagePaths } from '../../lib/locales';
 ---
-<BaseLayout title="Terms of Use | ShipMargin" description="Terms for using ShipMargin's free shipping calculators and audit tools." canonicalPath="/terms/">
+<BaseLayout title="Terms of Use | ShippingMath" description="Terms for using ShippingMath's free shipping calculators and audit tools." canonicalPath="/terms/" languagePaths={languagePaths.terms}>
   <header class="tool-hero">
     <span class="eyebrow">Straightforward terms</span>
     <h1>Useful estimates, checked decisions.</h1>
-    <p>ShipMargin helps you inspect shipping math. Your carrier agreement remains the final source for charges and service rules.</p>
+    <p>ShippingMath helps you inspect shipping math. Your carrier agreement remains the final source for charges and service rules.</p>
   </header>
   <article class="content-section">
     <h2>Using the tools</h2>

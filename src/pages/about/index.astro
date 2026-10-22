@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { languagePaths } from '../../lib/locales';
 ---
-<BaseLayout title="About ShipMargin" description="Why ShipMargin exists and what the free shipping tools are designed to do." canonicalPath="/about/">
-  <header class="tool-hero"><span class="eyebrow">About the project</span><h1>Shipping math should lead to a decision.</h1><p>ShipMargin turns package measurements into plain-language cost and margin signals for sellers everywhere.</p></header>
-  <article class="content-section"><h2>Why we built it</h2><p>Many calculators stop at a formula. ShipMargin keeps scale weight, dimensional weight, billable weight, package volume and margin together so a seller can decide whether to change the carton, price or shipping charge.</p><h2>What it is not</h2><p>ShipMargin is independent planning software. It is not a carrier, accounting system, postage quote or substitute for a current carrier agreement.</p><h2>Free first</h2><p>The launch product is free and does not require registration. Future paid features will only be considered if users repeatedly need saved catalogues, larger workflows, integrations or team reporting.</p></article>
+<BaseLayout title="About ShippingMath" description="Why ShippingMath exists and what the free shipping tools are designed to do." canonicalPath="/about/" languagePaths={languagePaths.about}>
+  <header class="tool-hero"><span class="eyebrow">About the project</span><h1>Shipping math should lead to a decision.</h1><p>ShippingMath turns package measurements into plain-language cost and margin signals for sellers everywhere.</p></header>
+  <article class="content-section"><h2>Why we built it</h2><p>Many calculators stop at a formula. ShippingMath keeps scale weight, dimensional weight, billable weight, package volume and margin together so a seller can decide whether to change the carton, price or shipping charge.</p><h2>What it is not</h2><p>ShippingMath is independent planning software. It is not a carrier, accounting system, postage quote or substitute for a current carrier agreement.</p><h2>Free first</h2><p>The launch product is free and does not require registration. Future paid features will only be considered if users repeatedly need saved catalogues, larger workflows, integrations or team reporting.</p></article>
 </BaseLayout>
