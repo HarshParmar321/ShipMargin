@@ -43,7 +43,10 @@ Small box,14,10,6,0.90
 Medium box,18,14,12,1.20</textarea>
 
       <details class="advanced optimizer-business">
-        <summary>Business and margin details <span>Optional</span></summary>
+        <summary>
+          <span class="advanced-title"><b>Business and margin</b><small>Add order costs for a safer selling price.</small></span>
+          <span class="optional-pill">Optional</span>
+        </summary>
         <div class="cost-grid">
           <label class="field"><span>Currency</span><select name="currency"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>BRL</option><option>CAD</option><option>AUD</option></select></label>
           <label class="field"><span>Monthly orders</span><input name="monthlyOrders" inputmode="numeric" type="number" min="1" step="1" value="100" /></label>
@@ -55,7 +58,9 @@ Medium box,18,14,12,1.20</textarea>
       </details>
 
       <details class="advanced optimizer-business">
-        <summary>Carrier calculation settings</summary>
+        <summary>
+          <span class="advanced-title"><b>Carrier settings</b><small>Choose the dimensional-weight rule.</small></span>
+        </summary>
         <div class="two-column-fields advanced-fields">
           <label class="field"><span>Calculation rule</span><select name="preset"><option value="imperial139">Common parcel · 139</option><option value="imperial166">Retail / legacy · 166</option><option value="metric5000">Express metric · 5,000</option><option value="metric6000">Air metric · 6,000</option></select></label>
           <label class="field"><span>Custom divisor</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value="139" /></label>
