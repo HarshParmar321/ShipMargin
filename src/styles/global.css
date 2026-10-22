@@ -223,12 +223,15 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
 .minimum-price-card > span, .minimum-price-card > small { display: block; color: rgba(255,255,255,.72); font-size: .67rem; }
 .minimum-price-card > strong { display: block; margin: 4px 0; font-size: 1.8rem; }
 .candidate-list { display: grid; gap: 7px; margin-top: 16px; }
-.candidate-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 1px solid rgba(255,255,255,.11); border-radius: 11px; }
+.candidate-row { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 1px solid rgba(255,255,255,.11); border-radius: 11px; background: transparent; color: inherit; text-align: left; font: inherit; cursor: pointer; }
 .candidate-row div { display: grid; }
 .candidate-row small { color: rgba(255,255,255,.48); font-size: .63rem; }
-.candidate-row > span { font-size: .72rem; font-weight: 800; }
-.candidate-row.is-best { border-color: var(--acid); background: rgba(216,255,112,.08); }
-.candidate-row.does-not-fit { opacity: .46; }
+.candidate-row:hover { border-color: rgba(216,255,112,.52); }
+.candidate-row:focus-visible { outline-color: var(--acid); }
+.candidate-row.is-selected { border-color: var(--acid); background: rgba(216,255,112,.08); }
+.candidate-row.does-not-fit { opacity: .46; cursor: not-allowed; }
+.candidate-meta { display: flex; align-items: end; gap: 5px; flex-direction: column; font-size: .72rem; }
+.candidate-meta small { padding: 2px 6px; border-radius: 999px; background: var(--acid); color: var(--ink); font-size: .55rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
 .optimizer-empty { margin: 22px 0; padding: 18px; border-radius: 14px; background: rgba(240,154,91,.13); border: 1px solid rgba(240,154,91,.28); }
 .optimizer-empty p { margin: 5px 0 0; color: rgba(255,255,255,.65); }
 .optimizer-copy { width: 100%; margin-top: 18px; }

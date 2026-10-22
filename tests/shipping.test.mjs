@@ -80,3 +80,26 @@ test('chooses the lowest total-cost valid box and estimates savings', () => {
   assert.equal(result.monthlySavings, 1455);
   assert.ok(result.minimumSellingPrice > 46 && result.minimumSellingPrice < 47);
 });
+
+test('allows a valid box to override the automatic recommendation', () => {
+  const input = {
+    unit: 'imperial', divisor: 139, billableStep: 1, roundDimensions: true,
+    productLength: 11, productWidth: 8, productHeight: 2, actualWeight: 8,
+    currentLength: 18, currentWidth: 14, currentHeight: 12,
+    costPerWeight: 1, monthlyOrders: 100, currentPackagingCost: 1.2,
+    productCost: 20, feesPerOrder: 4, targetMargin: 30,
+    boxes: [
+      { name: 'Slim', length: 12, width: 10, height: 3, cost: 0.65 },
+      { name: 'Small', length: 14, width: 10, height: 6, cost: 0.9 },
+    ],
+  };
+  const automatic = optimizeBoxes(input);
+  const smallKey = automatic.candidates.find((box) => box.name === 'Small').key;
+  const overridden = optimizeBoxes({ ...input, selectedBoxKey: smallKey });
+  assert.equal(overridden.recommended.name, 'Slim');
+  assert.equal(overridden.selected.name, 'Small');
+  assert.equal(overridden.best.name, 'Small');
+  assert.equal(overridden.isRecommendedSelection, false);
+  assert.equal(overridden.monthlySavings, 1430);
+  assert.equal(Math.round(overridden.minimumSellingPrice * 100) / 100, 47);
+});

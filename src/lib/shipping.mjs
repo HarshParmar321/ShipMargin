@@ -161,13 +161,14 @@ export function optimizeBoxes(input = {}) {
   });
   const currentShippingCost = current.billableWeight * costPerWeight;
   const currentTotalCost = currentShippingCost + currentPackagingCost;
-  const candidates = (Array.isArray(input.boxes) ? input.boxes : []).map((box) => {
+  const candidates = (Array.isArray(input.boxes) ? input.boxes : []).map((box, index) => {
     const fits = boxFits(productDimensions, [box.length, box.width, box.height]);
     const result = calculatePackage({ ...settings, length: box.length, width: box.width, height: box.height });
     const shippingCost = result.billableWeight * costPerWeight;
     const packagingCost = number(box.cost);
     return {
       ...box,
+      key: `${index}|${box.name}|${box.length}|${box.width}|${box.height}|${box.cost}`,
       fits,
       result,
       shippingCost,
@@ -181,12 +182,13 @@ export function optimizeBoxes(input = {}) {
       : a.result.billableWeight - b.result.billableWeight;
     return primary || (a.result.billableWeight - b.result.billableWeight) || (a.result.volume - b.result.volume);
   });
-  const best = valid[0] ?? null;
-  const savingsPerOrder = best ? Math.round((Math.max(0, currentTotalCost - best.totalCost) + Number.EPSILON) * 100) / 100 : 0;
-  const weightSavings = best ? Math.max(0, current.billableWeight - best.result.billableWeight) : 0;
+  const recommended = valid[0] ?? null;
+  const selected = valid.find((candidate) => candidate.key === input.selectedBoxKey) ?? recommended;
+  const savingsPerOrder = selected ? Math.round((Math.max(0, currentTotalCost - selected.totalCost) + Number.EPSILON) * 100) / 100 : 0;
+  const weightSavings = selected ? Math.max(0, current.billableWeight - selected.result.billableWeight) : 0;
   const monthlySavings = Math.round((savingsPerOrder * monthlyOrders + Number.EPSILON) * 100) / 100;
   const targetMargin = Math.min(number(input.targetMargin), 99.9);
-  const baseCosts = number(input.productCost) + number(input.feesPerOrder) + (best?.totalCost ?? currentTotalCost);
+  const baseCosts = number(input.productCost) + number(input.feesPerOrder) + (selected?.totalCost ?? currentTotalCost);
   const minimumSellingPrice = targetMargin > 0 ? baseCosts / (1 - targetMargin / 100) : baseCosts;
 
   return {
@@ -196,7 +198,10 @@ export function optimizeBoxes(input = {}) {
     currentTotalCost,
     candidates,
     validCount: valid.length,
-    best,
+    recommended,
+    selected,
+    best: selected,
+    isRecommendedSelection: Boolean(selected && recommended && selected.key === recommended.key),
     costPerWeight,
     monthlyOrders,
     savingsPerOrder,

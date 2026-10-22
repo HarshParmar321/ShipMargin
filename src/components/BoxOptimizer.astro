@@ -67,7 +67,7 @@ Medium box,18,14,12,1.20</textarea>
     </form>
 
     <aside class="optimizer-result" aria-live="polite" data-optimizer-result>
-      <div class="result-kicker"><span>Best valid option</span><span class="status-dot">Local result</span></div>
+      <div class="result-kicker"><span data-opt-result="choiceLabel">Best value</span><span class="status-dot">Local result</span></div>
       <div class="optimizer-winner">
         <span>Use</span>
         <h2 data-opt-result="name">Slim mailer</h2>
@@ -82,7 +82,7 @@ Medium box,18,14,12,1.20</textarea>
       <div class="optimizer-compare">
         <div><span>Current package</span><strong><b data-opt-result="currentBillable">22</b> <small data-opt-weight-unit>lb</small></strong></div>
         <span aria-hidden="true">→</span>
-        <div><span>Recommended box</span><strong><b data-opt-result="bestBillable">8</b> <small data-opt-weight-unit>lb</small></strong></div>
+        <div><span>Selected box</span><strong><b data-opt-result="bestBillable">8</b> <small data-opt-weight-unit>lb</small></strong></div>
       </div>
 
       <div class="minimum-price-card">
@@ -108,6 +108,7 @@ Medium box,18,14,12,1.20</textarea>
     const form = root.querySelector('[data-optimizer-form]');
     if (!(form instanceof HTMLFormElement)) return;
     let lastResult;
+    let selectedBoxKey = '';
     const value = (name) => form.elements.namedItem(name)?.value ?? '';
     const put = (name, output) => root.querySelectorAll(`[data-opt-result="${name}"]`).forEach((el) => { el.textContent = String(output); });
     const currency = () => String(value('currency') || 'USD').toUpperCase();
@@ -120,6 +121,7 @@ Medium box,18,14,12,1.20</textarea>
       productCost: value('productCost'), feesPerOrder: value('feesPerOrder'), targetMargin: value('targetMargin'),
       divisor: value('divisor'), billableStep: value('unit') === 'metric' ? 0.5 : 1, roundDimensions: form.elements.namedItem('roundDimensions')?.checked,
       boxes: parseBoxes(value('boxes')),
+      selectedBoxKey,
     });
 
     const render = () => {
@@ -134,6 +136,7 @@ Medium box,18,14,12,1.20</textarea>
       put('monthlySavings', money(lastResult.monthlySavings));
       put('targetMargin', formatNumber(lastResult.targetMargin, 1));
       put('minimumPrice', money(lastResult.minimumSellingPrice));
+      put('choiceLabel', lastResult.isRecommendedSelection ? 'Best value' : 'Your selection');
       const empty = root.querySelector('[data-optimizer-empty]');
       const resultBody = root.querySelector('.optimizer-winner');
       const savings = root.querySelector('.optimizer-savings');
@@ -147,7 +150,7 @@ Medium box,18,14,12,1.20</textarea>
         put('bestBillable', formatNumber(lastResult.best.result.billableWeight));
       }
       const list = root.querySelector('[data-candidate-list]');
-      if (list) list.innerHTML = lastResult.candidates.map((box) => `<article class="candidate-row ${box === lastResult.best ? 'is-best' : ''} ${box.fits ? '' : 'does-not-fit'}"><div><strong>${String(box.name).replaceAll('<', '&lt;')}</strong><small>${formatNumber(box.length)} × ${formatNumber(box.width)} × ${formatNumber(box.height)} ${dimensionUnit}</small></div><span>${box.fits ? `${formatNumber(box.result.billableWeight)} ${unit}` : 'Does not fit'}</span></article>`).join('');
+      if (list) list.innerHTML = lastResult.candidates.map((box) => `<button type="button" class="candidate-row ${box === lastResult.best ? 'is-selected' : ''} ${box === lastResult.recommended ? 'is-recommended' : ''} ${box.fits ? '' : 'does-not-fit'}" data-box-key="${encodeURIComponent(box.key)}" aria-pressed="${box === lastResult.best}" ${box.fits ? '' : 'disabled'}><div><strong>${String(box.name).replaceAll('<', '&lt;')}</strong><small>${formatNumber(box.length)} × ${formatNumber(box.width)} × ${formatNumber(box.height)} ${dimensionUnit}</small></div><span class="candidate-meta"><b>${box.fits ? `${formatNumber(box.result.billableWeight)} ${unit}` : 'Does not fit'}</b>${box === lastResult.recommended ? '<small>Best value</small>' : ''}</span></button>`).join('');
       return lastResult;
     };
 
@@ -162,7 +165,7 @@ Medium box,18,14,12,1.20</textarea>
     };
 
     form.addEventListener('input', render);
-    form.addEventListener('reset', () => setTimeout(updatePreset));
+    form.addEventListener('reset', () => { selectedBoxKey = ''; setTimeout(updatePreset); });
     form.elements.namedItem('preset')?.addEventListener('change', updatePreset);
     form.querySelectorAll('input[name="unit"]').forEach((radio) => radio.addEventListener('change', () => {
       const preset = form.elements.namedItem('preset');
@@ -174,6 +177,12 @@ Medium box,18,14,12,1.20</textarea>
       if (boxes instanceof HTMLTextAreaElement) boxes.value = 'name,length,width,height,cost\nSlim mailer,12,10,3,0.65\nSmall box,14,10,6,0.90\nMedium box,18,14,12,1.20';
       render();
     });
+    root.querySelector('[data-candidate-list]')?.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-box-key]');
+      if (!(button instanceof HTMLButtonElement) || button.disabled) return;
+      selectedBoxKey = decodeURIComponent(button.getAttribute('data-box-key') || '');
+      render();
+    });
     root.querySelector('[data-optimize]')?.addEventListener('click', () => {
       render();
       if (matchMedia('(max-width: 760px)').matches) root.querySelector('[data-optimizer-result]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -182,7 +191,7 @@ Medium box,18,14,12,1.20</textarea>
       const result = render();
       if (!result.best) return;
       const unit = result.current.unit === 'metric' ? 'kg' : 'lb';
-      await navigator.clipboard.writeText(`ShipMargin recommends ${result.best.name}: ${formatNumber(result.best.result.billableWeight)} ${unit} billable, saving about ${formatNumber(result.weightSavings)} ${unit} and ${money(result.monthlySavings)} per month.`);
+      await navigator.clipboard.writeText(`ShipMargin box selection: ${result.best.name}, ${formatNumber(result.best.result.billableWeight)} ${unit} billable, saving about ${formatNumber(result.weightSavings)} ${unit} and ${money(result.monthlySavings)} per month.${result.isRecommendedSelection ? ' This is the best-value option from the boxes entered.' : ''}`);
       event.currentTarget.textContent = 'Copied';
       setTimeout(() => { event.currentTarget.textContent = 'Copy recommendation'; }, 1400);
     });
