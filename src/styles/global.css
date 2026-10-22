@@ -98,8 +98,8 @@ h1 span { color: var(--violet); }
 .advanced[open] { border-color: rgba(119,89,243,.3); background: #fbfaff; box-shadow: 0 8px 24px rgba(44,35,80,.06); }
 .advanced summary { list-style: none; display: flex; align-items: center; gap: 10px; min-height: 66px; padding: 10px 0; cursor: pointer; }
 .advanced summary::-webkit-details-marker { display: none; }
-.advanced summary::after { content: '+'; display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; margin-left: 2px; border-radius: 9px; background: var(--ink); color: var(--acid); font-size: 1.05rem; line-height: 1; }
-.advanced[open] summary::after { content: '−'; background: var(--violet); color: white; }
+.advanced summary::after { content: ''; flex: 0 0 30px; width: 30px; height: 30px; margin-left: 2px; border-radius: 9px; background-color: var(--ink); background-image: linear-gradient(var(--acid), var(--acid)), linear-gradient(var(--acid), var(--acid)); background-position: center; background-repeat: no-repeat; background-size: 12px 2px, 2px 12px; }
+.advanced[open] summary::after { background-color: var(--violet); background-image: linear-gradient(white, white); background-size: 12px 2px; }
 .advanced-title { display: grid; gap: 2px; min-width: 0; margin-right: auto; }
 .advanced-title b { color: var(--ink); font-size: .84rem; }
 .advanced-title small { color: var(--ink-soft); font-size: .66rem; font-weight: 500; }
