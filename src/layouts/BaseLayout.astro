@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { TOOLS } from '../lib/tools';
 import { CLOUDFLARE_ANALYTICS_TOKEN } from '../lib/site';
 import { COUNTRY_LINKS } from '../lib/alternates';
+import Flag from '../components/Flag.astro';
 
 type Locale = 'en' | 'pt-br' | 'es';
 
@@ -37,7 +38,7 @@ const localeTags: Record<Locale, string> = { en: 'en', 'pt-br': 'pt-BR', es: 'es
 const homePaths: Record<Locale, string> = { en: '/', 'pt-br': '/pt-br/', es: '/es/' };
 const copy = {
   en: {
-    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Runs locally', toolsLabel: 'Free tools', countriesLabel: 'Countries',
+    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Free · private', localTip: 'Calculations run in your browser. Nothing you type is sent to a server.', toolsLabel: 'Free tools', countriesLabel: 'Countries', regionTitle: 'Choose your country', langTitle: 'Language', regionButton: 'Country and language',
     nav: [['DIM weight', '/dimensional-weight-calculator/'], ['USPS 2026', '/usps-dimensional-weight-calculator/'], ['Box optimizer', '/box-margin-optimizer/'], ['Margin', '/shipping-margin-calculator/']],
     strip: TOOLS.map((tool) => [tool.short, tool.href]),
     tagline: 'Clear shipping math for sellers everywhere.',
@@ -46,7 +47,7 @@ const copy = {
     fine: 'Planning estimates only. Confirm current rules and rates with your carrier or contract.',
   },
   'pt-br': {
-    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Processado localmente', toolsLabel: 'Ferramentas', countriesLabel: 'Países',
+    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Grátis · privado', localTip: 'Os cálculos rodam no seu navegador. Nada do que você digita é enviado a um servidor.', toolsLabel: 'Ferramentas', countriesLabel: 'Países', regionTitle: 'Escolha seu país', langTitle: 'Idioma', regionButton: 'País e idioma',
     nav: [['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
     strip: [['Início', '/pt-br/'], ['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
     tagline: 'Cálculos de frete claros para vendedores em qualquer lugar.',
@@ -55,7 +56,7 @@ const copy = {
     fine: 'Estimativas para planejamento. Confirme as regras e tarifas atuais com a transportadora ou no seu contrato.',
   },
   es: {
-    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Procesado localmente', toolsLabel: 'Herramientas', countriesLabel: 'Países',
+    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Gratis · privado', localTip: 'Los cálculos se hacen en tu navegador. Nada de lo que escribes se envía a un servidor.', toolsLabel: 'Herramientas', countriesLabel: 'Países', regionTitle: 'Elige tu país', langTitle: 'Idioma', regionButton: 'País e idioma',
     nav: [['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
     strip: [['Inicio', '/es/'], ['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
     tagline: 'Cálculos de envío claros para vendedores de todo el mundo.',
@@ -66,6 +67,7 @@ const copy = {
 } as const;
 
 const labels: Record<Locale, string> = { en: 'EN', 'pt-br': 'PT', es: 'ES' };
+const languageNames: Record<Locale, string> = { en: 'English', 'pt-br': 'Português', es: 'Español' };
 const t = copy[locale];
 const origin = Astro.site ?? Astro.url.origin;
 const canonical = new URL(canonicalPath, origin);
@@ -79,6 +81,11 @@ const suggestAlternates = (alternates ?? (languagePaths ? [...(Object.entries(la
   .filter(([tag]) => tag !== 'x-default');
 const here = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
 const isHere = (href: string) => here === href;
+// Which country is this page for? Country calculator pages → that country; PT → Brazil; ES → Spanish; other English pages → global.
+const tagCountry = COUNTRY_LINKS.find((c) => c.hreflang.toLowerCase() === pageLang.toLowerCase() && c.code !== 'us');
+const currentCountry = COUNTRY_LINKS.find((c) => c.href === here)
+  ?? tagCountry
+  ?? (locale === 'pt-br' ? COUNTRY_LINKS.find((c) => c.code === 'br') : locale === 'es' ? COUNTRY_LINKS.find((c) => c.code === 'es') : undefined);
 const structuredData = [
   {
     '@context': 'https://schema.org',
@@ -142,12 +149,34 @@ const structuredData = [
         {t.nav.map(([label, href]) => <a href={href} aria-current={isHere(href) ? 'page' : undefined}>{label}</a>)}
       </nav>
       <div class="header-actions">
-        <span class="privacy-pill"><i></i> {t.local}</span>
-        <nav class="language-switcher" aria-label="Language">
-          {(Object.keys(labels) as Locale[]).map((code) => (
-            <a href={switchPaths[code]} hreflang={localeTags[code]} lang={localeTags[code]} aria-current={code === locale ? 'page' : undefined}>{labels[code]}</a>
-          ))}
-        </nav>
+        <span class="privacy-pill" title={t.localTip}><i></i> {t.local}</span>
+        <details class="region-menu" data-region-menu>
+          <summary aria-label={t.regionButton}>
+            <Flag code={currentCountry?.code ?? 'globe'} />
+            <span class="region-code">{currentCountry?.short ?? labels[locale]}</span>
+            <svg class="region-chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
+          <div class="region-panel">
+            <p class="region-title">{t.regionTitle}</p>
+            <ul class="region-list">
+              {COUNTRY_LINKS.map((country) => (
+                <li>
+                  <a href={country.href} hreflang={country.hreflang} aria-current={currentCountry?.code === country.code ? 'true' : undefined}>
+                    <Flag code={country.code} />
+                    <span><b>{country.label}</b><small>{country.carriers}</small></span>
+                    {currentCountry?.code === country.code && <svg class="region-check" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <p class="region-title">{t.langTitle}</p>
+            <div class="region-langs">
+              {(Object.keys(labels) as Locale[]).map((code) => (
+                <a href={switchPaths[code]} hreflang={localeTags[code]} lang={localeTags[code]} aria-current={code === locale ? 'page' : undefined}>{languageNames[code]}</a>
+              ))}
+            </div>
+          </div>
+        </details>
       </div>
     </header>
     <nav class="tool-strip" aria-label={t.toolsLabel}>
@@ -175,7 +204,7 @@ const structuredData = [
         </div>
         <div class="footer-links">
           <strong>{t.countriesLabel}</strong>
-          {COUNTRY_LINKS.map((country) => <a href={country.href} hreflang={country.hreflang}>{country.label}</a>)}
+          {COUNTRY_LINKS.map((country) => <a class="footer-country" href={country.href} hreflang={country.hreflang}><Flag code={country.code} />{country.label}</a>)}
         </div>
         <div class="footer-links">
           <strong>ShippingMath</strong>
@@ -191,13 +220,13 @@ const structuredData = [
         const box = document.querySelector('[data-lang-suggest]');
         if (!(box instanceof HTMLElement)) return;
         const messages = {
-          'pt-br': ['🇧🇷 Ver esta página em português (Brasil)', 'Abrir'],
-          es: ['🇪🇸 Ver esta página en español', 'Abrir'],
-          'en-gb': ['🇬🇧 Shipping from the UK? See UK carrier rules', 'Open'],
-          'en-ca': ['🇨🇦 Shipping from Canada? See Canadian carrier rules', 'Open'],
-          'en-au': ['🇦🇺 Shipping from Australia? See cubic weight rules', 'Open'],
-          'en-in': ['🇮🇳 Shipping from India? See Indian courier rules', 'Open'],
-          'en-us': ['🇺🇸 See the US version (UPS, FedEx, USPS)', 'Open'],
+          'pt-br': ['Ver esta página em português (Brasil)', 'Abrir'],
+          es: ['Ver esta página en español', 'Abrir'],
+          'en-gb': ['Shipping from the UK? See UK carrier rules', 'Open'],
+          'en-ca': ['Shipping from Canada? See Canadian carrier rules', 'Open'],
+          'en-au': ['Shipping from Australia? See cubic weight rules', 'Open'],
+          'en-in': ['Shipping from India? See Indian courier rules', 'Open'],
+          'en-us': ['See the US version (UPS, FedEx, USPS)', 'Open'],
           en: ['See this page in English', 'Open'],
         };
         const alternates = JSON.parse(box.getAttribute('data-alternates') || '[]').map(([tag, path]) => [String(tag).toLowerCase(), path]);
@@ -231,6 +260,15 @@ const structuredData = [
       if (strip instanceof HTMLElement && active instanceof HTMLElement) {
         strip.scrollLeft = active.offsetLeft - (strip.clientWidth - active.clientWidth) / 2;
       }
+    </script>
+    <script>
+      // @ts-nocheck -- close the country menu on outside click or Escape.
+      (() => {
+        const menu = document.querySelector('[data-region-menu]');
+        if (!menu) return;
+        document.addEventListener('click', (event) => { if (menu.open && !menu.contains(event.target)) menu.open = false; });
+        document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && menu.open) { menu.open = false; menu.querySelector('summary')?.focus(); } });
+      })();
     </script>
   </body>
 </html>

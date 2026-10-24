@@ -58,7 +58,7 @@ h1 { margin-top: 20px; font-size: clamp(3.1rem, 7.1vw, 7.5rem); max-width: 960px
 h1 span { color: var(--violet); }
 
 .tool-hero { max-width: 1500px; margin: 0 auto; padding: 34px 5vw 22px; }
-.tool-hero h1 { font-size: clamp(2.35rem, 4.4vw, 4.4rem); max-width: 900px; }
+.tool-hero h1 { font-size: clamp(2.2rem, 3.6vw, 3.9rem); max-width: none; text-wrap: balance; }
 .tool-hero p { max-width: 760px; margin: 13px 0 0; color: var(--ink-soft); font-size: 1rem; }
 .crumbs { margin-bottom: 20px; color: var(--ink-soft); font-size: 0.82rem; }
 .crumbs a { text-decoration: underline; text-underline-offset: 3px; }
@@ -505,3 +505,32 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
 .country-picker a { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; min-height: 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink) !important; text-decoration: none !important; font-weight: 700; font-size: .9rem; }
 .country-picker a[aria-current="page"] { background: var(--ink); color: var(--acid) !important; border-color: var(--ink); }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 18px !important; }
+
+/* Country & language menu (header) */
+.flag { display: block; flex: 0 0 auto; width: 22px; height: 15px; border-radius: 3px; box-shadow: 0 0 0 1px rgba(23, 32, 24, 0.14); }
+.region-menu { position: relative; }
+.region-menu > summary { list-style: none; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 12px 6px 9px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--ink); font-size: .78rem; font-weight: 800; letter-spacing: .02em; cursor: pointer; user-select: none; }
+.region-menu > summary::-webkit-details-marker { display: none; }
+.region-menu > summary:hover, .region-menu[open] > summary { background: var(--paper-deep); }
+.region-chevron { color: var(--ink-soft); transition: transform .15s ease; }
+.region-menu[open] .region-chevron { transform: rotate(180deg); }
+.region-panel { position: absolute; right: 0; top: calc(100% + 8px); width: min(330px, calc(100vw - 24px)); max-height: calc(100vh - 90px); overflow-y: auto; padding: 8px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); box-shadow: 0 18px 50px rgba(23, 32, 24, 0.18); z-index: 60; }
+.region-title { margin: 8px 10px 6px; color: var(--ink-soft); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.region-list { margin: 0; padding: 0; list-style: none; }
+.region-list a { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; min-height: 52px; padding: 8px 10px; border-radius: 12px; color: var(--ink); text-decoration: none; }
+.region-list a:hover { background: var(--paper-deep); }
+.region-list a[aria-current] { background: rgba(216, 255, 112, 0.35); }
+.region-list b { display: block; font-size: .9rem; font-weight: 750; }
+.region-list small { display: block; margin-top: 1px; color: var(--ink-soft); font-size: .74rem; font-weight: 600; }
+.region-check { color: var(--ink); }
+.region-langs { display: flex; gap: 6px; padding: 2px 6px 8px; }
+.region-langs a { flex: 1; display: grid; place-items: center; min-height: 40px; padding: 0 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--ink-soft); font-size: .8rem; font-weight: 750; text-decoration: none; }
+.region-langs a:hover { color: var(--ink); background: var(--paper-deep); }
+.region-langs a[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: var(--acid); }
+.footer-country { display: inline-flex !important; align-items: center; gap: 8px; }
+.footer-country .flag { width: 18px; height: 12px; }
+@media (max-width: 620px) {
+  .region-menu > summary { min-height: 38px; padding: 6px 10px 6px 8px; }
+  .region-panel { position: fixed; top: 64px; right: 12px; left: 12px; width: auto; }
+}
+@media print { .region-menu { display: none !important; } }

@@ -16,13 +16,14 @@ export const VOLUMETRIC_CLUSTER: Alternate[] = [
   ['x-default', '/dimensional-weight-calculator/'],
 ];
 
-/** Country pickers shown on calculator pages. */
-export const COUNTRY_LINKS: { flag: string; label: string; href: string; hreflang: string }[] = [
-  { flag: '🇺🇸', label: 'United States', href: '/dimensional-weight-calculator/', hreflang: 'en-US' },
-  { flag: '🇬🇧', label: 'United Kingdom', href: '/uk/volumetric-weight-calculator/', hreflang: 'en-GB' },
-  { flag: '🇨🇦', label: 'Canada', href: '/canada/dimensional-weight-calculator/', hreflang: 'en-CA' },
-  { flag: '🇦🇺', label: 'Australia', href: '/australia/cubic-weight-calculator/', hreflang: 'en-AU' },
-  { flag: '🇮🇳', label: 'India', href: '/india/volumetric-weight-calculator/', hreflang: 'en-IN' },
-  { flag: '🇧🇷', label: 'Brasil', href: '/pt-br/calculadora-peso-cubado/', hreflang: 'pt-BR' },
-  { flag: '🇪🇸', label: 'España y Latinoamérica', href: '/es/calculadora-peso-volumetrico/', hreflang: 'es' },
+/** Country versions of the calculator, used by the header menu, country pickers and footer. */
+export type CountryCode = 'us' | 'gb' | 'ca' | 'au' | 'in' | 'br' | 'es';
+export const COUNTRY_LINKS: { code: CountryCode; short: string; label: string; carriers: string; href: string; hreflang: string }[] = [
+  { code: 'us', short: 'US', label: 'United States', carriers: 'UPS · FedEx · USPS', href: '/dimensional-weight-calculator/', hreflang: 'en-US' },
+  { code: 'gb', short: 'UK', label: 'United Kingdom', carriers: 'UPS · DHL Parcel', href: '/uk/volumetric-weight-calculator/', hreflang: 'en-GB' },
+  { code: 'ca', short: 'CA', label: 'Canada', carriers: 'Canada Post · UPS · FedEx', href: '/canada/dimensional-weight-calculator/', hreflang: 'en-CA' },
+  { code: 'au', short: 'AU', label: 'Australia', carriers: 'Australia Post · StarTrack', href: '/australia/cubic-weight-calculator/', hreflang: 'en-AU' },
+  { code: 'in', short: 'IN', label: 'India', carriers: 'Delhivery · Amazon · Blue Dart', href: '/india/volumetric-weight-calculator/', hreflang: 'en-IN' },
+  { code: 'br', short: 'BR', label: 'Brasil', carriers: 'Correios · Loggi · Amazon', href: '/pt-br/calculadora-peso-cubado/', hreflang: 'pt-BR' },
+  { code: 'es', short: 'ES', label: 'España y Latinoamérica', carriers: 'Correos · DHL · Estafeta', href: '/es/calculadora-peso-volumetrico/', hreflang: 'es' },
 ];

@@ -4,6 +4,7 @@ import ShippingCalculator from './ShippingCalculator.astro';
 import { TOOLS } from '../lib/tools';
 import { PRESETS, PRESET_GROUPS, RULES_REVIEWED_ON } from '../lib/shipping.mjs';
 import { COUNTRY_LINKS } from '../lib/alternates';
+import Flag from './Flag.astro';
 
 type Locale = 'en' | 'pt-br' | 'es';
 
@@ -134,7 +135,7 @@ if (faq.length) {
       <>
         <h2>{copy.countries}</h2>
         <ul class="country-picker">
-          {COUNTRY_LINKS.map((country) => <li><a href={country.href} hreflang={country.hreflang} aria-current={country.href === path ? 'page' : undefined}><span aria-hidden="true">{country.flag}</span>{country.label}</a></li>)}
+          {COUNTRY_LINKS.map((country) => <li><a href={country.href} hreflang={country.hreflang} aria-current={country.href === path ? 'page' : undefined}><Flag code={country.code} />{country.label}</a></li>)}
         </ul>
       </>
     )}
