@@ -1,5 +1,5 @@
 ---
-import { PRESETS, PRESET_GROUPS, PRESET_LABELS } from '../lib/shipping.mjs';
+import { PRESETS, PRESET_GROUPS, PRESET_LABELS, PRESET_SOURCES, RULES_REVIEWED_ON } from '../lib/shipping.mjs';
 import { CALCULATOR_COPY, NUMBER_LOCALE, type CalculatorLocale } from '../lib/calculatorCopy';
 
 type PresetKey = keyof typeof PRESETS;
@@ -28,16 +28,23 @@ const presetOptions: [string, string][] = [
   ...group.map((key): [string, string] => [key, labels[key] ?? PRESETS[key as PresetKey].label]),
   ['custom', t.custom],
 ];
+const inputNumber = new Intl.NumberFormat(NUMBER_LOCALE[locale], { maximumFractionDigits: 4, useGrouping: false });
+const iv = (value: number) => inputNumber.format(value);
 const dimUnit = metric ? 'cm' : 'in';
 const weightUnit = metric ? 'kg' : 'lb';
 const volumeUnit = metric ? 'cm³' : 'in³';
+const reviewedLabel = new Date(`${RULES_REVIEWED_ON}T12:00:00Z`).toLocaleDateString(NUMBER_LOCALE[locale], { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const exempt = (rule as { dimExemptBelowWeight?: number }).dimExemptBelowWeight ?? 0;
+const sources = Object.fromEntries(group.map((key) => [key, (PRESET_SOURCES as Record<string, string>)[key] ?? '']));
 const scriptCopy = {
+  basisLight: t.basisLight, custom: t.custom, enterDivisor: t.enterDivisor, enterDims: t.enterDims, basisSize: t.basisSize, totalFor: t.totalFor, packageLine: t.packageLine, csvHeader: t.csvHeader, csvTooBig: t.csvTooBig, csvSkipped: t.csvSkipped, csvRow: t.csvRow,
+  csvMissingDims: t.csvMissingDims, csvBadWeight: t.csvBadWeight, csvBadQty: t.csvBadQty,
   basisDim: t.basisDim, basisScale: t.basisScale, basisThreshold: t.basisThreshold, signalAir: t.signalAir, signalScale: t.signalScale,
   noRows: t.noRows, copied: t.copied, copy: t.copy, shared: t.shared, linkCopied: t.linkCopied, share: t.share, shareTitle: t.shareTitle, copyText: t.copyText,
 };
 ---
 
-<section class="calculator-shell" data-workspace data-default-tab={defaultTab} data-show-margin={String(showMargin)} data-locale={NUMBER_LOCALE[locale]} data-group={JSON.stringify(group)} data-copy={JSON.stringify(scriptCopy)}>
+<section class="calculator-shell" data-workspace data-default-tab={defaultTab} data-show-margin={String(showMargin)} data-locale={NUMBER_LOCALE[locale]} data-group={JSON.stringify(group)} data-sources={JSON.stringify(sources)} data-copy={JSON.stringify(scriptCopy)}>
   {!compactIntro && (
     <div class="workspace-intro">
       <span class="eyebrow">{t.introEyebrow}</span>
@@ -48,11 +55,11 @@ const scriptCopy = {
 
   <div class="workspace-card">
     <div class="workspace-tabs" role="tablist" aria-label={t.modeLabel}>
-      <button class="tab-button" type="button" role="tab" data-tab-target="single">{t.single}</button>
-      <button class="tab-button" type="button" role="tab" data-tab-target="batch">{t.batch} <span>{t.free}</span></button>
+      <button class="tab-button" type="button" role="tab" id="tab-single" aria-controls="panel-single" data-tab-target="single">{t.single}</button>
+      <button class="tab-button" type="button" role="tab" id="tab-batch" aria-controls="panel-batch" data-tab-target="batch">{t.batch} <span>{t.free}</span></button>
     </div>
 
-    <div class="workspace-panel" data-panel="single">
+    <div class="workspace-panel" id="panel-single" role="tabpanel" aria-labelledby="tab-single" data-panel="single">
       <form class="input-panel" data-calculator-form>
         <div class="panel-heading">
           <div>
@@ -69,14 +76,14 @@ const scriptCopy = {
         </fieldset>
 
         <div class="dimension-grid">
-          <label class="field"><span>{t.length} <b data-dimension-unit>{dimUnit}</b></span><input name="length" inputmode="decimal" enterkeyhint="next" type="number" min="0" step="0.1" value={pkg.length} /></label>
-          <label class="field"><span>{t.width} <b data-dimension-unit>{dimUnit}</b></span><input name="width" inputmode="decimal" enterkeyhint="next" type="number" min="0" step="0.1" value={pkg.width} /></label>
-          <label class="field"><span>{t.height} <b data-dimension-unit>{dimUnit}</b></span><input name="height" inputmode="decimal" enterkeyhint="next" type="number" min="0" step="0.1" value={pkg.height} /></label>
+          <label class="field"><span>{t.length} <b data-dimension-unit>{dimUnit}</b></span><input name="length" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={iv(pkg.length)} /></label>
+          <label class="field"><span>{t.width} <b data-dimension-unit>{dimUnit}</b></span><input name="width" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={iv(pkg.width)} /></label>
+          <label class="field"><span>{t.height} <b data-dimension-unit>{dimUnit}</b></span><input name="height" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={iv(pkg.height)} /></label>
         </div>
 
         <div class="two-column-fields">
-          <label class="field"><span>{t.scaleWeight} <b data-weight-unit>{weightUnit}</b></span><input name="actualWeight" inputmode="decimal" enterkeyhint="done" type="number" min="0" step="0.1" value={pkg.actualWeight} /></label>
-          <label class="field"><span>{t.packages}</span><input name="quantity" inputmode="numeric" type="number" min="1" step="1" value="1" /></label>
+          <label class="field"><span>{t.scaleWeight} <b data-weight-unit>{weightUnit}</b></span><input name="actualWeight" inputmode="decimal" enterkeyhint="done" type="text" autocomplete="off" value={iv(pkg.actualWeight)} /></label>
+          <label class="field"><span>{t.packages}</span><input name="quantity" inputmode="numeric" type="text" autocomplete="off" value="1" /></label>
         </div>
 
         <div class="mobile-live-result" aria-hidden="true">
@@ -85,34 +92,36 @@ const scriptCopy = {
           <small data-result="basis"></small>
         </div>
 
-        <label class="field full-field rule-field">
-          <span>{t.rule} <button class="info-dot" type="button" aria-label={t.ruleHelp} title={t.ruleTitle}>?</button></span>
-          <select name="preset">
+        <div class="field full-field rule-field">
+          <span><label for="calc-preset">{t.rule}</label> <button class="info-dot" type="button" aria-label={t.ruleHelp} aria-expanded="false" aria-controls="calc-rule-help" data-help-toggle>?</button></span>
+          <small class="rule-help" id="calc-rule-help" data-help-text hidden>{t.helpText}</small>
+          <select name="preset" id="calc-preset">
             {presetOptions.map(([value, label]) => <option value={value} selected={value === defaultPreset}>{label}</option>)}
           </select>
-        </label>
+        </div>
 
         <details class="advanced" data-margin-details>
           <summary>{t.profitSummary} <span>{t.optional}</span></summary>
           <div class="currency-row">
             <label class="field"><span>{t.currency}</span><select name="currency">{['USD', 'EUR', 'GBP', 'INR', 'BRL', 'MXN', 'CAD', 'AUD', 'COP', 'CLP'].map((code) => <option selected={code === (locale === 'pt-br' ? 'BRL' : locale === 'es' ? 'EUR' : 'USD')}>{code}</option>)}</select></label>
-            <label class="field"><span>{t.salePrice}</span><input name="salePrice" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.salePrice}</span><input name="salePrice" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00" /></label>
           </div>
           <div class="cost-grid">
-            <label class="field"><span>{t.productCost}</span><input name="productCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
-            <label class="field"><span>{t.packaging}</span><input name="packagingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
-            <label class="field"><span>{t.shippingCost}</span><input name="shippingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
-            <label class="field"><span>{t.fees}</span><input name="fees" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.productCost}</span><input name="productCost" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00" /></label>
+            <label class="field"><span>{t.packaging}</span><input name="packagingCost" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00" /></label>
+            <label class="field"><span>{t.shippingCost}</span><input name="shippingCost" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00" /></label>
+            <label class="field"><span>{t.fees}</span><input name="fees" inputmode="decimal" type="text" autocomplete="off" placeholder="0.00" /></label>
           </div>
         </details>
 
         <details class="advanced">
           <summary>{t.advanced}</summary>
           <div class="two-column-fields advanced-fields">
-            <label class="field"><span>{t.divisor}</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value={rule.divisor} /></label>
+            <label class="field"><span>{t.divisor}</span><input name="divisor" inputmode="decimal" type="text" autocomplete="off" value={iv(rule.divisor)} /></label>
             <label class="field"><span>{t.weightRounding}</span><select name="billableStep">{[['1', t.stepWhole], ['0.5', t.stepHalf], ['0.1', t.stepTenth]].map(([value, label]) => <option value={value} selected={Number(value) === rule.billableStep}>{label}</option>)}</select></label>
             <label class="field"><span>{t.dimRounding}</span><select name="dimRounding">{[['up', t.roundUp], ['nearest', t.roundNearest], ['none', t.roundNone]].map(([value, label]) => <option value={value} selected={value === rule.dimRounding}>{label}</option>)}</select></label>
-            <label class="field"><span>{t.threshold} <b data-volume-unit>{volumeUnit}</b></span><input name="dimThreshold" inputmode="numeric" type="number" min="0" step="1" value={rule.dimThreshold} /></label>
+            <label class="field"><span>{t.threshold} <b data-volume-unit>{volumeUnit}</b></span><input name="dimThreshold" inputmode="numeric" type="text" autocomplete="off" value={iv(rule.dimThreshold)} /></label>
+            <label class="field"><span>{t.exemptWeight} <b data-weight-unit>{weightUnit}</b></span><input name="dimExemptBelowWeight" inputmode="decimal" type="text" autocomplete="off" value={iv(exempt)} /></label>
           </div>
           <p class="result-note">{t.advancedNote}</p>
         </details>
@@ -124,6 +133,9 @@ const scriptCopy = {
           <span>{t.estimated}</span>
           <strong><b data-result="billable">–</b> <em data-weight-unit>{weightUnit}</em></strong>
           <p data-result="basis"></p>
+          <p class="result-total" data-result="total" hidden></p>
+          <p class="print-inputs" data-result="inputs"></p>
+          <p class="rule-line"><span>{t.ruleUsed}:</span> <b data-rule-label></b> <span data-rule-meta>· <a data-rule-source href="#" target="_blank" rel="noopener">{t.source}</a> · {t.checked} {reviewedLabel}</span></p>
         </div>
 
         <div class="air-card" data-air-card>
@@ -162,7 +174,7 @@ const scriptCopy = {
       </aside>
     </div>
 
-    <div class="workspace-panel batch-panel" data-panel="batch" hidden>
+    <div class="workspace-panel batch-panel" id="panel-batch" role="tabpanel" aria-labelledby="tab-batch" data-panel="batch" hidden>
       <div class="batch-input">
         <span class="step-label">{t.batchStep}</span>
         <h3>{t.batchHeading}</h3>
@@ -171,8 +183,10 @@ const scriptCopy = {
         <div class="batch-controls">
           <label class="file-button">{t.chooseCsv}<input data-csv-file type="file" accept=".csv,text/csv" /></label>
           <button class="text-button" type="button" data-sample>{t.loadExample}</button>
+          <button class="text-button" type="button" data-template>{t.csvTemplate}</button>
           <button class="primary-button" type="button" data-run-batch>{t.runBatch}</button>
         </div>
+        <div class="csv-issues" data-csv-issues hidden></div>
         <p class="privacy-line"><span>◆</span> {t.csvPrivacy}</p>
       </div>
       <div class="batch-results">
@@ -195,9 +209,10 @@ const scriptCopy = {
 
 <script>
   // @ts-nocheck -- DOM controls are progressively enhanced and guarded at runtime.
-  import { IN3_PER_LB_TO_CM3_PER_KG, PRESETS, calculatePackage, decodeShareParams, defaultPresetFor, encodeShareParams, escapeCsv, formatNumber, parseAuditCsv } from '../lib/shipping.mjs';
+  import { IN3_PER_LB_TO_CM3_PER_KG, MAX_CSV_BYTES, PRESETS, PRESET_SOURCES, calculatePackage, decodeShareParams, defaultPresetFor, encodeShareParams, formatNumber, parseAuditCsvDetailed, parseLocaleNumber, presetExtras } from '../lib/shipping.mjs';
 
   const getValue = (form, name) => form.elements.namedItem(name)?.value ?? '';
+  const NUMBER_FIELDS = ['length', 'width', 'height', 'actualWeight', 'quantity', 'divisor', 'dimThreshold', 'dimExemptBelowWeight', 'salePrice', 'productCost', 'packagingCost', 'shippingCost', 'fees'];
 
   document.querySelectorAll('[data-workspace]').forEach((workspace) => {
     const form = workspace.querySelector('[data-calculator-form]');
@@ -208,10 +223,34 @@ const scriptCopy = {
     const divisor = form.elements.namedItem('divisor');
     const unitRadios = form.elements.namedItem('unit');
     let batchRows = [];
+    let batchHasRun = false;
+    // The unit the CSV numbers were written in: the unit selected when the CSV was entered.
+    let batchUnit = null;
     const copy = JSON.parse(workspace.getAttribute('data-copy') || '{}');
     const numberLocale = workspace.getAttribute('data-locale') || 'en';
     const group = JSON.parse(workspace.getAttribute('data-group') || '[]');
+    const sources = JSON.parse(workspace.getAttribute('data-sources') || '{}');
     const fmt = (value, digits) => formatNumber(value, digits, numberLocale);
+    // The page's decimal mark decides "5,000" (five thousand on English pages) vs "5.000" (pt/es).
+    const decimalMark = new Intl.NumberFormat(numberLocale).format(1.5).includes(',') ? ',' : '.';
+    // Values converted between units are shown rounded; the exact value is kept so converting
+    // again (or back) never drifts. An entry is used only while the field still shows that text.
+    const exact = new Map();
+    const getNumber = (name) => {
+      const raw = getValue(form, name);
+      const kept = exact.get(name);
+      if (kept && kept.text === raw) return kept.value;
+      const parsed = parseLocaleNumber(raw, decimalMark);
+      return parsed === undefined || Number.isNaN(parsed) ? '' : parsed;
+    };
+    const setInput = (name, value, digits = 2) => {
+      const control = form.elements.namedItem(name);
+      if (!(control instanceof HTMLInputElement)) return;
+      if (value === '' || value === undefined) { control.value = ''; exact.delete(name); return; }
+      const text = new Intl.NumberFormat(numberLocale, { maximumFractionDigits: digits, useGrouping: false }).format(Number(value));
+      control.value = text;
+      exact.set(name, { text, value: Number(value) });
+    };
 
     const activateTab = (name) => {
       tabs.forEach((tab) => {
@@ -228,33 +267,35 @@ const scriptCopy = {
       workspace.querySelectorAll('[data-volume-unit]').forEach((el) => { el.textContent = unit === 'metric' ? 'cm³' : 'in³'; });
     };
 
-    const collect = () => ({
-      unit: getValue(form, 'unit'),
-      length: getValue(form, 'length'),
-      width: getValue(form, 'width'),
-      height: getValue(form, 'height'),
-      actualWeight: getValue(form, 'actualWeight'),
-      quantity: getValue(form, 'quantity'),
-      divisor: getValue(form, 'divisor'),
-      billableStep: getValue(form, 'billableStep'),
-      preset: getValue(form, 'preset'),
-      dimRounding: getValue(form, 'dimRounding'),
-      dimThreshold: getValue(form, 'dimThreshold'),
-      currency: getValue(form, 'currency'),
-      salePrice: getValue(form, 'salePrice'),
-      productCost: getValue(form, 'productCost'),
-      packagingCost: getValue(form, 'packagingCost'),
-      shippingCost: getValue(form, 'shippingCost'),
-      fees: getValue(form, 'fees'),
-    });
+    const collect = () => {
+      const presetKey = getValue(form, 'preset');
+      const data = { unit: getValue(form, 'unit'), preset: presetKey, billableStep: getValue(form, 'billableStep'), dimRounding: getValue(form, 'dimRounding'), currency: getValue(form, 'currency') };
+      NUMBER_FIELDS.forEach((name) => { data[name] = getNumber(name); });
+      // Rules with no form field (packaging weight, side-length condition…) apply while their preset is selected.
+      return { ...data, ...presetExtras(presetKey) };
+    };
 
     const put = (name, value) => workspace.querySelectorAll(`[data-result="${name}"]`).forEach((el) => { el.textContent = String(value); });
 
     const calculate = () => {
       const result = calculatePackage(collect());
       setUnitLabels(result.unit);
-      put('billable', fmt(result.billableWeight));
-      put('basis', !result.dimApplies ? copy.basisThreshold : result.isDimensional ? copy.basisDim : copy.basisScale);
+      const ready = result.hasDimensions && result.hasRule;
+      put('billable', ready ? fmt(result.billableWeight) : '–');
+      put('basis', !result.hasRule ? copy.enterDivisor : !result.hasDimensions ? copy.enterDims : result.exemptByWeight ? copy.basisLight : result.exemptBySize ? copy.basisSize : !result.dimApplies ? copy.basisThreshold : result.isDimensional ? copy.basisDim : copy.basisScale);
+      const weightLabel = result.unit === 'metric' ? 'kg' : 'lb';
+      const sizeLabel = result.unit === 'metric' ? 'cm' : 'in';
+      workspace.querySelectorAll('[data-result="total"]').forEach((el) => {
+        el.hidden = !(ready && result.quantity > 1);
+        el.textContent = String(copy.totalFor).replace('{q}', String(result.quantity)).replace('{total}', `${fmt(result.totalBillableWeight)} ${weightLabel}`);
+      });
+      put('inputs', `${copy.packageLine}: ${result.rawDimensions.map((n) => fmt(n, 2)).join(' × ')} ${sizeLabel} · ${fmt(Number(getNumber('actualWeight')) || 0, 2)} ${weightLabel}${result.quantity > 1 ? ` · × ${result.quantity}` : ''}`);
+      const presetKey = preset instanceof HTMLSelectElement ? preset.value : 'custom';
+      const presetText = preset instanceof HTMLSelectElement ? preset.selectedOptions[0]?.textContent ?? '' : '';
+      workspace.querySelectorAll('[data-rule-label]').forEach((el) => { el.textContent = presetKey === 'custom' ? copy.custom : presetText; });
+      const sourceUrl = sources[presetKey];
+      workspace.querySelectorAll('[data-rule-meta]').forEach((el) => { el.hidden = !sourceUrl; });
+      workspace.querySelectorAll('[data-rule-source]').forEach((el) => { if (sourceUrl) el.setAttribute('href', sourceUrl); });
       put('airWeight', fmt(result.airWeight));
       put('airPercent', fmt(result.airPercent, 0));
       put('actual', fmt(result.actualWeight));
@@ -280,26 +321,96 @@ const scriptCopy = {
       return result;
     };
 
+    const PACKAGE_FIELDS = ['length', 'width', 'height', 'actualWeight'];
+    const RULE_FIELDS = ['divisor', 'dimThreshold', 'dimExemptBelowWeight'];
+    const currentUnit = () => getValue(form, 'unit');
+    const setRadio = (unit) => {
+      const radio = form.querySelector(`input[name="unit"][value="${unit}"]`);
+      if (radio instanceof HTMLInputElement) radio.checked = true;
+    };
+    // Describe the same parcel in the other unit system.
+    const convertPackage = (toMetric) => {
+      ['length', 'width', 'height'].forEach((name) => {
+        const current = getNumber(name);
+        if (current !== '') setInput(name, toMetric ? current * 2.54 : current / 2.54);
+      });
+      const weight = getNumber('actualWeight');
+      if (weight !== '') setInput('actualWeight', toMetric ? weight / 2.2046226 : weight * 2.2046226);
+    };
+    // Keep a custom rule comparable when the units change.
+    const convertRule = (toMetric) => {
+      const divisorNow = Number(getNumber('divisor')) || 0;
+      const thresholdNow = Number(getNumber('dimThreshold')) || 0;
+      const exemptNow = Number(getNumber('dimExemptBelowWeight')) || 0;
+      setInput('divisor', toMetric ? divisorNow * IN3_PER_LB_TO_CM3_PER_KG : divisorNow / IN3_PER_LB_TO_CM3_PER_KG, 0);
+      setInput('dimThreshold', toMetric ? thresholdNow * 16.387064 : thresholdNow / 16.387064, 0);
+      setInput('dimExemptBelowWeight', toMetric ? exemptNow / 2.2046226 : exemptNow * 2.2046226);
+    };
+    const applyPresetRule = (selected) => {
+      setInput('divisor', selected.divisor, 4);
+      setInput('dimThreshold', selected.dimThreshold, 4);
+      setInput('dimExemptBelowWeight', selected.dimExemptBelowWeight ?? 0, 4);
+      const setSelect = (name, fieldValue) => {
+        const control = form.elements.namedItem(name);
+        if (control instanceof HTMLSelectElement) control.value = String(fieldValue);
+      };
+      setSelect('billableStep', selected.billableStep);
+      setSelect('dimRounding', selected.dimRounding);
+    };
+
+    let unitMemory = null;
+    const snapshot = () => ({
+      fields: Object.fromEntries([...PACKAGE_FIELDS, ...RULE_FIELDS, 'billableStep', 'dimRounding', 'preset'].map((name) => [name, getValue(form, name)])),
+      exact: new Map(exact),
+    });
+    const sameFields = (a, b) => Object.keys(a.fields).every((name) => a.fields[name] === b.fields[name]);
+    const restore = (state) => {
+      Object.entries(state.fields).forEach(([name, text]) => {
+        const control = form.elements.namedItem(name);
+        if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement) control.value = text;
+      });
+      exact.clear();
+      state.exact.forEach((entry, name) => exact.set(name, entry));
+    };
+
+    // Choosing a carrier from the list. If it uses the other unit system, convert the parcel first.
     const updatePreset = () => {
       const selected = PRESETS[preset?.value];
-      if (!selected) return;
-      if (divisor instanceof HTMLInputElement) divisor.value = String(selected.divisor);
-      const radio = form.querySelector(`input[name="unit"][value="${selected.unit}"]`);
-      if (radio instanceof HTMLInputElement) radio.checked = true;
-      const setField = (name, fieldValue) => {
-        const control = form.elements.namedItem(name);
-        if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement) control.value = String(fieldValue);
-      };
-      setField('billableStep', selected.billableStep);
-      setField('dimRounding', selected.dimRounding);
-      setField('dimThreshold', selected.dimThreshold);
+      unitMemory = null;
+      if (!selected) { calculate(); return; }
+      if (selected.unit !== currentUnit()) {
+        convertPackage(selected.unit === 'metric');
+        setRadio(selected.unit);
+      }
+      applyPresetRule(selected);
       calculate();
     };
 
+    const onUnitChange = (radio) => {
+      const toMetric = radio.value === 'metric';
+      const fromUnit = toMetric ? 'imperial' : 'metric';
+      const before = snapshot();
+      // Switching straight back restores exactly what was there, including the carrier.
+      if (unitMemory && unitMemory.unit === radio.value && sameFields(before, unitMemory.written)) {
+        restore(unitMemory.original);
+        unitMemory = null;
+        calculate();
+        return;
+      }
+      convertPackage(toMetric);
+      const next = defaultPresetFor(radio.value, group);
+      if (preset instanceof HTMLSelectElement) preset.value = next;
+      if (PRESETS[next]) applyPresetRule(PRESETS[next]);
+      else convertRule(toMetric);
+      calculate();
+      unitMemory = { unit: fromUnit, original: before, written: snapshot() };
+    };
+
     // Editing the rule by hand turns it into a custom rule, so the label never disagrees with the maths.
-    ['divisor', 'billableStep', 'dimRounding', 'dimThreshold'].forEach((name) => {
+    ['divisor', 'billableStep', 'dimRounding', 'dimThreshold', 'dimExemptBelowWeight'].forEach((name) => {
       form.elements.namedItem(name)?.addEventListener('change', () => {
         if (preset instanceof HTMLSelectElement) preset.value = 'custom';
+        calculate();
       });
     });
 
@@ -311,28 +422,64 @@ const scriptCopy = {
     };
 
     const loadQuery = () => {
-      const shared = decodeShareParams(window.location.search);
+      const params = new URLSearchParams(window.location.search);
+      const shared = decodeShareParams(params);
       if (!Object.keys(shared).length) return false;
-      if (shared.unit) {
-        const radio = form.querySelector(`input[name="unit"][value="${shared.unit}"]`);
-        if (radio instanceof HTMLInputElement) radio.checked = true;
+      if (shared.unit) setRadio(shared.unit);
+      if (preset instanceof HTMLSelectElement) {
+        if (shared.preset && PRESETS[shared.preset]) {
+          // A link to a carrier this page doesn't list: add it so its full rule still applies.
+          if (![...preset.options].some((option) => option.value === shared.preset)) {
+            const option = new Option(PRESETS[shared.preset].label, shared.preset);
+            preset.insertBefore(option, preset.querySelector('option[value="custom"]'));
+            sources[shared.preset] = PRESET_SOURCES[shared.preset] ?? '';
+          }
+          preset.value = shared.preset;
+        } else if (shared.preset === 'custom' || ['d', 't', 'r', 's', 'x'].some((key) => params.has(key))) {
+          preset.value = 'custom';
+        }
       }
-      if (preset instanceof HTMLSelectElement) preset.value = shared.preset ?? 'custom';
-      ['length', 'width', 'height', 'actualWeight', 'quantity', 'divisor', 'dimThreshold', 'billableStep', 'dimRounding'].forEach((field) => {
+      // Use full precision: a link must reproduce the exact answer.
+      ['length', 'width', 'height', 'actualWeight', 'quantity', 'divisor', 'dimThreshold', 'dimExemptBelowWeight'].forEach((field) => {
+        if (shared[field] !== undefined) setInput(field, shared[field], 6);
+      });
+      ['billableStep', 'dimRounding'].forEach((field) => {
         const control = form.elements.namedItem(field);
-        if (shared[field] !== undefined && (control instanceof HTMLInputElement || control instanceof HTMLSelectElement)) control.value = String(shared[field]);
+        if (shared[field] !== undefined && control instanceof HTMLSelectElement) control.value = String(shared[field]);
       });
       return true;
+    };
+
+    const showIssues = (html) => {
+      const box = workspace.querySelector('[data-csv-issues]');
+      if (!(box instanceof HTMLElement)) return;
+      box.hidden = !html;
+      box.innerHTML = html;
     };
 
     const runBatch = () => {
       const input = workspace.querySelector('[data-csv-input]');
       if (!(input instanceof HTMLTextAreaElement)) return;
       const settings = collect();
-      batchRows = parseAuditCsv(input.value).map((row) => ({ ...row, result: calculatePackage({ ...settings, ...row }) }));
+      batchUnit ??= settings.unit;
+      const parsed = parseAuditCsvDetailed(input.value, { unit: batchUnit });
+      const lengthFactor = batchUnit === settings.unit ? 1 : settings.unit === 'metric' ? 2.54 : 1 / 2.54;
+      const weightFactor = batchUnit === settings.unit ? 1 : settings.unit === 'metric' ? 1 / 2.2046226 : 2.2046226;
+      batchRows = parsed.rows.map((row) => {
+        const converted = { ...row, length: row.length * lengthFactor, width: row.width * lengthFactor, height: row.height * lengthFactor, actualWeight: row.actualWeight * weightFactor };
+        return { ...converted, result: calculatePackage({ ...settings, ...converted }) };
+      });
+      const reasons = { dims: copy.csvMissingDims, weight: copy.csvBadWeight, qty: copy.csvBadQty, header: copy.csvHeader };
+      batchHasRun = true;
+      if (parsed.tooLarge) showIssues(`<p>${copy.csvTooBig}</p>`);
+      else if (parsed.errors.length) {
+        const items = parsed.errors.slice(0, 8).map(({ row, reason }) => `<li>${String(copy.csvRow).replace('{row}', String(row))}: ${reasons[reason] ?? reason}</li>`).join('');
+        const more = parsed.errors.length > 8 ? `<li>…</li>` : '';
+        showIssues(`<p>${String(copy.csvSkipped).replace('{count}', String(parsed.errors.length))}</p><ul>${items}${more}</ul>`);
+      } else showIssues('');
       const body = workspace.querySelector('[data-batch-body]');
       if (body) {
-        body.innerHTML = batchRows.length ? batchRows.map(({ sku, result }) => `<tr><td>${String(sku).replaceAll('<', '&lt;')}</td><td>${fmt(result.actualWeight)}</td><td>${fmt(result.dimWeight)}</td><td><strong>${fmt(result.billableWeight)}</strong></td><td><span class="signal ${result.isDimensional ? 'warn' : 'good'}">${result.isDimensional ? copy.signalAir : copy.signalScale}</span></td></tr>`).join('') : `<tr><td colspan="5" class="empty-cell">${copy.noRows}</td></tr>`;
+        body.innerHTML = batchRows.length ? batchRows.map(({ sku, result }) => `<tr><td>${String(sku).replaceAll('&', '&amp;').replaceAll('<', '&lt;')}</td><td>${fmt(result.actualWeight)}</td><td>${fmt(result.dimWeight)}</td><td><strong>${fmt(result.billableWeight)}</strong></td><td><span class="signal ${result.isDimensional ? 'warn' : 'good'}">${result.isDimensional ? copy.signalAir : copy.signalScale}</span></td></tr>`).join('') : `<tr><td colspan="5" class="empty-cell">${copy.noRows}</td></tr>`;
       }
       const dimRows = batchRows.filter(({ result }) => result.isDimensional).length;
       const air = batchRows.reduce((sum, { result }) => sum + result.airWeight * result.quantity, 0);
@@ -345,23 +492,26 @@ const scriptCopy = {
 
     tabs.forEach((tab) => tab.addEventListener('click', () => activateTab(tab.getAttribute('data-tab-target'))));
     form.addEventListener('input', calculate);
-    preset?.addEventListener('change', updatePreset);
-    unitRadios?.forEach?.((radio) => radio.addEventListener('change', () => {
-      const next = defaultPresetFor(radio.value, group);
-      if (preset instanceof HTMLSelectElement) preset.value = next;
-      if (next === 'custom') {
-        // No preset for this unit on this page: convert the current rule so the answer stays comparable.
-        const toMetric = radio.value === 'metric';
-        const divisorField = form.elements.namedItem('divisor');
-        const thresholdField = form.elements.namedItem('dimThreshold');
-        if (divisorField instanceof HTMLInputElement) divisorField.value = String(Math.round(toMetric ? Number(divisorField.value) * IN3_PER_LB_TO_CM3_PER_KG : Number(divisorField.value) / IN3_PER_LB_TO_CM3_PER_KG));
-        if (thresholdField instanceof HTMLInputElement) thresholdField.value = String(Math.round(toMetric ? Number(thresholdField.value) * 16.387064 : Number(thresholdField.value) / 16.387064));
-        calculate();
-        return;
-      }
-      updatePreset();
+    workspace.querySelector('[data-csv-input]')?.addEventListener('input', () => { batchUnit = null; });
+    // Keep the batch audit in step with the selected rule.
+    form.addEventListener('change', () => { if (batchHasRun) runBatch(); });
+    workspace.querySelector('[data-help-toggle]')?.addEventListener('click', (event) => {
+      const button = event.currentTarget;
+      const help = workspace.querySelector('[data-help-text]');
+      if (!(help instanceof HTMLElement)) return;
+      help.hidden = !help.hidden;
+      button.setAttribute('aria-expanded', String(!help.hidden));
+    });
+    tabs.forEach((tab) => tab.addEventListener('keydown', (event) => {
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+      const list = [...tabs];
+      const next = list[(list.indexOf(tab) + (event.key === 'ArrowRight' ? 1 : list.length - 1)) % list.length];
+      activateTab(next.getAttribute('data-tab-target'));
+      next.focus();
     }));
-    workspace.querySelector('[data-reset]')?.addEventListener('click', () => { form.reset(); updatePreset(); });
+    preset?.addEventListener('change', updatePreset);
+    unitRadios?.forEach?.((radio) => radio.addEventListener('change', () => { onUnitChange(radio); if (batchHasRun) runBatch(); }));
+    workspace.querySelector('[data-reset]')?.addEventListener('click', () => { form.reset(); exact.clear(); unitMemory = null; updatePreset(); });
     workspace.querySelector('[data-copy]')?.addEventListener('click', async (event) => {
       const button = event.currentTarget;
       const result = calculate();
@@ -370,7 +520,8 @@ const scriptCopy = {
       await navigator.clipboard.writeText(String(copy.copyText)
         .replace('{billable}', `${fmt(result.billableWeight)} ${unit}`)
         .replace('{air}', `${fmt(result.airWeight)} ${unit}`)
-        .replace('{girth}', `${fmt(result.lengthPlusGirth)} ${dimUnitLabel}`));
+        .replace('{girth}', `${fmt(result.lengthPlusGirth)} ${dimUnitLabel}`)
+        + (result.quantity > 1 ? ` ${String(copy.totalFor).replace('{q}', String(result.quantity)).replace('{total}', `${fmt(result.totalBillableWeight)} ${unit}`)}` : ''));
       button.textContent = copy.copied;
       setTimeout(() => { button.textContent = copy.copy; }, 1400);
     });
@@ -386,22 +537,58 @@ const scriptCopy = {
     workspace.querySelector('[data-sample]')?.addEventListener('click', () => {
       const input = workspace.querySelector('[data-csv-input]');
       if (input instanceof HTMLTextAreaElement) input.value = 'sku,length,width,height,weight,quantity\nTSHIRT-M,12,10,3,1.2,24\nMUG-RED,8,6,5,2.1,12\nLAMP-01,24,18,16,7.5,4';
+      batchUnit = 'imperial';
       runBatch();
     });
     workspace.querySelector('[data-run-batch]')?.addEventListener('click', runBatch);
+    workspace.querySelector('[data-template]')?.addEventListener('click', () => {
+      const metric = getValue(form, 'unit') === 'metric';
+      const decimalComma = new Intl.NumberFormat(numberLocale).format(1.5).includes(',');
+      const sep = decimalComma ? ';' : ',';
+      const num = (value) => (decimalComma ? String(value).replace('.', ',') : String(value));
+      const rows = [['sku', 'length', 'width', 'height', 'weight', 'quantity'],
+        metric ? ['TSHIRT-M', 30, 25, 3, 0.5, 24] : ['TSHIRT-M', 12, 10, 3, 1.2, 24],
+        metric ? ['MUG-RED', 20, 15, 12, 0.9, 12] : ['MUG-RED', 8, 6, 5, 2.1, 12]];
+      const text = rows.map((row) => row.map((cell) => (typeof cell === 'number' ? num(cell) : cell)).join(sep)).join('\r\n');
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8' }));
+      link.download = 'shippingmath-template.csv';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    });
     workspace.querySelector('[data-csv-file]')?.addEventListener('change', async (event) => {
       const file = event.target.files?.[0];
       if (!file) return;
+      if (file.size > MAX_CSV_BYTES) { showIssues(`<p>${copy.csvTooBig}</p>`); event.target.value = ''; return; }
+      batchUnit = null;
       const input = workspace.querySelector('[data-csv-input]');
       if (input instanceof HTMLTextAreaElement) input.value = await file.text();
+      event.target.value = '';
       runBatch();
     });
     workspace.querySelector('[data-download]')?.addEventListener('click', () => {
       if (!batchRows.length) return;
-      const rows = ['sku,actual_weight,dim_weight,billable_weight,air_weight,billing_basis'];
-      batchRows.forEach(({ sku, result }) => rows.push([sku, result.actualWeight, result.dimWeight, result.billableWeight, result.airWeight, result.isDimensional ? 'dimensional' : 'scale'].map(escapeCsv).join(',')));
+      // Match the visitor's Excel: semicolons and decimal commas where the comma is the decimal mark.
+      const decimalComma = new Intl.NumberFormat(numberLocale).format(1.5).includes(',');
+      const sep = decimalComma ? ';' : ',';
+      const num = (value) => { const text = String(Math.round(Number(value) * 1000) / 1000); return decimalComma ? text.replace('.', ',') : text; };
+      const cell = (value) => {
+        let text = String(value ?? '');
+        if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`; // stop spreadsheet formulas
+        return new RegExp(`["\n\r${sep}]`).test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+      };
+      const first = batchRows[0].result;
+      const w = first.unit === 'metric' ? 'kg' : 'lb';
+      const d = first.unit === 'metric' ? 'cm' : 'in';
+      const header = ['sku', `length_${d}`, `width_${d}`, `height_${d}`, 'quantity', `actual_weight_${w}`, `dim_weight_${w}`, `billable_weight_${w}`, `air_weight_${w}`, `total_billable_${w}`, 'billing_basis', 'rule'];
+      const rule = (preset instanceof HTMLSelectElement ? preset.selectedOptions[0]?.textContent : '') || copy.custom;
+      const rows = [header.join(sep)];
+      batchRows.forEach(({ sku, length, width, height, result }) => rows.push([
+        cell(sku), num(length), num(width), num(height), String(result.quantity), num(result.actualWeight), num(result.dimWeight), num(result.billableWeight), num(result.airWeight), num(result.totalBillableWeight),
+        result.isDimensional ? 'dimensional' : 'scale', cell(rule),
+      ].join(sep)));
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(new Blob([rows.join('\n')], { type: 'text/csv' }));
+      link.href = URL.createObjectURL(new Blob(['\uFEFF' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' }));
       link.download = 'shippingmath-audit.csv';
       link.click();
       URL.revokeObjectURL(link.href);

@@ -22,7 +22,7 @@ const local = site.locale === 'pt-br'
       <p>{t.intro}</p>
       <p class="hero-actions"><a class="primary-button localized-cta" href={local.calcPath}>{local.calcCta}</a> <a class="text-button" href={site.optimizerPath}>{local.optimizerLink}</a></p>
     </div>
-    <div class="quick-trust" aria-label="Product benefits">{t.trust.map((item) => <span>✓ {item}</span>)}</div>
+    <div class="quick-trust" aria-label={site.locale === 'pt-br' ? 'Vantagens' : 'Ventajas'}>{t.trust.map((item) => <span>✓ {item}</span>)}</div>
   </section>
 
   <ShippingCalculator locale={site.locale} presetGroup={local.group} defaultPreset={local.preset} compactIntro />

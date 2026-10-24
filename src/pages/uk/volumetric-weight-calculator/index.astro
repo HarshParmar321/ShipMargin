@@ -10,10 +10,10 @@ const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: num
 };
 
 const faq: [string, string][] = [
-  ['How do I calculate volumetric weight in the UK?', 'Measure the parcel in centimetres, multiply length × width × height and divide by your carrier\'s divisor. UPS UK, Parcelforce international and Evri international use 5,000; DHL Parcel UK international uses 4,000. You pay for the higher of the volumetric and actual weight.'],
+  ['How do I calculate volumetric weight in the UK?', 'Measure the parcel in centimetres, multiply length × width × height and divide by your carrier\'s divisor. UPS UK, Parcelforce international (zones 4–12) and Evri international use 5,000; DHL Parcel UK international uses 4,000. You pay for the higher of the volumetric and actual weight.'],
   ['Does Royal Mail use volumetric weight?', 'Royal Mail prices UK parcels by size format and weight rather than volumetric weight: a Small Parcel is up to 45 × 35 × 16 cm and 2 kg, and a Medium Parcel up to 61 × 46 × 46 cm and 20 kg. Check the format your parcel fits before you buy postage.'],
   ['Does Evri charge volumetric weight in the UK?', 'Evri says volumetric pricing applies to international deliveries, using length × width × height in cm ÷ 5,000. For UK parcels it uses weight and size limits: up to 15 kg and 120 cm long.'],
-  ['What divisor does DHL use in the UK?', 'DHL Parcel UK divides by 4,000 for international parcels. DHL Express services generally use 5,000. Always check the divisor for the exact service you book.'],
+  ['What divisor does DHL use in the UK?', 'DHL Parcel UK divides by 4,000 for international parcels. DHL Express is a separate company with its own rate guides, so check the divisor for the exact service you book.'],
   ['How does UPS UK round measurements?', 'UPS UK rounds each measurement to the nearest whole centimetre, divides by 5,000, and rounds the result up to the next half kilogram.'],
   ['What is the difference between volumetric weight and actual weight?', 'Actual weight is what the scales show. Volumetric weight is calculated from the size of the parcel. Carriers charge whichever is higher, so a large, light box can cost more than its weight suggests.'],
 ];
@@ -39,7 +39,7 @@ const faq: [string, string][] = [
   <ul class="key-facts">
     <li><b>5,000</b><span>UPS UK, Parcelforce and Evri international (cm³ per kg)</span></li>
     <li><b>4,000</b><span>DHL Parcel UK international</span></li>
-    <li><b>0.5 kg</b><span>UPS UK rounds chargeable weight up to the next half kilo</span></li>
+    <li><b>0.5 kg</b><span>UPS UK rounds chargeable weight up to the next half kilo (UPS Standard single-package rates are listed per whole kilo)</span></li>
     <li><b>No divisor</b><span>Royal Mail UK parcels are priced by size format</span></li>
   </ul>
 
@@ -57,8 +57,8 @@ const faq: [string, string][] = [
     <table class="rule-table">
       <thead><tr><th>Courier</th><th>Divisor</th><th>Applies to</th><th>Source</th></tr></thead>
       <tbody>
-        <tr><td data-label="Courier">UPS UK</td><td data-label="Divisor">5,000</td><td data-label="Applies to">Domestic and international; nearest cm, weight up to next 0.5 kg</td><td data-label="Source"><a href="https://assets.ups.com/adobe/assets/urn:aaid:aem:f9426dfc-9318-4338-8a0e-fc1bf01dc65c/original/as/preview-rate-guide-base-gb-en.pdf" rel="noopener">UPS 2026 rate guide</a></td></tr>
-        <tr><td data-label="Courier">Parcelforce</td><td data-label="Divisor">5,000</td><td data-label="Applies to">International; UK domestic uses size limits instead</td><td data-label="Source"><a href="https://www.parcelforce.com/help-and-advice/sending/how-to-measure-a-parcel-for-international-delivery" rel="noopener">Parcelforce</a></td></tr>
+        <tr><td data-label="Courier">UPS UK</td><td data-label="Divisor">5,000</td><td data-label="Applies to">Domestic and international; nearest cm, weight up to next 0.5 kg (UPS Standard single packages are priced per whole kg)</td><td data-label="Source"><a href="https://assets.ups.com/adobe/assets/urn:aaid:aem:f9426dfc-9318-4338-8a0e-fc1bf01dc65c/original/as/preview-rate-guide-base-gb-en.pdf" rel="noopener">UPS 2026 rate guide</a></td></tr>
+        <tr><td data-label="Courier">Parcelforce</td><td data-label="Divisor">5,000</td><td data-label="Applies to">International zones 4–12; UK domestic uses size limits instead</td><td data-label="Source"><a href="https://www.parcelforce.com/help-and-advice/sending/how-to-measure-a-parcel-for-international-delivery" rel="noopener">Parcelforce</a></td></tr>
         <tr><td data-label="Courier">Evri</td><td data-label="Divisor">5,000</td><td data-label="Applies to">International; UK parcels up to 15 kg, 120 cm long</td><td data-label="Source"><a href="https://www.evri.com/send/parcel-size-and-weight-guide" rel="noopener">Evri</a></td></tr>
         <tr><td data-label="Courier">DHL Parcel UK</td><td data-label="Divisor">4,000</td><td data-label="Applies to">International; up to 25 kg and 120 × 80 × 80 cm</td><td data-label="Source"><a href="https://send.dhlparcel.co.uk/resources/how-to-weigh-and-measure-a-parcel" rel="noopener">DHL Parcel UK</a></td></tr>
         <tr><td data-label="Courier">Royal Mail (UK)</td><td data-label="Divisor">—</td><td data-label="Applies to">Priced by format: Small Parcel 45 × 35 × 16 cm / 2 kg; Medium 61 × 46 × 46 cm / 20 kg</td><td data-label="Source"><a href="https://www.royalmail.com/sending/uk" rel="noopener">Royal Mail</a></td></tr>

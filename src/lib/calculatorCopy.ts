@@ -25,7 +25,7 @@ const en = {
   copy: 'Copy result', share: 'Share link', print: 'Print / PDF', printLabel: 'Print or save result as PDF',
   note: 'Planning estimate. Confirm the rule in your carrier agreement before buying a label.',
   batchStep: 'Batch audit', batchHeading: 'Paste a product or package list.',
-  batchHelpBefore: 'Use six columns:', batchHelpAfter: 'Everything stays on this device.', csvLabel: 'CSV package data',
+  batchHelpBefore: 'Use six columns:', batchHelpAfter: 'Commas or semicolons both work, and decimals can use . or ,. Everything stays on this device.', csvLabel: 'CSV package data',
   chooseCsv: 'Choose CSV', loadExample: 'Load example', runBatch: 'Audit packages',
   csvPrivacy: 'CSV contents are processed locally and are never uploaded.',
   validRows: 'Valid rows', dimRows: 'DIM-controlled', totalAir: 'Total air weight',
@@ -37,6 +37,13 @@ const en = {
   signalAir: 'Paying for air', signalScale: 'Scale-led', noRows: 'No valid rows found. Check the six-column format.',
   copied: 'Copied', shared: 'Shared', linkCopied: 'Link copied', shareTitle: 'ShippingMath package audit',
   copyText: 'ShippingMath audit: {billable} billable; {air} air weight; {girth} length + girth.',
+  enterDims: 'Enter length, width and height to see the billable weight.', enterDivisor: 'Enter a divisor above 0 under Advanced calculation settings.', basisSize: 'No side is over the size limit, so the scale weight is billed.',
+  totalFor: 'Total for {q} packages: {total}', packageLine: 'Package', helpText: 'Carriers divide length × width × height by a divisor (for example 139 in³/lb or 5,000 cm³/kg) and bill the greater of that and the scale weight. Pick your carrier, or set your own rule under Advanced calculation settings.',
+  exemptWeight: 'No DIM below scale weight of', basisLight: 'Light parcel: under the weight limit, so the scale weight is billed.',
+  ruleUsed: 'Rule', source: 'Source', checked: 'checked',
+  csvTooBig: 'This file is too large. Use up to 5 MB and 5,000 rows.', csvSkipped: '{count} row(s) skipped:', csvRow: 'Row {row}',
+  csvMissingDims: 'length, width and height must be numbers above 0', csvBadWeight: 'weight is not a valid number', csvBadQty: 'quantity is not a valid number',
+  csvTemplate: 'Download template', csvHeader: 'the header row was not recognised. Use sku, length, width, height, weight, quantity (see the template).',
 };
 
 type Copy = typeof en;
@@ -54,7 +61,7 @@ const ptBr: Copy = {
   profitSummary: 'Lucro e custos', optional: 'Opcional', currency: 'Moeda', salePrice: 'Preço de venda',
   productCost: 'Custo do produto', packaging: 'Embalagem', shippingCost: 'Frete / etiqueta', fees: 'Taxas do marketplace',
   advanced: 'Configurações avançadas', divisor: 'Fator de cubagem', weightRounding: 'Arredondamento do peso',
-  stepWhole: 'Próximo kg inteiro', stepHalf: 'Próximos 0,5 kg', stepTenth: 'Próximos 0,1 kg',
+  stepWhole: 'Próxima unidade inteira', stepHalf: 'Próxima 0,5 unidade', stepTenth: 'Próxima 0,1 unidade',
   dimRounding: 'Arredondamento das medidas', roundUp: 'Para cima (próxima unidade)', roundNearest: 'Para a unidade mais próxima', roundNone: 'Sem arredondamento',
   threshold: 'Peso cubado só acima de', advancedNote: 'Alterar estes campos muda a regra para “Regra personalizada”. Limite 0 = o peso cubado sempre se aplica.',
   liveAudit: 'Resultado', ready: 'Pronto', estimated: 'Peso cobrado estimado',
@@ -65,7 +72,7 @@ const ptBr: Copy = {
   copy: 'Copiar resultado', share: 'Compartilhar link', print: 'Imprimir / PDF', printLabel: 'Imprimir ou salvar o resultado em PDF',
   note: 'Estimativa para planejamento. Confirme a regra no contrato com a transportadora antes de comprar a etiqueta.',
   batchStep: 'Lote', batchHeading: 'Cole uma lista de produtos ou encomendas.',
-  batchHelpBefore: 'Use seis colunas:', batchHelpAfter: 'Tudo fica neste dispositivo.', csvLabel: 'Dados das encomendas em CSV',
+  batchHelpBefore: 'Use seis colunas:', batchHelpAfter: 'Aceita vírgula ou ponto e vírgula como separador e decimais com , ou .. Tudo fica neste dispositivo.', csvLabel: 'Dados das encomendas em CSV',
   chooseCsv: 'Escolher CSV', loadExample: 'Carregar exemplo', runBatch: 'Calcular lote',
   csvPrivacy: 'O conteúdo do CSV é processado localmente e nunca é enviado.',
   validRows: 'Linhas válidas', dimRows: 'Cobradas pelo peso cubado', totalAir: 'Peso total de ar',
@@ -76,6 +83,13 @@ const ptBr: Copy = {
   signalAir: 'Pagando por ar', signalScale: 'Peso real', noRows: 'Nenhuma linha válida. Confira o formato de seis colunas.',
   copied: 'Copiado', shared: 'Compartilhado', linkCopied: 'Link copiado', shareTitle: 'Cálculo de peso cubado — ShippingMath',
   copyText: 'ShippingMath: {billable} cobrados; {air} de ar; {girth} de comprimento + contorno.',
+  enterDims: 'Informe comprimento, largura e altura para ver o peso cobrado.', enterDivisor: 'Informe um fator de cubagem maior que 0 nas Configurações avançadas.', basisSize: 'Nenhum lado passa do limite de tamanho: cobra-se o peso real.',
+  totalFor: 'Total para {q} volumes: {total}', packageLine: 'Encomenda', helpText: 'As transportadoras dividem comprimento × largura × altura por um fator (por exemplo 6.000 cm³/kg) e cobram o maior entre esse resultado e o peso real. Escolha a transportadora ou defina sua regra em Configurações avançadas.',
+  exemptWeight: 'Sem cubagem abaixo do peso real de', basisLight: 'Pacote leve: abaixo do limite de peso, cobra-se o peso real.',
+  ruleUsed: 'Regra', source: 'Fonte', checked: 'revisada em',
+  csvTooBig: 'Arquivo grande demais. Use até 5 MB e 5.000 linhas.', csvSkipped: '{count} linha(s) ignorada(s):', csvRow: 'Linha {row}',
+  csvMissingDims: 'comprimento, largura e altura devem ser números maiores que 0', csvBadWeight: 'o peso não é um número válido', csvBadQty: 'a quantidade não é um número válido',
+  csvTemplate: 'Baixar modelo', csvHeader: 'o cabeçalho não foi reconhecido. Use sku, comprimento, largura, altura, peso, quantidade (veja o modelo).',
 };
 
 const es: Copy = {
@@ -91,7 +105,7 @@ const es: Copy = {
   profitSummary: 'Beneficio y costes', optional: 'Opcional', currency: 'Moneda', salePrice: 'Precio de venta',
   productCost: 'Coste del producto', packaging: 'Embalaje', shippingCost: 'Envío / etiqueta', fees: 'Comisiones del marketplace',
   advanced: 'Ajustes avanzados', divisor: 'Divisor', weightRounding: 'Redondeo del peso',
-  stepWhole: 'Siguiente kg entero', stepHalf: 'Siguientes 0,5 kg', stepTenth: 'Siguientes 0,1 kg',
+  stepWhole: 'Siguiente unidad entera', stepHalf: 'Siguiente 0,5 unidad', stepTenth: 'Siguiente 0,1 unidad',
   dimRounding: 'Redondeo de medidas', roundUp: 'Hacia arriba (siguiente unidad)', roundNearest: 'A la unidad más cercana', roundNone: 'Sin redondeo',
   threshold: 'Peso volumétrico solo por encima de', advancedNote: 'Cambiar estos campos pasa la regla a “Regla personalizada”. Un límite de 0 significa que el peso volumétrico siempre se aplica.',
   liveAudit: 'Resultado', ready: 'Listo', estimated: 'Peso facturable estimado',
@@ -102,7 +116,7 @@ const es: Copy = {
   copy: 'Copiar resultado', share: 'Compartir enlace', print: 'Imprimir / PDF', printLabel: 'Imprimir o guardar el resultado en PDF',
   note: 'Estimación orientativa. Confirma la regla con tu empresa de paquetería o tu contrato antes de comprar la etiqueta.',
   batchStep: 'Lote', batchHeading: 'Pega una lista de productos o paquetes.',
-  batchHelpBefore: 'Usa seis columnas:', batchHelpAfter: 'Todo se queda en este dispositivo.', csvLabel: 'Datos de los paquetes en CSV',
+  batchHelpBefore: 'Usa seis columnas:', batchHelpAfter: 'Acepta coma o punto y coma como separador y decimales con , o .. Todo se queda en este dispositivo.', csvLabel: 'Datos de los paquetes en CSV',
   chooseCsv: 'Elegir CSV', loadExample: 'Cargar ejemplo', runBatch: 'Calcular lote',
   csvPrivacy: 'El contenido del CSV se procesa localmente y nunca se sube.',
   validRows: 'Filas válidas', dimRows: 'Por peso volumétrico', totalAir: 'Peso total de aire',
@@ -113,6 +127,13 @@ const es: Copy = {
   signalAir: 'Pagando aire', signalScale: 'Peso real', noRows: 'No hay filas válidas. Revisa el formato de seis columnas.',
   copied: 'Copiado', shared: 'Compartido', linkCopied: 'Enlace copiado', shareTitle: 'Cálculo de peso volumétrico — ShippingMath',
   copyText: 'ShippingMath: {billable} facturables; {air} de aire; {girth} de largo + contorno.',
+  enterDims: 'Introduce largo, ancho y alto para ver el peso facturable.', enterDivisor: 'Introduce un divisor mayor que 0 en los ajustes avanzados.', basisSize: 'Ningún lado supera el límite de tamaño: se cobra el peso real.',
+  totalFor: 'Total para {q} paquetes: {total}', packageLine: 'Paquete', helpText: 'Las empresas dividen largo × ancho × alto entre un factor (por ejemplo 5.000 cm³/kg) y cobran el mayor entre ese resultado y el peso real. Elige tu transportista o define tu regla en la configuración avanzada.',
+  exemptWeight: 'Sin peso volumétrico bajo un peso real de', basisLight: 'Paquete ligero: bajo el límite de peso, se cobra el peso real.',
+  ruleUsed: 'Regla', source: 'Fuente', checked: 'revisada en',
+  csvTooBig: 'El archivo es demasiado grande. Usa hasta 5 MB y 5.000 filas.', csvSkipped: '{count} fila(s) omitida(s):', csvRow: 'Fila {row}',
+  csvMissingDims: 'largo, ancho y alto deben ser números mayores que 0', csvBadWeight: 'el peso no es un número válido', csvBadQty: 'la cantidad no es un número válido',
+  csvTemplate: 'Descargar plantilla', csvHeader: 'no se reconoció la fila de encabezado. Usa sku, largo, ancho, alto, peso, cantidad (ver la plantilla).',
 };
 
 export const CALCULATOR_COPY: Record<CalculatorLocale, Copy> = { en, 'pt-br': ptBr, es };

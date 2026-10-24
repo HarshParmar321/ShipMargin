@@ -39,7 +39,7 @@ const localeTags: Record<Locale, string> = { en: 'en', 'pt-br': 'pt-BR', es: 'es
 const homePaths: Record<Locale, string> = { en: '/', 'pt-br': '/pt-br/', es: '/es/' };
 const copy = {
   en: {
-    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Free · private', localTip: 'Calculations run in your browser. Nothing you type is sent to a server.', toolsLabel: 'Free tools', countriesLabel: 'Countries', regionTitle: 'Choose your country', langTitle: 'Language', regionButton: 'Country and language',
+    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Free · private', localTip: 'Calculations run in your browser. Nothing you type is sent to a server.', toolsLabel: 'Free tools', countriesLabel: 'Countries', regionTitle: 'Choose your country', langTitle: 'Language', regionButton: 'Country and language', close: 'Close', mainNav: 'Main navigation',
     nav: [['DIM weight', '/dimensional-weight-calculator/'], ['USPS 2026', '/usps-dimensional-weight-calculator/'], ['Box optimizer', '/box-margin-optimizer/'], ['Margin', '/shipping-margin-calculator/']],
     strip: TOOLS.map((tool) => [tool.short, tool.href]),
     tagline: 'Clear shipping math for sellers everywhere.', chipFree: 'Free, no sign-up', reviewed: 'Rules reviewed:',
@@ -48,7 +48,7 @@ const copy = {
     fine: 'Planning estimates only. Confirm current rules and rates with your carrier or contract.',
   },
   'pt-br': {
-    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Grátis · privado', localTip: 'Os cálculos rodam no seu navegador. Nada do que você digita é enviado a um servidor.', toolsLabel: 'Ferramentas', countriesLabel: 'Países', regionTitle: 'Escolha seu país', langTitle: 'Idioma', regionButton: 'País e idioma',
+    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Grátis · privado', localTip: 'Os cálculos rodam no seu navegador. Nada do que você digita é enviado a um servidor.', toolsLabel: 'Ferramentas', countriesLabel: 'Países', regionTitle: 'Escolha seu país', langTitle: 'Idioma', regionButton: 'País e idioma', close: 'Fechar', mainNav: 'Navegação principal',
     nav: [['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
     strip: [['Início', '/pt-br/'], ['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
     tagline: 'Cálculos de frete claros para vendedores em qualquer lugar.', chipFree: 'Grátis, sem cadastro', reviewed: 'Regras revisadas:',
@@ -57,7 +57,7 @@ const copy = {
     fine: 'Estimativas para planejamento. Confirme as regras e tarifas atuais com a transportadora ou no seu contrato.',
   },
   es: {
-    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Gratis · privado', localTip: 'Los cálculos se hacen en tu navegador. Nada de lo que escribes se envía a un servidor.', toolsLabel: 'Herramientas', countriesLabel: 'Países', regionTitle: 'Elige tu país', langTitle: 'Idioma', regionButton: 'País e idioma',
+    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Gratis · privado', localTip: 'Los cálculos se hacen en tu navegador. Nada de lo que escribes se envía a un servidor.', toolsLabel: 'Herramientas', countriesLabel: 'Países', regionTitle: 'Elige tu país', langTitle: 'Idioma', regionButton: 'País e idioma', close: 'Cerrar', mainNav: 'Navegación principal',
     nav: [['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
     strip: [['Inicio', '/es/'], ['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
     tagline: 'Cálculos de envío claros para vendedores de todo el mundo.', chipFree: 'Gratis, sin registro', reviewed: 'Reglas revisadas:',
@@ -147,7 +147,7 @@ const structuredData = [
         <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" width="100%" height="100%"><path d="M14 22 32 12l18 10-18 10-18-10Zm0 0v20l18 10 18-10V22M32 32v20" fill="none" stroke="#d8ff70" stroke-width="5" stroke-linejoin="round"/></svg></span>
         <span>ShippingMath</span>
       </a>
-      <nav class="main-nav" aria-label="Main navigation">
+      <nav class="main-nav" aria-label={t.mainNav}>
         {t.nav.map(([label, href]) => <a href={href} aria-current={isHere(href) ? 'page' : undefined}>{label}</a>)}
       </nav>
       <div class="header-actions">
@@ -188,7 +188,7 @@ const structuredData = [
       <div class="lang-suggest" hidden data-lang-suggest data-alternates={JSON.stringify(suggestAlternates)}>
         <span data-lang-suggest-text></span>
         <a class="lang-suggest-go" data-lang-suggest-link href="/"></a>
-        <button type="button" class="lang-suggest-close" data-lang-suggest-close aria-label="Close">×</button>
+        <button type="button" class="lang-suggest-close" data-lang-suggest-close aria-label={t.close}>×</button>
       </div>
     )}
     <main id="main">

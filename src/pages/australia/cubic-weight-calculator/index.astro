@@ -13,7 +13,7 @@ const faq: [string, string][] = [
   ['What is cubic weight?', 'Cubic weight is the weight a carrier assigns to a parcel based on its size. In Australia it is usually the volume in cubic metres multiplied by 250. You pay for the greater of the cubic weight and the actual (dead) weight.'],
   ['How do I calculate cubic weight for Australia Post?', 'Convert length, width and height to metres, multiply them, then multiply by 250. For example, 0.5 × 0.4 × 0.3 m = 0.06 m³, and 0.06 × 250 = 15 kg. In centimetres, that is the same as L × W × H ÷ 4,000.'],
   ['Does Australia Post charge cubic weight on every parcel?', 'No. Cubic weight does not apply to eligible Australia Post packaging, and for non-contract MyPost Business customers it generally does not apply to parcels under 1 kg actual weight, although Australia Post may still apply it to large, irregular or cylindrical items.'],
-  ['What cubic factor do StarTrack and Aramex use?', 'StarTrack Road Express and Premium use 250 kg/m³, and Fixed Price Premium uses 190 kg/m³. Aramex Australia also calculates cubic weight with a factor of 250.'],
+  ['What cubic factor do StarTrack and Aramex use?', 'StarTrack Road Express and Premium use 250 kg/m³, and Fixed Price Premium uses 190 kg/m³. StarTrack rounds partial chargeable kilograms up to the next whole kilogram for each consignment. Aramex Australia also calculates cubic weight with a factor of 250.'],
   ['Does Sendle use cubic weight?', 'Sendle prices by size bands that cap both weight and volume in litres (length × width × height in cm ÷ 1,000). If weight and volume fall in different bands, the larger band applies.'],
   ['What is the cubic weight vs dead weight difference?', 'Dead weight is what the scales show. Cubic weight is calculated from the parcel\'s size. Carriers charge whichever is higher.'],
 ];
@@ -58,20 +58,27 @@ const faq: [string, string][] = [
     <p class="answer">Charged weight: <b>15 kg</b></p>
     <a class="try-link" href={tryLink('auspost', { length: 50, width: 40, height: 30, actualWeight: 4 })} rel="nofollow">Open this example →</a>
   </div>
+  <div class="example-card">
+    <h3>The same box weighing 0.5 kg</h3>
+    <p>The cubic weight is still 15 kg, but the parcel weighs under 1 kg. For non-contract parcels (for example MyPost Business), Australia Post generally doesn't apply cubic charging under 1 kg. StarTrack has no such rule and rounds up to whole kilograms.</p>
+    <p class="answer">Australia Post: <b>0.5 kg</b> · StarTrack: <b>15 kg</b></p>
+    <a class="try-link" href={tryLink('auspost', { length: 50, width: 40, height: 30, actualWeight: 0.5 })} rel="nofollow">Open with Australia Post →</a>
+    <a class="try-link" style="margin-left: 16px" href={tryLink('startrack', { length: 50, width: 40, height: 30, actualWeight: 0.5 })} rel="nofollow">Open with StarTrack →</a>
+  </div>
 
   <h2>Australian carrier rules</h2>
   <div class="rule-table-wrap">
     <table class="rule-table">
       <thead><tr><th>Carrier</th><th>Factor</th><th>Notes</th><th>Source</th></tr></thead>
       <tbody>
-        <tr><td data-label="Carrier">Australia Post</td><td data-label="Factor">250 kg/m³</td><td data-label="Notes">Not on eligible Australia Post packaging; max 22 kg, 105 cm, 0.25 m³</td><td data-label="Source"><a href="https://auspost.com.au/business/business-ideas/ecommerce-jargon-busters/what-is-cubic-weight" rel="noopener">Australia Post</a></td></tr>
-        <tr><td data-label="Carrier">StarTrack</td><td data-label="Factor">250 kg/m³ (Fixed Price Premium 190)</td><td data-label="Notes">From 1 October 2026</td><td data-label="Source"><a href="https://auspost.com.au/content/dam/startrack_corp/documents/startrack-additional-charges.pdf" rel="noopener">StarTrack charges</a></td></tr>
+        <tr><td data-label="Carrier">Australia Post</td><td data-label="Factor">250 kg/m³</td><td data-label="Notes">Not on eligible Australia Post packaging; max 22 kg, 105 cm, 0.25 m³</td><td data-label="Source"><a href="https://auspost.com.au/business/business-ideas/ecommerce-jargon-busters/what-is-cubic-weight" rel="noopener">Cubic weight</a> · <a href="https://auspost.com.au/business/shipping/check-sending-guidelines/size-weight-guidelines" rel="noopener">Size and weight limits</a></td></tr>
+        <tr><td data-label="Carrier">StarTrack</td><td data-label="Factor">250 kg/m³ (Fixed Price Premium 190)</td><td data-label="Notes">Partial kilograms rounded up to the next whole kg per consignment (terms clause 4.9); factors from 1 October 2026. The calculator rounds each parcel.</td><td data-label="Source"><a href="https://auspost.com.au/content/dam/startrack_corp/documents/startrack-additional-charges.pdf" rel="noopener">StarTrack charges</a> · <a href="https://auspost.com.au/terms-conditions/startrack-terms-and-conditions" rel="noopener">Terms</a></td></tr>
         <tr><td data-label="Carrier">Aramex Australia</td><td data-label="Factor">250 kg/m³</td><td data-label="Notes">Check the parcel limit for your service</td><td data-label="Source"><a href="https://www.aramex.com.au/terms-and-conditions/conditions-of-carriage/domestic-conditions-of-carriage/" rel="noopener">Conditions of carriage</a></td></tr>
         <tr><td data-label="Carrier">Sendle</td><td data-label="Factor">Size bands (kg and litres)</td><td data-label="Notes">Litres = L × W × H (cm) ÷ 1,000</td><td data-label="Source"><a href="https://support.sendle.com/hc/en-au/articles/205230938-Sendle-parcel-sizes-and-weights-for-domestic-parcels" rel="noopener">Sendle</a></td></tr>
       </tbody>
     </table>
   </div>
-  <p class="table-note">Australia Post doesn't publish a rounding rule for cubic weight, so the calculator shows it in 0.1 kg steps.</p>
+  <p class="table-note">Australia Post and Aramex don't publish a rounding rule for cubic weight, so the calculator shows them in 0.1 kg steps. The Australia Post option skips cubic weight for parcels under 1 kg actual weight, which is the non-contract rule; if you have a contract, check your agreement and adjust the setting under <em>Advanced calculation settings</em>.</p>
 
   <h2>How to reduce cubic weight</h2>
   <ul>

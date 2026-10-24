@@ -1,6 +1,27 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languagePaths } from '../../lib/locales';
+import { PRESETS, PRESET_SOURCES } from '../../lib/shipping.mjs';
+
+type Rule = { label: string; unit: string; divisor: number; dimThreshold: number; dimRounding: string; billableStep: number; dimExemptBelowWeight?: number; dimExemptInclusive?: boolean; dimMinLongestSide?: number; packagingWeight?: number };
+const presetRows = Object.entries(PRESETS as Record<string, Rule>).map(([key, rule]) => {
+  const metric = rule.unit === 'metric';
+  const w = metric ? 'kg' : 'lb';
+  const conditions = [
+    rule.dimThreshold ? `No DIM at or below ${rule.dimThreshold.toLocaleString('en')} ${metric ? 'cm³' : 'in³'}` : '',
+    rule.dimExemptBelowWeight ? `No DIM ${rule.dimExemptInclusive ? 'up to' : 'under'} ${rule.dimExemptBelowWeight} ${w} actual weight` : '',
+    rule.dimMinLongestSide ? `DIM only if a side is over ${rule.dimMinLongestSide} ${metric ? 'cm' : 'in'}` : '',
+    rule.packagingWeight ? `Adds ${rule.packagingWeight * 1000} g packaging` : '',
+  ].filter(Boolean).join('; ') || '—';
+  return {
+    label: rule.label,
+    divisor: `${rule.divisor.toLocaleString('en')} ${metric ? 'cm³/kg' : 'in³/lb'}`,
+    sides: rule.dimRounding === 'up' ? 'Up to whole unit' : rule.dimRounding === 'nearest' ? 'Nearest whole unit' : 'Exact measurements',
+    step: `${rule.billableStep} ${w}`,
+    conditions,
+    source: (PRESET_SOURCES as Record<string, string>)[key] ?? '',
+  };
+});
 ---
 <BaseLayout title="Calculation methodology | ShippingMath" description="How ShippingMath calculates dimensional, billable and margin estimates." canonicalPath="/methodology/" languagePaths={languagePaths.methodology}>
   <header class="tool-hero"><span class="eyebrow">Transparent calculations</span><h1>Methodology</h1><p>Every answer should be reproducible. These are the assumptions used by the current free tools.</p></header>
@@ -14,10 +35,22 @@ import { languagePaths } from '../../lib/locales';
     <ul>
       <li><strong>UPS Daily Rates:</strong> divisor 139 in³/lb, measurements rounded up to the next whole inch. <strong>UPS Retail Rates:</strong> divisor 166. Source: <a href="https://www.ups.com/us/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS package dimensions and weight guide</a>.</li>
       <li><strong>USPS:</strong> divisor 139 in³/lb, each measurement rounded up to the next whole inch, and dimensional weight applies only to parcels larger than 1 cubic foot (1,728 in³), effective 12 July 2026. Source: <a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">USPS Postal Bulletin 22705</a>.</li>
-      <li><strong>FedEx:</strong> divisor 139 in³/lb. FedEx's <a href="https://www.fedex.com/en-ca/resources-tools/dimensional-weight.html" rel="noopener">Canada dimensional weight page</a> says to round each dimension up to the next whole inch, while its <a href="https://www.fedex.com/en-us/shipping/packaging/what-is-dimensional-weight.html" rel="noopener">US help page</a> says to round to the nearest whole inch. We default to rounding up; switch to “nearest” if your FedEx invoices show otherwise.</li>
+      <li><strong>FedEx (US):</strong> divisor 139 in³/lb, each measurement rounded to the nearest whole inch, result rounded up to the next whole pound. Source: <a href="https://www.fedex.com/en-us/shipping/packaging/what-is-dimensional-weight.html" rel="noopener">FedEx US dimensional weight page</a>. FedEx Canada rounds each side up instead; the Canada page uses that rule.</li>
       <li><strong>International express (metric):</strong> 5,000 cm³/kg is common for express services; some air and economy services use 6,000 cm³/kg. Check your service.</li>
     </ul>
     <p>Negotiated contracts can use different divisors or thresholds. Enter yours under advanced settings.</p>
+    <h2 id="all-presets">Every carrier preset</h2>
+    <p>This table is generated from the same rules the calculators use, so it always matches them. “Not published” means the carrier doesn't state that rounding, so we use exact measurements or 0.1 kg steps.</p>
+    <div class="rule-table-wrap">
+      <table class="rule-table">
+        <thead><tr><th>Preset</th><th>Divisor</th><th>Sides</th><th>Weight step</th><th>Conditions</th><th>Source</th></tr></thead>
+        <tbody>
+          {presetRows.map((row) => (
+            <tr><td data-label="Preset">{row.label}</td><td data-label="Divisor">{row.divisor}</td><td data-label="Sides">{row.sides}</td><td data-label="Weight step">{row.step}</td><td data-label="Conditions">{row.conditions}</td><td data-label="Source">{row.source ? <a href={row.source} rel="noopener">Official page</a> : 'Generic'}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
     <p class="notice">Found a rule that has changed? Please report it through the <a href="/contact/">contact page</a> with a link to the carrier's published rule.</p>
   </article>
 </BaseLayout>

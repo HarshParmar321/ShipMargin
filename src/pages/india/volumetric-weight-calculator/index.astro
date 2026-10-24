@@ -12,14 +12,14 @@ const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: num
 const faq: [string, string][] = [
   ['What is the volumetric weight formula in India?', 'Most Indian couriers use length × breadth × height in centimetres divided by 5,000. Delhivery, Blue Dart (air) and Amazon Easy Ship all publish this formula. You are charged the higher of the volumetric weight and the dead weight.'],
   ['How do I calculate volumetric weight in inches?', 'Multiply length × breadth × height in inches and divide by about 305 to get kilograms (the same as ÷ 5,000 in centimetres). Or switch the calculator to Imperial and it converts the divisor for you.'],
-  ['How does Delhivery calculate volumetric weight?', 'Delhivery uses (length × breadth × height) / 5,000 for Surface and Express, and charges max(dead weight, volumetric weight). Shipments packed in flyers are charged on dead weight up to 1 kg.'],
+  ['How does Delhivery calculate volumetric weight?', 'Delhivery uses (length × breadth × height) / 5,000 for Surface and Express, and charges max(dead weight, volumetric weight). Shipments packed in flyers are charged on dead weight up to 1 kg; choose “Delhivery flyer” in the calculator for those. The same help page also says dead weight under 1 kg is used as is; it is unclear whether that covers boxes, so check your Delhivery panel for light boxed parcels.'],
   ['How does Amazon Easy Ship charge weight?', 'Amazon.in uses (L × B × H in cm) / 5,000 and charges the higher of volumetric and actual weight. The minimum chargeable weight is 500 g and weight is charged in 500 g steps for standard-size items.'],
-  ['Does India Post use volumetric weight?', 'Yes. Post Office rules define the weight as the gross or volumetric weight, whichever is higher, but we could not find the published formula, so check at the counter or with your account.'],
+  ['Does India Post use volumetric weight?', 'India Post\'s Speed Post parcel page refers to a parcel\'s gross weight (up to 35 kg) or its volumetric weight, but it doesn\'t publish the formula, so check at the counter or with your account before relying on a divisor.'],
   ['What is dead weight vs volumetric weight?', 'Dead weight is what the scale shows. Volumetric weight is calculated from the box size. Couriers charge the higher one, so a big, light parcel can cost much more than its dead weight.'],
 ];
 ---
 <ToolPage
-  title="Volumetric Weight Calculator India (cm, inches) | ShippingMath"
+  title="Volumetric Weight Calculator India | ShippingMath"
   heading="Volumetric weight calculator India"
   crumb="Volumetric weight (India)"
   eyebrow="Delhivery · Blue Dart · Amazon · Shiprocket"
@@ -55,17 +55,23 @@ const faq: [string, string][] = [
     <a class="try-link" href={tryLink('delhivery', { length: 30, width: 20, height: 15, actualWeight: 1 })} rel="nofollow">Open with Delhivery →</a>
     <a class="try-link" style="margin-left: 16px" href={tryLink('amazonIn', { length: 30, width: 20, height: 15, actualWeight: 1 })} rel="nofollow">Open with Amazon →</a>
   </div>
+  <div class="example-card">
+    <h3>A 35 × 30 × 3 cm flyer weighing 0.4 kg (Delhivery)</h3>
+    <p>35 × 30 × 3 = 3,150 cm³; 3,150 ÷ 5,000 = 0.63 kg. Delhivery charges flyers on dead weight up to 1 kg, so the volumetric weight is ignored.</p>
+    <p class="answer">Chargeable weight: <b>0.4 kg</b> (the regular box rule would give 0.7 kg)</p>
+    <a class="try-link" href={tryLink('delhiveryFlyer', { length: 35, width: 30, height: 3, actualWeight: 0.4 })} rel="nofollow">Open with Delhivery flyer →</a>
+  </div>
 
   <h2>Courier rules in India</h2>
   <div class="rule-table-wrap">
     <table class="rule-table">
       <thead><tr><th>Courier</th><th>Formula</th><th>Notes</th><th>Source</th></tr></thead>
       <tbody>
-        <tr><td data-label="Courier">Delhivery</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Surface and Express; flyers on dead weight up to 1 kg</td><td data-label="Source"><a href="https://help.delhivery.com/docs/calculating-volumetric-weight" rel="noopener">Delhivery</a></td></tr>
+        <tr><td data-label="Courier">Delhivery</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Surface and Express. Flyers: dead weight up to 1 kg (use the “Delhivery flyer” option)</td><td data-label="Source"><a href="https://help.delhivery.com/docs/calculating-volumetric-weight" rel="noopener">Delhivery</a></td></tr>
         <tr><td data-label="Courier">Blue Dart (air)</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Rounded to the next half kg or kg; surface uses 1 cubic foot = 10 kg</td><td data-label="Source"><a href="https://www.bluedart.com/terms-condition" rel="noopener">Blue Dart terms</a></td></tr>
         <tr><td data-label="Courier">Amazon Easy Ship</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Minimum 500 g, charged in 500 g steps</td><td data-label="Source"><a href="https://sell.amazon.in/fees-and-pricing" rel="noopener">Amazon.in fees</a></td></tr>
         <tr><td data-label="Courier">Shiprocket</td><td data-label="Formula">÷ 5,000 (most partners)</td><td data-label="Notes">Some partners differ (e.g. Aramex 6,000)</td><td data-label="Source"><a href="https://support.shiprocket.in/support/solutions/articles/43000664204-how-to-calculate-the-volumetric-weight-of-my-shipment-" rel="noopener">Shiprocket</a></td></tr>
-        <tr><td data-label="Courier">India Post / Speed Post</td><td data-label="Formula">Not published</td><td data-label="Notes">Gross or volumetric weight, whichever is higher; 35 kg</td><td data-label="Source"><a href="https://www.indiapost.gov.in/mailproducts/domesticservices/speedpostparceldomestic" rel="noopener">India Post</a></td></tr>
+        <tr><td data-label="Courier">India Post / Speed Post</td><td data-label="Formula">Not published</td><td data-label="Notes">Mentions gross or volumetric weight (formula not published); up to 35 kg</td><td data-label="Source"><a href="https://www.indiapost.gov.in/mailproducts/domesticservices/speedpostparceldomestic" rel="noopener">India Post</a></td></tr>
       </tbody>
     </table>
   </div>

@@ -11,21 +11,21 @@ const dictionaries = {
     step: '01 / Compare boxes', heading: 'Product and current package', reset: 'Reset', measurement: 'Measurement system', productSize: 'Product size', length: 'Length', width: 'Width', height: 'Height', currentPackage: 'Current package', scaleWeight: 'Scale weight', shippingPer: 'Shipping per billed', availableBoxes: 'Available boxes', catalogueHelp: 'Name, length, width, height, packaging cost', loadExample: 'Load example', boxName: 'Box name', newBox: 'Box', cost: 'Cost', addBox: '+ Add a box', removeBox: 'Remove box', pasteCsv: 'Paste or edit as CSV',
     business: 'Business and margin', businessHelp: 'Add order costs for a safer selling price.', optional: 'Optional', currency: 'Currency', monthlyOrders: 'Monthly orders', currentPackagingCost: 'Current packaging cost', productCost: 'Product cost', otherFees: 'Other fees / order', targetMargin: 'Target margin', carrier: 'Carrier settings', carrierHelp: 'Choose the dimensional-weight rule.', rule: 'Calculation rule', ups: 'UPS Daily Rates · 139', upsRetail: 'UPS Retail Rates · 166', fedex: 'FedEx · 139', usps: 'USPS · 139 · over 1,728 in³', custom: 'Custom rule', dimRounding: 'Dimension rounding', roundUp: 'Up to next whole unit', roundNearest: 'To nearest whole unit', roundNone: 'No rounding', threshold: 'DIM applies above (volume)', express: 'Express metric · 5,000', air: 'Air metric · 6,000', divisor: 'Custom divisor', round: 'Round package dimensions up before calculating', submit: 'Find my best box',
     bestValue: 'Best value', localResult: 'Local result', use: 'Use', billable: 'billable', boxesFit: 'boxes fit', weightAvoided: 'Weight avoided', perShipment: 'per shipment', savings: 'Estimated savings', perMonth: 'per month', selectedBox: 'Selected box', minimumPrice: 'Minimum selling price for', targetSuffix: 'target margin', includes: 'Includes product, selected packaging, estimated shipping and entered fees.', noFit: 'No listed box fits the product.', noFitHelp: 'Add a larger box or check the product dimensions.', copy: 'Copy recommendation', printPdf: 'Print / PDF', note: 'Savings are planning estimates based on the cost per billed weight you entered. Confirm carrier rules and actual label rates.', imperial: 'Imperial', metric: 'Metric', doesNotFit: 'Does not fit', yourSelection: 'Your selection', copied: 'Copied',
-    copyPrefix: 'ShippingMath box selection', copyBillable: 'billable', copySaving: 'saving about', copyAnd: 'and', copyMonthly: 'per month', copyBest: 'This is the best-value option from the boxes entered.',
+    copyPrefix: 'ShippingMath box selection', copyBillable: 'billable', copySaving: 'saving about', copyAnd: 'and', copyMonthly: 'per month', copyBest: 'This is the best-value option from the boxes entered.', invalidRule: 'Enter a divisor above 0',
     boxes: [['Slim mailer', 12, 10, 3, 0.65], ['Small box', 14, 10, 6, 0.90], ['Medium box', 18, 14, 12, 1.20]],
   },
   'pt-br': {
     step: '01 / Comparar caixas', heading: 'Produto e embalagem atual', reset: 'Limpar', measurement: 'Sistema de medidas', productSize: 'Tamanho do produto', length: 'Comprimento', width: 'Largura', height: 'Altura', currentPackage: 'Embalagem atual', scaleWeight: 'Peso real', shippingPer: 'Frete por peso faturável', availableBoxes: 'Caixas disponíveis', catalogueHelp: 'Nome, comprimento, largura, altura, custo da embalagem', loadExample: 'Carregar exemplo', boxName: 'Nome da caixa', newBox: 'Caixa', cost: 'Custo', addBox: '+ Adicionar caixa', removeBox: 'Remover caixa', pasteCsv: 'Colar ou editar como CSV',
     business: 'Negócio e margem', businessHelp: 'Adicione os custos para calcular um preço de venda seguro.', optional: 'Opcional', currency: 'Moeda', monthlyOrders: 'Pedidos por mês', currentPackagingCost: 'Custo da embalagem atual', productCost: 'Custo do produto', otherFees: 'Outras taxas / pedido', targetMargin: 'Margem desejada', carrier: 'Configurações da transportadora', carrierHelp: 'Escolha a regra de peso cubado.', rule: 'Regra de cálculo', ups: 'UPS Daily Rates · 139', upsRetail: 'UPS Retail Rates · 166', fedex: 'FedEx · 139', usps: 'USPS · 139 · acima de 1.728 pol³', custom: 'Regra personalizada', dimRounding: 'Arredondamento das medidas', roundUp: 'Para cima (próxima unidade)', roundNearest: 'Para a unidade mais próxima', roundNone: 'Sem arredondamento', threshold: 'Peso cubado acima de (volume)', express: 'Métrico expresso · 5.000', air: 'Métrico aéreo · 6.000', divisor: 'Divisor personalizado', round: 'Arredondar as dimensões externas antes de calcular', submit: 'Encontrar a melhor caixa',
     bestValue: 'Melhor custo', localResult: 'Resultado local', use: 'Usar', billable: 'faturável', boxesFit: 'caixas válidas', weightAvoided: 'Peso evitado', perShipment: 'por envio', savings: 'Economia estimada', perMonth: 'por mês', selectedBox: 'Caixa escolhida', minimumPrice: 'Preço mínimo de venda para', targetSuffix: 'de margem', includes: 'Inclui produto, embalagem escolhida, frete estimado e taxas informadas.', noFit: 'Nenhuma caixa informada comporta o produto.', noFitHelp: 'Adicione uma caixa maior ou confira as dimensões.', copy: 'Copiar recomendação', printPdf: 'Imprimir / PDF', note: 'A economia é uma estimativa baseada no custo por peso faturável informado. Confirme as regras e o preço real da etiqueta.', imperial: 'Imperial', metric: 'Métrico', doesNotFit: 'Não cabe', yourSelection: 'Sua escolha', copied: 'Copiado',
-    copyPrefix: 'Seleção de caixa da ShippingMath', copyBillable: 'de peso faturável', copySaving: 'economizando cerca de', copyAnd: 'e', copyMonthly: 'por mês', copyBest: 'Esta é a opção de melhor custo entre as caixas informadas.',
+    copyPrefix: 'Seleção de caixa da ShippingMath', copyBillable: 'de peso faturável', copySaving: 'economizando cerca de', copyAnd: 'e', copyMonthly: 'por mês', copyBest: 'Esta é a opção de melhor custo entre as caixas informadas.', invalidRule: 'Informe um fator maior que 0',
     boxes: [['Envelope fino', 30, 25, 8, 1.50], ['Caixa pequena', 35, 25, 15, 2.50], ['Caixa média', 46, 36, 30, 4.00]],
   },
   es: {
     step: '01 / Comparar cajas', heading: 'Producto y paquete actual', reset: 'Restablecer', measurement: 'Sistema de medidas', productSize: 'Tamaño del producto', length: 'Largo', width: 'Ancho', height: 'Alto', currentPackage: 'Paquete actual', scaleWeight: 'Peso real', shippingPer: 'Envío por peso facturable', availableBoxes: 'Cajas disponibles', catalogueHelp: 'Nombre, largo, ancho, alto, coste del embalaje', loadExample: 'Cargar ejemplo', boxName: 'Nombre de la caja', newBox: 'Caja', cost: 'Coste', addBox: '+ Añadir caja', removeBox: 'Quitar caja', pasteCsv: 'Pegar o editar como CSV',
     business: 'Negocio y margen', businessHelp: 'Añade los costes para calcular un precio de venta seguro.', optional: 'Opcional', currency: 'Moneda', monthlyOrders: 'Pedidos al mes', currentPackagingCost: 'Coste del embalaje actual', productCost: 'Coste del producto', otherFees: 'Otras comisiones / pedido', targetMargin: 'Margen objetivo', carrier: 'Configuración del transportista', carrierHelp: 'Elige la regla de peso volumétrico.', rule: 'Regla de cálculo', ups: 'UPS Daily Rates · 139', upsRetail: 'UPS Retail Rates · 166', fedex: 'FedEx · 139', usps: 'USPS · 139 · más de 1.728 pulg³', custom: 'Regla personalizada', dimRounding: 'Redondeo de medidas', roundUp: 'Hacia arriba (siguiente unidad)', roundNearest: 'A la unidad más cercana', roundNone: 'Sin redondeo', threshold: 'Peso volumétrico por encima de (volumen)', express: 'Métrico exprés · 5.000', air: 'Métrico aéreo · 6.000', divisor: 'Divisor personalizado', round: 'Redondear las dimensiones exteriores antes de calcular', submit: 'Encontrar la mejor caja',
     bestValue: 'Mejor coste', localResult: 'Resultado local', use: 'Usar', billable: 'facturable', boxesFit: 'cajas válidas', weightAvoided: 'Peso evitado', perShipment: 'por envío', savings: 'Ahorro estimado', perMonth: 'al mes', selectedBox: 'Caja elegida', minimumPrice: 'Precio mínimo de venta para', targetSuffix: 'de margen', includes: 'Incluye producto, embalaje elegido, envío estimado y comisiones introducidas.', noFit: 'Ninguna caja introducida admite el producto.', noFitHelp: 'Añade una caja mayor o revisa las dimensiones.', copy: 'Copiar recomendación', printPdf: 'Imprimir / PDF', note: 'El ahorro es una estimación basada en el coste por peso facturable introducido. Confirma las reglas y el precio real de la etiqueta.', imperial: 'Imperial', metric: 'Métrico', doesNotFit: 'No cabe', yourSelection: 'Tu elección', copied: 'Copiado',
-    copyPrefix: 'Selección de caja de ShippingMath', copyBillable: 'de peso facturable', copySaving: 'con un ahorro aproximado de', copyAnd: 'y', copyMonthly: 'al mes', copyBest: 'Es la opción de mejor coste entre las cajas introducidas.',
+    copyPrefix: 'Selección de caja de ShippingMath', copyBillable: 'de peso facturable', copySaving: 'con un ahorro aproximado de', copyAnd: 'y', copyMonthly: 'al mes', copyBest: 'Es la opción de mejor coste entre las cajas introducidas.', invalidRule: 'Introduce un divisor mayor que 0',
     boxes: [['Sobre fino', 30, 25, 8, 0.40], ['Caja pequeña', 35, 25, 15, 0.70], ['Caja mediana', 46, 36, 30, 1.20]],
   },
 } as const;
@@ -43,6 +43,9 @@ const d = metric
   ? { product: [28, 20, 5], current: [46, 36, 30], weight: 3.5, perWeight: locale === 'pt-br' ? 8 : 2 }
   : { product: [11, 8, 2], current: [18, 14, 12], weight: 8, perWeight: 1 };
 const formatterLocale = locale === 'pt-br' ? 'pt-BR' : locale;
+const inputNumber = new Intl.NumberFormat(formatterLocale, { maximumFractionDigits: 4, minimumFractionDigits: 0, useGrouping: false });
+const iv = (value: number | string) => inputNumber.format(Number(value));
+const money2 = new Intl.NumberFormat(formatterLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false });
 const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join(',')).join('\n')}`;
 ---
 
@@ -62,20 +65,20 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
 
       <span class="form-group-label">{t.productSize}</span>
       <div class="dimension-grid">
-        <label class="field"><span>{t.length} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="productLength" inputmode="decimal" type="number" min="0" step="0.1" value={d.product[0]} /></label>
-        <label class="field"><span>{t.width} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="productWidth" inputmode="decimal" type="number" min="0" step="0.1" value={d.product[1]} /></label>
-        <label class="field"><span>{t.height} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="productHeight" inputmode="decimal" type="number" min="0" step="0.1" value={d.product[2]} /></label>
+        <label class="field"><span>{t.length} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="productLength" inputmode="decimal" type="text" autocomplete="off" value={iv(d.product[0])} /></label>
+        <label class="field"><span>{t.width} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="productWidth" inputmode="decimal" type="text" autocomplete="off" value={iv(d.product[1])} /></label>
+        <label class="field"><span>{t.height} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="productHeight" inputmode="decimal" type="text" autocomplete="off" value={iv(d.product[2])} /></label>
       </div>
 
       <span class="form-group-label spaced-label">{t.currentPackage}</span>
       <div class="dimension-grid">
-        <label class="field"><span>{t.length} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="currentLength" inputmode="decimal" type="number" min="0" step="0.1" value={d.current[0]} /></label>
-        <label class="field"><span>{t.width} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="currentWidth" inputmode="decimal" type="number" min="0" step="0.1" value={d.current[1]} /></label>
-        <label class="field"><span>{t.height} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="currentHeight" inputmode="decimal" type="number" min="0" step="0.1" value={d.current[2]} /></label>
+        <label class="field"><span>{t.length} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="currentLength" inputmode="decimal" type="text" autocomplete="off" value={iv(d.current[0])} /></label>
+        <label class="field"><span>{t.width} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="currentWidth" inputmode="decimal" type="text" autocomplete="off" value={iv(d.current[1])} /></label>
+        <label class="field"><span>{t.height} <b data-opt-dimension-unit>{dimUnit}</b></span><input name="currentHeight" inputmode="decimal" type="text" autocomplete="off" value={iv(d.current[2])} /></label>
       </div>
       <div class="two-column-fields optimizer-core-fields">
-        <label class="field"><span>{t.scaleWeight} <b data-opt-weight-unit>{weightUnit}</b></span><input name="actualWeight" inputmode="decimal" type="number" min="0" step="0.1" value={d.weight} /></label>
-        <label class="field"><span>{t.shippingPer} <b data-opt-weight-unit>{weightUnit}</b></span><input name="costPerWeight" inputmode="decimal" type="number" min="0" step="0.01" value={d.perWeight} /></label>
+        <label class="field"><span>{t.scaleWeight} <b data-opt-weight-unit>{weightUnit}</b></span><input name="actualWeight" inputmode="decimal" type="text" autocomplete="off" value={iv(d.weight)} /></label>
+        <label class="field"><span>{t.shippingPer} <b data-opt-weight-unit>{weightUnit}</b></span><input name="costPerWeight" inputmode="decimal" type="text" autocomplete="off" value={iv(d.perWeight)} /></label>
       </div>
 
       <div class="optimizer-catalogue-heading">
@@ -95,12 +98,12 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
           <span class="optional-pill">{t.optional}</span>
         </summary>
         <div class="cost-grid">
-          <label class="field"><span>{t.currency}</span><select name="currency"><option selected={locale === 'en'}>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option selected={locale === 'pt-br'}>BRL</option><option>CAD</option><option>AUD</option></select></label>
-          <label class="field"><span>{t.monthlyOrders}</span><input name="monthlyOrders" inputmode="numeric" type="number" min="1" step="1" value="100" /></label>
-          <label class="field"><span>{t.currentPackagingCost}</span><input name="currentPackagingCost" inputmode="decimal" type="number" min="0" step="0.01" value="1.20" /></label>
-          <label class="field"><span>{t.productCost}</span><input name="productCost" inputmode="decimal" type="number" min="0" step="0.01" value="20" /></label>
-          <label class="field"><span>{t.otherFees}</span><input name="feesPerOrder" inputmode="decimal" type="number" min="0" step="0.01" value="4" /></label>
-          <label class="field"><span>{t.targetMargin}</span><input name="targetMargin" inputmode="decimal" type="number" min="0" max="99" step="0.1" value="30" /></label>
+          <label class="field"><span>{t.currency}</span><select name="currency">{['USD', 'EUR', 'GBP', 'INR', 'BRL', 'MXN', 'CAD', 'AUD', 'COP', 'CLP'].map((code) => <option selected={code === (locale === 'pt-br' ? 'BRL' : locale === 'es' ? 'EUR' : 'USD')}>{code}</option>)}</select></label>
+          <label class="field"><span>{t.monthlyOrders}</span><input name="monthlyOrders" inputmode="numeric" type="text" autocomplete="off" value="100" /></label>
+          <label class="field"><span>{t.currentPackagingCost}</span><input name="currentPackagingCost" inputmode="decimal" type="text" autocomplete="off" value={money2.format(1.2)} /></label>
+          <label class="field"><span>{t.productCost}</span><input name="productCost" inputmode="decimal" type="text" autocomplete="off" value="20" /></label>
+          <label class="field"><span>{t.otherFees}</span><input name="feesPerOrder" inputmode="decimal" type="text" autocomplete="off" value="4" /></label>
+          <label class="field"><span>{t.targetMargin}</span><input name="targetMargin" inputmode="decimal" type="text" autocomplete="off" value="30" /></label>
         </div>
       </details>
 
@@ -110,11 +113,11 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
         </summary>
         <div class="two-column-fields advanced-fields">
           <label class="field"><span>{t.rule}</span><select name="preset">{group.map((key) => <option value={key} selected={key === defaultKey}>{presetLabels[key] ?? PRESETS[key as keyof typeof PRESETS].label}</option>)}<option value="custom">{t.custom}</option></select></label>
-          <label class="field"><span>{t.divisor}</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value={rule.divisor} /></label>
+          <label class="field"><span>{t.divisor}</span><input name="divisor" inputmode="decimal" type="text" autocomplete="off" value={iv(rule.divisor)} /></label>
         </div>
         <div class="two-column-fields advanced-fields">
           <label class="field"><span>{t.dimRounding}</span><select name="dimRounding">{[["up", t.roundUp], ["nearest", t.roundNearest], ["none", t.roundNone]].map(([value, label]) => <option value={value} selected={value === rule.dimRounding}>{label}</option>)}</select></label>
-          <label class="field"><span>{t.threshold}</span><input name="dimThreshold" inputmode="numeric" type="number" min="0" step="1" value={rule.dimThreshold} /></label>
+          <label class="field"><span>{t.threshold}</span><input name="dimThreshold" inputmode="numeric" type="text" autocomplete="off" value={iv(rule.dimThreshold)} /></label>
         </div>
       </details>
 
@@ -126,23 +129,23 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
       <div class="optimizer-winner">
         <span>{t.use}</span>
         <h2 data-opt-result="name">{t.boxes[0][0]}</h2>
-        <p><b data-opt-result="billable">8</b> <span data-opt-weight-unit>lb</span> {t.billable} · <b data-opt-result="validCount">3</b> {t.boxesFit}</p>
+        <p><b data-opt-result="billable">–</b> <span data-opt-weight-unit>{weightUnit}</span> {t.billable} · <b data-opt-result="validCount">–</b> {t.boxesFit}</p>
       </div>
 
       <div class="optimizer-savings">
-        <article><span>{t.weightAvoided}</span><strong><b data-opt-result="weightSavings">14</b> <small data-opt-weight-unit>lb</small></strong><small>{t.perShipment}</small></article>
-        <article><span>{t.savings}</span><strong data-opt-result="monthlySavings">$1,455</strong><small>{t.perMonth}</small></article>
+        <article><span>{t.weightAvoided}</span><strong><b data-opt-result="weightSavings">–</b> <small data-opt-weight-unit>{weightUnit}</small></strong><small>{t.perShipment}</small></article>
+        <article><span>{t.savings}</span><strong data-opt-result="monthlySavings">–</strong><small>{t.perMonth}</small></article>
       </div>
 
       <div class="optimizer-compare">
-        <div><span>{t.currentPackage}</span><strong><b data-opt-result="currentBillable">22</b> <small data-opt-weight-unit>lb</small></strong></div>
+        <div><span>{t.currentPackage}</span><strong><b data-opt-result="currentBillable">–</b> <small data-opt-weight-unit>{weightUnit}</small></strong></div>
         <span aria-hidden="true">→</span>
-        <div><span>{t.selectedBox}</span><strong><b data-opt-result="bestBillable">8</b> <small data-opt-weight-unit>lb</small></strong></div>
+        <div><span>{t.selectedBox}</span><strong><b data-opt-result="bestBillable">–</b> <small data-opt-weight-unit>{weightUnit}</small></strong></div>
       </div>
 
       <div class="minimum-price-card">
         <span>{t.minimumPrice} <b data-opt-result="targetMargin">30</b>% {t.targetSuffix}</span>
-        <strong data-opt-result="minimumPrice">$46.64</strong>
+        <strong data-opt-result="minimumPrice">–</strong>
         <small>{t.includes}</small>
       </div>
 
@@ -160,7 +163,7 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
 
 <script>
   // @ts-nocheck -- browser-only progressive enhancement.
-  import { PRESETS, defaultPresetFor, formatNumber as formatNumberRaw, optimizeBoxes, parseBoxes } from '../lib/shipping.mjs';
+  import { IN3_PER_LB_TO_CM3_PER_KG, PRESETS, defaultPresetFor, formatNumber as formatNumberRaw, optimizeBoxes, parseBoxes, parseLocaleNumber } from '../lib/shipping.mjs';
 
   document.querySelectorAll('[data-box-optimizer]').forEach((root) => {
     const form = root.querySelector('[data-optimizer-form]');
@@ -173,23 +176,57 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
     let lastResult;
     let selectedBoxKey = '';
     const value = (name) => form.elements.namedItem(name)?.value ?? '';
+    // Number fields accept 1.5 and 1,5; the page's decimal mark decides "5,000" vs "5.000".
+    const decimalMark = new Intl.NumberFormat(formatterLocale).format(1.5).includes(',') ? ',' : '.';
+    const inputFormat = new Intl.NumberFormat(formatterLocale, { maximumFractionDigits: 2, useGrouping: false });
+    // Converted values are shown rounded; the exact value is kept while the field still shows that text.
+    const exact = new Map();
+    const numberValue = (name) => {
+      const raw = value(name);
+      const kept = exact.get(name);
+      if (kept && kept.text === raw) return kept.value;
+      const parsed = parseLocaleNumber(raw, decimalMark);
+      return parsed === undefined || Number.isNaN(parsed) ? '' : parsed;
+    };
+    const setInput = (name, next, digits = 2) => {
+      const control = form.elements.namedItem(name);
+      if (!(control instanceof HTMLInputElement)) return;
+      if (next === '') { control.value = ''; exact.delete(name); return; }
+      const text = new Intl.NumberFormat(formatterLocale, { maximumFractionDigits: digits, useGrouping: false }).format(Number(next));
+      control.value = text;
+      exact.set(name, { text, value: Number(next) });
+    };
+    // The last carrier preset chosen. A custom rule keeps its weight step and special conditions,
+    // because the optimizer has no field for them.
+    let activeRule = PRESETS[value('preset')] ?? null;
     const put = (name, output) => root.querySelectorAll(`[data-opt-result="${name}"]`).forEach((el) => { el.textContent = String(output); });
     const currency = () => String(value('currency') || 'USD').toUpperCase();
     const money = (amount) => new Intl.NumberFormat(formatterLocale, { style: 'currency', currency: currency(), maximumFractionDigits: 2 }).format(amount || 0);
 
-    const collect = () => ({
-      unit: value('unit'), productLength: value('productLength'), productWidth: value('productWidth'), productHeight: value('productHeight'),
-      currentLength: value('currentLength'), currentWidth: value('currentWidth'), currentHeight: value('currentHeight'), actualWeight: value('actualWeight'),
-      costPerWeight: value('costPerWeight'), monthlyOrders: value('monthlyOrders'), currentPackagingCost: value('currentPackagingCost'),
-      productCost: value('productCost'), feesPerOrder: value('feesPerOrder'), targetMargin: value('targetMargin'),
-      divisor: value('divisor'), billableStep: PRESETS[value('preset')]?.billableStep ?? (value('unit') === 'metric' ? 0.5 : 1),
-      dimRounding: value('dimRounding'), dimThreshold: value('dimThreshold'),
-      boxes: parseBoxes(value('boxes')),
-      selectedBoxKey,
-    });
+    const NUMBER_FIELDS = ['productLength', 'productWidth', 'productHeight', 'currentLength', 'currentWidth', 'currentHeight', 'actualWeight', 'costPerWeight', 'monthlyOrders', 'currentPackagingCost', 'productCost', 'feesPerOrder', 'targetMargin', 'divisor', 'dimThreshold'];
+    const collect = () => {
+      const data = { unit: value('unit'), dimRounding: value('dimRounding'), boxes: parseBoxes(value('boxes')), selectedBoxKey };
+      NUMBER_FIELDS.forEach((name) => { data[name] = numberValue(name); });
+      const sameUnit = activeRule && activeRule.unit === data.unit;
+      data.billableStep = sameUnit ? activeRule.billableStep : (data.unit === 'metric' ? 0.5 : 1);
+      if (sameUnit) {
+        data.dimExemptBelowWeight = activeRule.dimExemptBelowWeight ?? 0;
+        data.dimExemptInclusive = Boolean(activeRule.dimExemptInclusive);
+        data.dimMinLongestSide = activeRule.dimMinLongestSide ?? 0;
+        data.packagingWeight = activeRule.packagingWeight ?? 0;
+      }
+      return data;
+    };
 
     const render = () => {
       lastResult = optimizeBoxes(collect());
+      if (!lastResult.current.hasRule) {
+        ['validCount', 'currentBillable', 'weightSavings', 'monthlySavings', 'minimumPrice', 'billable', 'bestBillable'].forEach((name) => put(name, '–'));
+        put('name', copy.invalidRule);
+        const list = root.querySelector('[data-candidate-list]');
+        if (list) list.innerHTML = '';
+        return lastResult;
+      }
       const unit = lastResult.current.unit === 'metric' ? 'kg' : 'lb';
       const dimensionUnit = lastResult.current.unit === 'metric' ? 'cm' : 'in';
       root.querySelectorAll('[data-opt-weight-unit]').forEach((el) => { el.textContent = unit; });
@@ -220,15 +257,17 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
 
     const updatePreset = () => {
       const selected = PRESETS[value('preset')];
-      if (!selected) return;
-      const divisor = form.elements.namedItem('divisor');
-      if (divisor instanceof HTMLInputElement) divisor.value = String(selected.divisor);
+      unitMemory = null;
+      if (!selected) { render(); return; }
+      activeRule = selected;
+      // A carrier in the other unit system: describe the same parcel and boxes in its units first.
+      if (selected.unit !== value('unit')) convertUnits(selected.unit === 'metric');
+      setInput('divisor', selected.divisor, 4);
       const radio = form.querySelector(`input[name="unit"][value="${selected.unit}"]`);
       if (radio instanceof HTMLInputElement) radio.checked = true;
       const rounding = form.elements.namedItem('dimRounding');
       if (rounding instanceof HTMLSelectElement) rounding.value = selected.dimRounding;
-      const threshold = form.elements.namedItem('dimThreshold');
-      if (threshold instanceof HTMLInputElement) threshold.value = String(selected.dimThreshold);
+      setInput('dimThreshold', selected.dimThreshold, 4);
       render();
     };
 
@@ -236,6 +275,7 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
       form.elements.namedItem(name)?.addEventListener('change', () => {
         const preset = form.elements.namedItem('preset');
         if (preset instanceof HTMLSelectElement) preset.value = 'custom';
+        render();
       });
     });
 
@@ -247,13 +287,14 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
     const readRowsFromCsv = () => {
       const field = boxesField();
       editorRows = parseBoxes(field instanceof HTMLTextAreaElement ? field.value : '').map((box) => ({
-        name: String(box.name), length: String(box.length), width: String(box.width), height: String(box.height), cost: String(box.cost),
+        name: String(box.name), length: inputFormat.format(box.length), width: inputFormat.format(box.width), height: inputFormat.format(box.height), cost: inputFormat.format(box.cost),
       }));
     };
     const writeCsv = () => {
       const field = boxesField();
       if (!(field instanceof HTMLTextAreaElement)) return;
-      field.value = `name,length,width,height,cost\n${editorRows.map((row) => [String(row.name).replaceAll(',', ' '), row.length, row.width, row.height, row.cost].join(',')).join('\n')}`;
+      const quote = (text) => (/[",;\n]/.test(text) ? `"${String(text).replaceAll('"', '""')}"` : text);
+      field.value = `name;length;width;height;cost\n${editorRows.map((row) => [quote(String(row.name)), row.length, row.width, row.height, row.cost].join(';')).join('\n')}`;
     };
     const makeField = (row, key, className, isNumber) => {
       const label = document.createElement('label');
@@ -262,7 +303,7 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
       caption.textContent = editorLabels[key] || key;
       const input = document.createElement('input');
       input.value = row[key];
-      if (isNumber) { input.type = 'number'; input.min = '0'; input.step = 'any'; input.inputMode = 'decimal'; }
+      if (isNumber) { input.type = 'text'; input.inputMode = 'decimal'; input.autocomplete = 'off'; }
       else { input.type = 'text'; input.autocomplete = 'off'; }
       input.addEventListener('input', () => { row[key] = input.value; writeCsv(); });
       label.append(caption, input);
@@ -301,13 +342,74 @@ const boxCsv = `name,length,width,height,cost\n${t.boxes.map((box) => box.join('
     syncEditorFromCsv();
 
     form.addEventListener('input', render);
-    form.addEventListener('reset', () => { selectedBoxKey = ''; setTimeout(() => { syncEditorFromCsv(); updatePreset(); }); });
+    form.addEventListener('reset', () => { selectedBoxKey = ''; setTimeout(() => { exact.clear(); syncEditorFromCsv(); updatePreset(); }); });
     form.elements.namedItem('preset')?.addEventListener('change', updatePreset);
+    // Remember everything before a unit switch, so switching straight back restores it exactly.
+    let unitMemory = null;
+    const UNIT_FIELDS = ['productLength', 'productWidth', 'productHeight', 'currentLength', 'currentWidth', 'currentHeight', 'actualWeight', 'costPerWeight', 'boxes', 'divisor', 'dimThreshold', 'dimRounding', 'preset'];
+    const snapshot = () => ({
+      fields: Object.fromEntries(UNIT_FIELDS.map((name) => [name, value(name)])),
+      exact: new Map(exact),
+      rows: editorRows.map((row) => ({ ...row, exact: { ...(row.exact || {}) } })),
+      activeRule,
+    });
     form.querySelectorAll('input[name="unit"]').forEach((radio) => radio.addEventListener('change', () => {
+      const toMetric = radio.value === 'metric';
+      const before = snapshot();
+      if (unitMemory && unitMemory.unit === radio.value && UNIT_FIELDS.every((name) => before.fields[name] === unitMemory.written.fields[name])) {
+        const saved = unitMemory.original;
+        UNIT_FIELDS.forEach((name) => { const control = form.elements.namedItem(name); if (control) control.value = saved.fields[name]; });
+        exact.clear(); saved.exact.forEach((entry, name) => exact.set(name, entry));
+        editorRows = saved.rows; renderEditor();
+        activeRule = saved.activeRule;
+        unitMemory = null;
+        render();
+        return;
+      }
+      convertUnits(toMetric);
       const preset = form.elements.namedItem('preset');
-      if (preset instanceof HTMLSelectElement) preset.value = defaultPresetFor(radio.value, group);
-      updatePreset();
+      const next = defaultPresetFor(radio.value, group);
+      if (preset instanceof HTMLSelectElement) preset.value = next;
+      if (PRESETS[next]) {
+        activeRule = PRESETS[next];
+        setInput('divisor', activeRule.divisor, 4);
+        setInput('dimThreshold', activeRule.dimThreshold, 4);
+        const rounding = form.elements.namedItem('dimRounding');
+        if (rounding instanceof HTMLSelectElement) rounding.value = activeRule.dimRounding;
+      } else {
+        // No preset for this unit: convert the current rule so the answer stays comparable.
+        const divisorNow = Number(numberValue('divisor')) || 0;
+        const thresholdNow = Number(numberValue('dimThreshold')) || 0;
+        setInput('divisor', toMetric ? divisorNow * IN3_PER_LB_TO_CM3_PER_KG : divisorNow / IN3_PER_LB_TO_CM3_PER_KG, 0);
+        setInput('dimThreshold', toMetric ? thresholdNow * 16.387064 : thresholdNow / 16.387064, 0);
+      }
+      render();
+      unitMemory = { unit: toMetric ? 'imperial' : 'metric', original: before, written: snapshot() };
     }));
+    function convertUnits(toMetric) {
+      const length = (n) => (toMetric ? n * 2.54 : n / 2.54);
+      ['productLength', 'productWidth', 'productHeight', 'currentLength', 'currentWidth', 'currentHeight'].forEach((name) => {
+        const current = numberValue(name);
+        if (current !== '') setInput(name, length(current));
+      });
+      const weight = numberValue('actualWeight');
+      if (weight !== '') setInput('actualWeight', toMetric ? weight / 2.2046226 : weight * 2.2046226);
+      const perWeight = numberValue('costPerWeight');
+      if (perWeight !== '') setInput('costPerWeight', toMetric ? perWeight * 2.2046226 : perWeight / 2.2046226);
+      editorRows.forEach((row) => {
+        row.exact ||= {};
+        ['length', 'width', 'height'].forEach((key) => {
+          const kept = row.exact[key];
+          const current = kept && kept.text === row[key] ? kept.value : parseLocaleNumber(row[key], decimalMark);
+          if (!Number.isFinite(current)) return;
+          const next = length(current);
+          row[key] = inputFormat.format(next);
+          row.exact[key] = { text: row[key], value: next };
+        });
+      });
+      writeCsv();
+      renderEditor();
+    }
     root.querySelector('[data-load-boxes]')?.addEventListener('click', () => {
       const boxes = form.elements.namedItem('boxes');
       if (boxes instanceof HTMLTextAreaElement) boxes.value = defaultBoxes;

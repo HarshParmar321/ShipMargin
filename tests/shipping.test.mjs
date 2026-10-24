@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PRESETS, PRESET_GROUPS, boxFits, calculatePackage, decodeShareParams, encodeShareParams, optimizeBoxes, parseAuditCsv, parseBoxes } from '../src/lib/shipping.mjs';
+import { PRESETS, PRESET_GROUPS, PRESET_SOURCES, MAX_CSV_ROWS, boxFits, calculatePackage, decodeShareParams, encodeShareParams, optimizeBoxes, parseAuditCsv, parseAuditCsvDetailed, parseBoxes, parseCsvTable, parseLocaleNumber, parseMeasure, presetExtras } from '../src/lib/shipping.mjs';
 
 test('calculates imperial dimensional and billable weight', () => {
   const result = calculatePackage({
@@ -129,8 +129,10 @@ test('UPS Retail divisor 166', () => {
   assert.equal(result.billableWeight, 19);
 });
 
-test('FedEx defaults to round-up; nearest-whole mode is available', () => {
-  const up = withPreset('fedex139', { length: 10.4, width: 10.4, height: 10.4, actualWeight: 1 });
+test('FedEx US rounds each side to the nearest inch (fedex.com/en-us); round-up mode is available', () => {
+  const nearestDefault = withPreset('fedex139', { length: 10.4, width: 10.4, height: 10.6, actualWeight: 1 });
+  assert.deepEqual(nearestDefault.dimensions, [10, 10, 11]);
+  const up = withPreset('fedex139', { length: 10.4, width: 10.4, height: 10.4, actualWeight: 1, dimRounding: 'up' });
   assert.deepEqual(up.dimensions, [11, 11, 11]);
   const nearest = withPreset('fedex139', { length: 10.4, width: 10.4, height: 10.6, actualWeight: 1, dimRounding: 'nearest' });
   assert.deepEqual(nearest.dimensions, [10, 10, 11]);
@@ -184,7 +186,7 @@ test('suggested smaller carton really reaches scale weight after rounding', () =
 test('share links round-trip every preset and reproduce the same answer', () => {
   const pkg = { length: 12.1, width: 12, height: 11.5, actualWeight: 3, quantity: 2 };
   for (const [key, rule] of Object.entries(PRESETS)) {
-    const state = { ...pkg, preset: key, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep };
+    const state = { ...pkg, preset: key, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep, dimExemptBelowWeight: rule.dimExemptBelowWeight ?? 0 };
     const decoded = decodeShareParams(encodeShareParams(state));
     assert.deepEqual(decoded, state, `round trip failed for ${key}`);
     assert.equal(calculatePackage(decoded).billableWeight, calculatePackage(state).billableWeight);
@@ -273,4 +275,159 @@ test('UPS UK rounds dimensions to the nearest cm and weight up to 0.5 kg', () =>
 
 test('Correos de México rounds up to the next whole kg', () => {
   assert.equal(withPreset('mexpost', { length: 40, width: 30, height: 21, actualWeight: 1 }).billableWeight, 5); // 4.2 -> 5
+});
+
+const withRule = (key, pkg) => calculatePackage({ ...PRESETS[key], ...pkg });
+
+test('Australia Post: no cubic charge under 1 kg actual weight (non-contract rule)', () => {
+  const light = withRule('auspost', { length: 50.5, width: 40.3, height: 30.9, actualWeight: 0.5 });
+  assert.equal(light.billableWeight, 0.5);
+  assert.equal(light.exemptByWeight, true);
+  assert.equal(light.isDimensional, false);
+  assert.equal(withRule('auspost', { length: 50, width: 40, height: 30, actualWeight: 1 }).billableWeight, 15);
+  assert.equal(withRule('auspost', { length: 50, width: 40, height: 30, actualWeight: 4 }).billableWeight, 15);
+});
+
+test('StarTrack rounds chargeable weight up to the next whole kg (terms clause 4.9)', () => {
+  assert.equal(withRule('startrack', { length: 50.5, width: 40.3, height: 30.9, actualWeight: 0.5 }).billableWeight, 16);
+  // Worked example from the StarTrack terms: 0.40 × 0.30 × 0.55 m → 16.5 kg → 17 kg.
+  assert.equal(withRule('startrack', { length: 40, width: 30, height: 55, actualWeight: 1 }).billableWeight, 17);
+  // Fixed Price Premium uses 190 kg/m³: 0.06 m³ → 11.4 → 12 kg.
+  assert.equal(withRule('startrackFpp', { length: 50, width: 40, height: 30, actualWeight: 4 }).billableWeight, 12);
+});
+
+test('Aramex Australia is a separate preset at 250 kg/m³', () => {
+  assert.ok(PRESET_GROUPS.au.includes('aramexAu'));
+  assert.equal(withRule('aramexAu', { length: 50, width: 40, height: 30, actualWeight: 4 }).billableWeight, 15);
+});
+
+test('Delhivery: flyers under 1 kg use dead weight, boxes use volumetric weight', () => {
+  assert.equal(withRule('delhiveryFlyer', { length: 35, width: 30, height: 3, actualWeight: 0.4 }).billableWeight, 0.4);
+  assert.ok(Math.abs(withRule('delhivery', { length: 35, width: 30, height: 3, actualWeight: 0.4 }).billableWeight - 0.7) < 1e-9);
+  assert.ok(Math.abs(withRule('delhiveryFlyer', { length: 35, width: 30, height: 10, actualWeight: 1.2 }).billableWeight - 2.1) < 1e-9);
+});
+
+test('light-parcel exemption survives share links', () => {
+  const query = encodeShareParams({ preset: 'custom', unit: 'metric', divisor: 4000, dimExemptBelowWeight: 1, length: 50, width: 40, height: 30, actualWeight: 0.5 });
+  const decoded = decodeShareParams(query);
+  assert.equal(decoded.dimExemptBelowWeight, 1);
+  assert.equal(decodeShareParams('p=auspost&l=50&w=40&h=30&wt=0.5').dimExemptBelowWeight, 1);
+});
+
+test('every preset has an official source link', () => {
+  Object.keys(PRESETS).filter((key) => !key.startsWith('metric')).forEach((key) => assert.match(PRESET_SOURCES[key] ?? '', /^https:\/\//, key));
+});
+
+test('numbers in any common format', () => {
+  assert.equal(parseLocaleNumber('1,5'), 1.5);
+  assert.equal(parseLocaleNumber('1.5'), 1.5);
+  assert.equal(parseLocaleNumber('1.234,5'), 1234.5);
+  assert.equal(parseLocaleNumber('1,234.5'), 1234.5);
+  assert.equal(parseLocaleNumber('1 234,5'), 1234.5);
+  assert.equal(parseLocaleNumber(''), undefined);
+  assert.ok(Number.isNaN(parseLocaleNumber('abc')));
+});
+
+test('CSV: quoted fields with commas, escaped quotes and line breaks', () => {
+  const table = parseCsvTable('name,note\n"Large box, blue","He said ""hi"""\n"multi\nline",x\r\n');
+  assert.deepEqual(table, [['name', 'note'], ['Large box, blue', 'He said "hi"'], ['multi\nline', 'x']]);
+});
+
+test('CSV: semicolon files with decimal commas (Excel in Brazil and Europe)', () => {
+  const { rows, errors, delimiter } = parseAuditCsvDetailed('sku;length;width;height;weight;quantity\n"Caixa grande, azul";50;40;30;2,5;3');
+  assert.equal(delimiter, ';');
+  assert.deepEqual(errors, []);
+  assert.deepEqual(rows[0], { sku: 'Caixa grande, azul', length: 50, width: 40, height: 30, actualWeight: 2.5, quantity: 3 });
+});
+
+test('CSV: Portuguese and Spanish headers', () => {
+  assert.equal(parseAuditCsv('SKU;Comprimento (cm);Largura (cm);Altura (cm);Peso (kg);Quantidade\nA;50;40;30;2;1')[0].width, 40);
+  assert.equal(parseAuditCsv('SKU;Largo;Ancho;Alto;Peso;Cantidad\nA;50;40;30;2;1')[0].length, 50);
+});
+
+test('CSV: WooCommerce and Shopify style exports', () => {
+  const woo = parseAuditCsv('ID,Type,SKU,Name,"Weight (kg)","Length (cm)","Width (cm)","Height (cm)"\n1,simple,MUG-1,"Mug, red",0.4,12,10,10');
+  assert.deepEqual(woo[0], { sku: 'MUG-1', length: 12, width: 10, height: 10, actualWeight: 0.4, quantity: 1 });
+  const shopify = parseAuditCsv('Handle,Title,Variant SKU,Variant Grams,Length,Width,Height\ntee,T-shirt,TEE-M,250,30,25,3');
+  assert.equal(shopify[0].actualWeight, 0.25);
+  assert.equal(shopify[0].sku, 'TEE-M');
+});
+
+test('CSV: row-specific errors and limits', () => {
+  const { rows, errors } = parseAuditCsvDetailed('sku,length,width,height,weight,quantity\nOK,10,10,10,1,1\nBAD,0,10,10,1,1\nW,10,10,10,abc,1\nQ,10,10,10,1,xyz');
+  assert.equal(rows.length, 1);
+  assert.deepEqual(errors, [{ row: 3, reason: 'dims' }, { row: 4, reason: 'weight' }, { row: 5, reason: 'qty' }]);
+  const big = 'sku,length,width,height,weight,quantity\n' + 'A,1,1,1,1,1\n'.repeat(MAX_CSV_ROWS + 1);
+  assert.equal(parseAuditCsvDetailed(big).tooLarge, true);
+});
+
+test('box list CSV handles quoted names and decimal commas', () => {
+  assert.deepEqual(parseBoxes('nome;comprimento;largura;altura;custo\n"Caixa, pequena";20;15;10;0,45'), [{ name: 'Caixa, pequena', length: 20, width: 15, height: 10, cost: 0.45 }]);
+});
+
+test('Amazon FBA Brasil adds 20 g of packaging before comparing', () => {
+  const r = withRule('amazonBr', { length: 10, width: 10, height: 10, actualWeight: 0.5 });
+  assert.equal(r.actualWeight, 0.6); // 0.52 kg -> next 0.1 kg
+});
+
+test('Chilexpress only applies volumetric weight when a side is over 60 cm', () => {
+  assert.equal(withRule('chilexpress', { length: 50, width: 40, height: 30, actualWeight: 1 }).billableWeight, 1);
+  assert.equal(withRule('chilexpress', { length: 61, width: 40, height: 30, actualWeight: 1 }).billableWeight, 18.3);
+  assert.equal(withRule('chilexpress', { length: 60, width: 40, height: 30, actualWeight: 1 }).billableWeight, 1);
+});
+
+test('Delhivery flyer: dead weight up to and including 1 kg', () => {
+  assert.equal(withRule('delhiveryFlyer', { length: 50, width: 40, height: 5, actualWeight: 1 }).billableWeight, 1);
+  assert.equal(withRule('delhiveryFlyer', { length: 50, width: 40, height: 5, actualWeight: 1.05 }).billableWeight, 2);
+});
+
+test('no floating-point noise in 0.1 steps, and absurd input stays finite', () => {
+  const r = calculatePackage({ unit: 'metric', divisor: 5000, billableStep: 0.1, dimRounding: 'none', length: 30, width: 20, height: 10, actualWeight: 0.3 });
+  assert.equal(r.dimWeight, 1.2);
+  assert.equal(r.airWeight, 0.9);
+  const huge = calculatePackage({ unit: 'metric', divisor: 5000, length: 1e120, width: 1e120, height: 1e120, actualWeight: 1 });
+  assert.ok(Number.isFinite(huge.billableWeight));
+});
+
+test('CSV cells with units are converted, not dropped', () => {
+  const { rows, errors } = parseAuditCsvDetailed('sku,length,width,height,weight,quantity\nG,30,20,10,500g,1\nI,12in,10in,4in,2lb,1\nS,10,10,10,5stone,1', { unit: 'metric' });
+  assert.equal(rows[0].actualWeight, 0.5);
+  assert.equal(rows[1].length, 30.48);
+  assert.equal(rows[1].actualWeight, 0.907185);
+  assert.deepEqual(errors, [{ row: 4, reason: 'weight' }]);
+  assert.equal(parseMeasure('500g', 'weight', 'imperial'), 1.102311);
+  assert.equal(parseMeasure('1.250', 'weight', 'metric', 'g'), 1.25);
+});
+
+test('CSV header units and unknown headers', () => {
+  const rows = parseAuditCsv('sku,length (in),width (in),height (in),weight (lb)\nA,12,10,8,4', { unit: 'metric' });
+  assert.equal(rows[0].length, 30.48);
+  assert.deepEqual(parseAuditCsvDetailed('name,price,stock\nmug,10,5').errors, [{ row: 1, reason: 'header' }]);
+});
+
+test('preset-only rules are exposed for the UI', () => {
+  assert.equal(presetExtras('amazonBr').packagingWeight, 0.02);
+  assert.equal(presetExtras('chilexpress').dimMinLongestSide, 60);
+  assert.equal(presetExtras('delhiveryFlyer').dimExemptInclusive, true);
+  assert.deepEqual(presetExtras('custom'), {});
+});
+
+test('thousands vs decimal follows the page decimal mark', () => {
+  assert.equal(parseLocaleNumber('5,000', '.'), 5000);
+  assert.equal(parseLocaleNumber('5.000', ','), 5000);
+  assert.equal(parseLocaleNumber('1.728', '.'), 1.728);
+  assert.equal(parseLocaleNumber('1,728', ','), 1.728);
+  assert.equal(parseLocaleNumber('1,5', '.'), 1.5);
+  assert.ok(Number.isNaN(parseLocaleNumber('1.2.3', '.')));
+  assert.ok(Number.isNaN(parseLocaleNumber('1e3', '.')));
+  // CSV: semicolon files use a decimal comma, so 1.250 in a weight column is 1250.
+  assert.equal(parseAuditCsv('sku;length;width;height;weight\nA;10;10;10;1.250')[0].actualWeight, 1250);
+  assert.equal(parseAuditCsv('sku,length,width,height,weight\nA,10,10,10,1.250')[0].actualWeight, 1.25);
+});
+
+test('an empty or zero divisor is reported, not replaced by 1', () => {
+  assert.equal(calculatePackage({ unit: 'imperial', divisor: '', length: 10, width: 10, height: 10, actualWeight: 1 }).hasRule, false);
+  assert.equal(calculatePackage({ unit: 'imperial', divisor: 0, length: 10, width: 10, height: 10, actualWeight: 1 }).hasRule, false);
+  assert.equal(calculatePackage({ unit: 'imperial', divisor: 139, length: 10, width: 10, height: 10, actualWeight: 1 }).hasRule, true);
+  assert.ok(calculatePackage({ unit: 'imperial', length: 10, width: 10, height: 10, actualWeight: 1, quantity: 1e308 }).totalBillableWeight < Infinity);
 });

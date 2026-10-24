@@ -11,7 +11,7 @@ const faq: [string, string][] = [
   ['When did USPS change its dimensional weight rules?', 'The new rules took effect on 12 July 2026, as published in USPS Postal Bulletin 22705.'],
   ['What is the USPS dimensional weight divisor now?', 'USPS now divides the package volume in cubic inches by 139. Before 12 July 2026 the divisor was 166, so the same box now has a higher dimensional weight.'],
   ['Does USPS charge dimensional weight on every package?', 'No. USPS only applies dimensional weight to parcels larger than one cubic foot (1,728 cubic inches). Parcels at or below that size are priced by their actual weight.'],
-  ['Which USPS services use dimensional weight?', 'Priority Mail Express, Priority Mail, USPS Ground Advantage (retail and commercial) and Parcel Select, for zones 1 to 9, according to the Postal Bulletin notice.'],
+  ['Which USPS services use dimensional weight?', 'Priority Mail Express, Priority Mail and USPS Ground Advantage (retail and commercial) for zones 1 to 9, and Parcel Select Destination Entry parcels over 1 cubic foot, according to the Postal Bulletin notice.'],
   ['How does USPS round package measurements?', 'Each measurement is rounded up to the next whole inch before the volume is calculated, and the dimensional weight is rounded up to the next whole pound. A side of 12.1 inches counts as 13 inches.'],
   ['Is a 12 × 12 × 12 inch box charged by dimensional weight at USPS?', 'No. 12 × 12 × 12 is exactly 1,728 cubic inches, which is not larger than one cubic foot, so it is priced by actual weight. If any side measures even slightly over 12 inches, it is rounded up and dimensional weight applies.'],
   ['Why did my USPS label cost more after July 2026?', 'For parcels over one cubic foot, the lower divisor (139 instead of 166) and the round-up rule both increase the dimensional weight. A box that was billed at 19 lb before can now be billed at 22 lb.'],
@@ -45,11 +45,11 @@ const faq: [string, string][] = [
       <tbody>
         <tr><td data-label="Rule">Divisor</td><td data-label="Before">166</td><td data-label="Now">139</td></tr>
         <tr><td data-label="Rule">Measurement rounding</td><td data-label="Before">To the nearest inch</td><td data-label="Now">Up to the next whole inch</td></tr>
-        <tr><td data-label="Rule">When DIM weight applies</td><td data-label="Before">Parcels over 1 cubic foot</td><td data-label="Now">Parcels over 1 cubic foot (unchanged)</td></tr>
+        <tr><td data-label="Rule">When DIM weight applies</td><td data-label="Before">Parcels over 1 cubic foot</td><td data-label="Now">Parcels over 1,728 in³ (1 cubic foot)</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="table-note">The new rules cover Priority Mail Express, Priority Mail, USPS Ground Advantage (retail and commercial) and Parcel Select. Source: <a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">USPS Postal Bulletin 22705</a>. The previous divisor and rounding are as reported by <a href="https://blog.ordoro.com/2026/07/16/usps-shipping-changes-2026/" rel="noopener">Ordoro</a> and <a href="https://www.ship.com/post/usps-dimensional-weight-rules-2026" rel="noopener">Ship.com</a>.</p>
+  <p class="table-note">The new rules cover Priority Mail Express, Priority Mail and USPS Ground Advantage (retail and commercial, zones 1–9) and Parcel Select Destination Entry. USPS Ground Advantage Commercial is priced in ounce steps under 1 lb, so very light parcels can cost less than the whole-pound estimate. Source: <a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">USPS Postal Bulletin 22705</a>. The previous divisor and rounding are as reported by <a href="https://blog.ordoro.com/2026/07/16/usps-shipping-changes-2026/" rel="noopener">Ordoro</a> and <a href="https://www.ship.com/post/usps-dimensional-weight-rules-2026" rel="noopener">Ship.com</a>.</p>
 
   <h2>How to calculate USPS dimensional weight</h2>
   <ol>

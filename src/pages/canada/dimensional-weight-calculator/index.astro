@@ -28,7 +28,7 @@ const faq: [string, string][] = [
   alternates={VOLUMETRIC_CLUSTER}
   presetGroup="ca"
   defaultPreset="canadaPost"
-  example={{ length: 100, width: 60, height: 20, actualWeight: 5 }}
+  example={{ length: 100, width: 60, height: 20, actualWeight: 8 }}
   faq={faq}
   showReviewed
   showCountries
@@ -42,13 +42,13 @@ const faq: [string, string][] = [
     <li><b>139 / 166</b><span>The same factors in in³ per lb</span></li>
   </ul>
 
-  <h2>Canada Post's own example</h2>
+  <h2>Canada Post's own examples</h2>
   <div class="example-card">
     <h3>A 100 × 60 × 20 cm parcel</h3>
-    <p>Canada Post's customer guide shows this box: 120,000 cm³. By Xpresspost (÷ 5,000) it counts as 24 kg; by Regular Parcel (÷ 6,000) as 20 kg.</p>
-    <p class="answer">Xpresspost: <b>24 kg</b> · Regular Parcel: <b>20 kg</b></p>
-    <a class="try-link" href={tryLink('canadaPost', { length: 100, width: 60, height: 20, actualWeight: 5 })} rel="nofollow">Open with Xpresspost →</a>
-    <a class="try-link" style="margin-left: 16px" href={tryLink('canadaPostRegular', { length: 100, width: 60, height: 20, actualWeight: 5 })} rel="nofollow">Open with Regular Parcel →</a>
+    <p>Canada Post's customer guide uses this box (120,000 cm³). Sent by Xpresspost (÷ 5,000) with an actual weight of 8 kg, it is billed on its volumetric equivalent of 24 kg. Sent by Regular Parcel (÷ 6,000) its volumetric equivalent is 20 kg, so with the guide's actual weight of 26 kg it is billed on the 26 kg actual weight.</p>
+    <p class="answer">Xpresspost, 8 kg: <b>24 kg</b> · Regular Parcel, 26 kg: <b>26 kg</b></p>
+    <a class="try-link" href={tryLink('canadaPost', { length: 100, width: 60, height: 20, actualWeight: 8 })} rel="nofollow">Open with Xpresspost →</a>
+    <a class="try-link" style="margin-left: 16px" href={tryLink('canadaPostRegular', { length: 100, width: 60, height: 20, actualWeight: 26 })} rel="nofollow">Open with Regular Parcel →</a>
   </div>
 
   <h2>Carrier rules in Canada</h2>

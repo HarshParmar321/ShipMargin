@@ -15,7 +15,7 @@ const faq: [string, string][] = [
   ['Qual é o fator de cubagem dos Correios?', 'O fator volumétrico dos Correios para SEDEX e PAC é 6.000, segundo o Termo de Condições de Prestação de Serviços de Encomendas Nacionais.'],
   ['Os Correios cobram peso cubado em toda encomenda?', 'Não. Pelo termo de condições dos Correios, a encomenda com peso volumétrico de até 5 kg é sempre precificada pelo peso físico. Na prática, caixas com até 30.000 cm³ (por exemplo 40 × 30 × 25 cm) pagam pelo peso real.'],
   ['Qual a diferença entre peso cubado e peso real?', 'Peso real é o que a balança mostra. Peso cubado é calculado pelo tamanho da caixa. A transportadora cobra o maior dos dois, respeitando as regras de cada serviço.'],
-  ['Qual é a cubagem máxima dos Correios?', 'Para pacotes no SEDEX e no PAC, a maior dimensão é de 100 cm, a soma de comprimento + largura + altura é de no máximo 200 cm e o peso máximo é 30 kg.'],
+  ['Qual é a cubagem máxima dos Correios?', 'Para pacotes no SEDEX e no PAC, a maior dimensão é de 100 cm, a soma de comprimento + largura + altura é de no máximo 200 cm e o peso máximo é 30 kg (no PAC, 50 kg apenas em âmbito estadual para clientes com contrato).'],
   ['O Mercado Livre usa peso cubado?', 'Sim, o Mercado Livre calcula o custo de envio a partir das medidas e do peso do pacote, mas não conseguimos confirmar o fator usado em uma fonte oficial. Confira a página de ajuda do Mercado Livre sobre medidas e peso e use uma regra personalizada na calculadora.'],
   ['Como calcular o peso cubado de uma caixa em metros cúbicos?', 'Multiplique as medidas em metros e depois pelo fator em kg/m³. Um fator de 6.000 cm³/kg equivale a cerca de 167 kg/m³: uma caixa de 0,06 m³ tem 0,06 × 167 ≈ 10 kg de peso cubado.'],
 ];
@@ -98,7 +98,7 @@ const faq: [string, string][] = [
   <div class="example-card">
     <h3>3. A mesma caixa média na Loggi</h3>
     <p>Volume: 0,5 × 0,4 × 0,3 m = 0,06 m³. 0,06 × 167 kg/m³ ≈ 10,0 kg. Na Loggi não há o limite de 5 kg: vale sempre o maior peso.</p>
-    <p class="answer">Peso cobrado: <b>≈ 10,1 kg</b> (peso cubado, arredondado para 0,1 kg)</p>
+    <p class="answer">Peso cobrado: <b>≈ 10,1 kg</b> (peso cubado; a Loggi não publica regra de arredondamento, a calculadora mostra em passos de 0,1 kg)</p>
     <a class="try-link" href={tryLink('loggi', { length: 50, width: 40, height: 30, actualWeight: 2 })} rel="nofollow">Abrir este exemplo →</a>
   </div>
 
