@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
 import { TOOLS } from '../lib/tools';
-import { CLOUDFLARE_ANALYTICS_TOKEN } from '../lib/site';
+import { CLOUDFLARE_ANALYTICS_TOKEN, SUPPORT_EMAIL } from '../lib/site';
+import { RULES_REVIEWED_ON } from '../lib/shipping.mjs';
 import { COUNTRY_LINKS } from '../lib/alternates';
 import Flag from '../components/Flag.astro';
 
@@ -41,7 +42,7 @@ const copy = {
     skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Free · private', localTip: 'Calculations run in your browser. Nothing you type is sent to a server.', toolsLabel: 'Free tools', countriesLabel: 'Countries', regionTitle: 'Choose your country', langTitle: 'Language', regionButton: 'Country and language',
     nav: [['DIM weight', '/dimensional-weight-calculator/'], ['USPS 2026', '/usps-dimensional-weight-calculator/'], ['Box optimizer', '/box-margin-optimizer/'], ['Margin', '/shipping-margin-calculator/']],
     strip: TOOLS.map((tool) => [tool.short, tool.href]),
-    tagline: 'Clear shipping math for sellers everywhere.',
+    tagline: 'Clear shipping math for sellers everywhere.', chipFree: 'Free, no sign-up', reviewed: 'Rules reviewed:',
     footerTools: TOOLS.map((tool) => [tool.name, tool.href]),
     footer: [['Methodology', '/methodology/'], ['Privacy', '/privacy/'], ['Terms', '/terms/'], ['About', '/about/'], ['Contact', '/contact/']],
     fine: 'Planning estimates only. Confirm current rules and rates with your carrier or contract.',
@@ -50,7 +51,7 @@ const copy = {
     skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Grátis · privado', localTip: 'Os cálculos rodam no seu navegador. Nada do que você digita é enviado a um servidor.', toolsLabel: 'Ferramentas', countriesLabel: 'Países', regionTitle: 'Escolha seu país', langTitle: 'Idioma', regionButton: 'País e idioma',
     nav: [['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
     strip: [['Início', '/pt-br/'], ['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
-    tagline: 'Cálculos de frete claros para vendedores em qualquer lugar.',
+    tagline: 'Cálculos de frete claros para vendedores em qualquer lugar.', chipFree: 'Grátis, sem cadastro', reviewed: 'Regras revisadas:',
     footerTools: [['Calculadora de peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/']],
     footer: [['Metodologia', '/pt-br/metodologia/'], ['Privacidade', '/pt-br/privacidade/'], ['Termos', '/pt-br/termos/'], ['Sobre', '/pt-br/sobre/'], ['Contato', '/pt-br/contato/']],
     fine: 'Estimativas para planejamento. Confirme as regras e tarifas atuais com a transportadora ou no seu contrato.',
@@ -59,7 +60,7 @@ const copy = {
     skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Gratis · privado', localTip: 'Los cálculos se hacen en tu navegador. Nada de lo que escribes se envía a un servidor.', toolsLabel: 'Herramientas', countriesLabel: 'Países', regionTitle: 'Elige tu país', langTitle: 'Idioma', regionButton: 'País e idioma',
     nav: [['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
     strip: [['Inicio', '/es/'], ['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
-    tagline: 'Cálculos de envío claros para vendedores de todo el mundo.',
+    tagline: 'Cálculos de envío claros para vendedores de todo el mundo.', chipFree: 'Gratis, sin registro', reviewed: 'Reglas revisadas:',
     footerTools: [['Calculadora de peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/']],
     footer: [['Metodología', '/es/metodologia/'], ['Privacidad', '/es/privacidad/'], ['Términos', '/es/terminos/'], ['Acerca de', '/es/acerca-de/'], ['Contacto', '/es/contacto/']],
     fine: 'Estimaciones para planificación. Confirma las reglas y tarifas actuales con el transportista o tu contrato.',
@@ -69,6 +70,7 @@ const copy = {
 const labels: Record<Locale, string> = { en: 'EN', 'pt-br': 'PT', es: 'ES' };
 const languageNames: Record<Locale, string> = { en: 'English', 'pt-br': 'Português', es: 'Español' };
 const t = copy[locale];
+const reviewedLabel = new Date(`${RULES_REVIEWED_ON}T12:00:00Z`).toLocaleDateString(localeTags[locale], { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const origin = Astro.site ?? Astro.url.origin;
 const canonical = new URL(canonicalPath, origin);
 const ogImage = new URL('/og-image.png', origin);
@@ -193,25 +195,44 @@ const structuredData = [
       <slot />
     </main>
     <footer class="site-footer">
-      <div>
-        <a class="brand footer-brand" href={homePaths[locale]}><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" width="100%" height="100%"><path d="M14 22 32 12l18 10-18 10-18-10Zm0 0v20l18 10 18-10V22M32 32v20" fill="none" stroke="#d8ff70" stroke-width="5" stroke-linejoin="round"/></svg></span>ShippingMath</a>
-        <p>{t.tagline}</p>
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div class="footer-about">
+            <a class="brand footer-brand" href={homePaths[locale]}><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" width="100%" height="100%"><path d="M14 22 32 12l18 10-18 10-18-10Zm0 0v20l18 10 18-10V22M32 32v20" fill="none" stroke="#172018" stroke-width="5" stroke-linejoin="round"/></svg></span>ShippingMath</a>
+            <p class="footer-tagline">{t.tagline}</p>
+            <ul class="footer-chips">
+              <li>{t.chipFree}</li>
+              <li>{t.reviewed} {reviewedLabel}</li>
+            </ul>
+            {SUPPORT_EMAIL && (
+              <a class="footer-mail" href={`mailto:${SUPPORT_EMAIL}`}>
+                <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M3 5h14v10H3z M3 5l7 6 7-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                {SUPPORT_EMAIL}
+              </a>
+            )}
+          </div>
+          <div class="footer-cols">
+            <div class="footer-col footer-col-tools">
+              <p class="footer-heading">{t.toolsLabel}</p>
+              {t.footerTools.map(([label, href]) => <a href={href}>{label}</a>)}
+            </div>
+            <div class="footer-col footer-col-countries">
+              <p class="footer-heading">{t.countriesLabel}</p>
+              <div class="footer-flags">
+                {COUNTRY_LINKS.map((country) => <a href={country.href} hreflang={country.hreflang}><Flag code={country.code} /><span>{country.label}</span></a>)}
+              </div>
+            </div>
+            <div class="footer-col footer-col-company">
+              <p class="footer-heading">ShippingMath</p>
+              {t.footer.map(([label, href]) => <a href={href}>{label}</a>)}
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <span>© {new Date().getFullYear()} ShippingMath</span>
+          <span>{t.fine}</span>
+        </div>
       </div>
-      <div class="footer-columns">
-        <div class="footer-links">
-          <strong>{t.toolsLabel}</strong>
-          {t.footerTools.map(([label, href]) => <a href={href}>{label}</a>)}
-        </div>
-        <div class="footer-links">
-          <strong>{t.countriesLabel}</strong>
-          {COUNTRY_LINKS.map((country) => <a class="footer-country" href={country.href} hreflang={country.hreflang}><Flag code={country.code} />{country.label}</a>)}
-        </div>
-        <div class="footer-links">
-          <strong>ShippingMath</strong>
-          {t.footer.map(([label, href]) => <a href={href}>{label}</a>)}
-        </div>
-      </div>
-      <p class="fine-print">{t.fine}</p>
     </footer>
     <script>
       // @ts-nocheck -- small progressive enhancement, guarded at runtime.

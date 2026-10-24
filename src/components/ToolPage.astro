@@ -121,10 +121,10 @@ if (faq.length) {
     {faq.length > 0 && (
       <>
         <h2 id="faq">{copy.faq}</h2>
-        <div class="faq">
+        <div class="faq" data-faq>
           {faq.map(([question, answer]) => (
             <details>
-              <summary>{question}</summary>
+              <summary><span>{question}</span><span class="faq-icon" aria-hidden="true"></span></summary>
               <p>{answer}</p>
             </details>
           ))}
@@ -149,3 +149,48 @@ if (faq.length) {
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // Smooth open/close for FAQ answers. Without JS (or with reduced motion) <details> still works instantly.
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLDetailsElement>('[data-faq] details').forEach((details) => {
+    const summary = details.querySelector('summary');
+    const answer = details.querySelector<HTMLElement>(':scope > p');
+    if (!summary || !answer || reduceMotion || !details.animate) return;
+    let animation: Animation | null = null;
+    let closing = false;
+    const easing = 'cubic-bezier(.2, .7, .2, 1)';
+    const finish = (open: boolean) => {
+      details.open = open;
+      animation = null;
+      closing = false;
+      details.style.height = '';
+      details.style.overflow = '';
+    };
+    summary.addEventListener('click', (event) => {
+      event.preventDefault();
+      details.style.overflow = 'hidden';
+      const start = `${details.offsetHeight}px`;
+      if (!details.open || closing) {
+        // open
+        animation?.cancel();
+        details.style.height = start;
+        details.open = true;
+        closing = false;
+        const end = `${summary.offsetHeight + answer.offsetHeight}px`;
+        animation = details.animate({ height: [start, end] }, { duration: 280, easing });
+        answer.animate({ opacity: [0, 1], transform: ['translateY(-4px)', 'none'] }, { duration: 260, easing });
+        animation.onfinish = () => finish(true);
+        animation.oncancel = () => { animation = null; };
+      } else {
+        // close
+        animation?.cancel();
+        closing = true;
+        const end = `${summary.offsetHeight}px`;
+        animation = details.animate({ height: [start, end] }, { duration: 220, easing });
+        animation.onfinish = () => finish(false);
+        animation.oncancel = () => { closing = false; animation = null; };
+      }
+    });
+  });
+</script>
