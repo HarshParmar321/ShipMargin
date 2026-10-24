@@ -10,3 +10,10 @@
  */
 export const SUPPORT_EMAIL = 'support@shippingmath.com';
 export const CLOUDFLARE_ANALYTICS_TOKEN = '';
+
+/**
+ * Cloudflare Web Analytics is on through Cloudflare's automatic setup (it injects the
+ * beacon itself), so no token is needed. This flag keeps the privacy pages accurate.
+ */
+export const CLOUDFLARE_WEB_ANALYTICS_ON = true;
+export const USES_CLOUDFLARE_ANALYTICS = CLOUDFLARE_WEB_ANALYTICS_ON || Boolean(CLOUDFLARE_ANALYTICS_TOKEN);
