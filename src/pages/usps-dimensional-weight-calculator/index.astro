@@ -1,0 +1,111 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../lib/shipping.mjs';
+
+const path = '/usps-dimensional-weight-calculator/';
+const usps = PRESETS.usps139;
+const tryLink = (pkg: { length: number; width: number; height: number; actualWeight: number }) =>
+  `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset: 'usps139', unit: usps.unit, divisor: usps.divisor, dimThreshold: usps.dimThreshold, dimRounding: usps.dimRounding, billableStep: usps.billableStep })}#main`;
+
+const faq: [string, string][] = [
+  ['When did USPS change its dimensional weight rules?', 'The new rules took effect on 12 July 2026, as published in USPS Postal Bulletin 22705.'],
+  ['What is the USPS dimensional weight divisor now?', 'USPS now divides the package volume in cubic inches by 139. Before 12 July 2026 the divisor was 166, so the same box now has a higher dimensional weight.'],
+  ['Does USPS charge dimensional weight on every package?', 'No. USPS only applies dimensional weight to parcels larger than one cubic foot (1,728 cubic inches). Parcels at or below that size are priced by their actual weight.'],
+  ['Which USPS services use dimensional weight?', 'Priority Mail Express, Priority Mail, USPS Ground Advantage (retail and commercial) and Parcel Select, for zones 1 to 9, according to the Postal Bulletin notice.'],
+  ['How does USPS round package measurements?', 'Each measurement is rounded up to the next whole inch before the volume is calculated, and the dimensional weight is rounded up to the next whole pound. A side of 12.1 inches counts as 13 inches.'],
+  ['Is a 12 × 12 × 12 inch box charged by dimensional weight at USPS?', 'No. 12 × 12 × 12 is exactly 1,728 cubic inches, which is not larger than one cubic foot, so it is priced by actual weight. If any side measures even slightly over 12 inches, it is rounded up and dimensional weight applies.'],
+  ['Why did my USPS label cost more after July 2026?', 'For parcels over one cubic foot, the lower divisor (139 instead of 166) and the round-up rule both increase the dimensional weight. A box that was billed at 19 lb before can now be billed at 22 lb.'],
+];
+---
+<ToolPage
+  title="USPS Dimensional Weight Calculator (2026) | ShippingMath"
+  heading="USPS dimensional weight calculator"
+  crumb="USPS DIM weight (2026)"
+  eyebrow="Updated for 12 July 2026"
+  description="Check USPS dimensional weight under the 2026 rules: divisor 139, measurements rounded up, and DIM pricing only for parcels over 1,728 cubic inches."
+  path={path}
+  defaultPreset="usps139"
+  example={{ length: 16, width: 12, height: 10, actualWeight: 4 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">On 12 July 2026 USPS changed how it calculates dimensional weight. The divisor dropped from 166 to 139, and every measurement is now rounded up. Parcels larger than one cubic foot got more expensive; smaller parcels are still priced by weight.</p>
+
+  <ul class="key-facts">
+    <li><b>139</b><span>New divisor (in³ per lb), previously 166</span></li>
+    <li><b>Round up</b><span>Each side to the next whole inch</span></li>
+    <li><b>1,728 in³</b><span>DIM weight only applies above 1 cubic foot</span></li>
+    <li><b>12 Jul 2026</b><span>Effective date (Postal Bulletin 22705)</span></li>
+  </ul>
+
+  <h2>What changed on 12 July 2026</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Rule</th><th>Before</th><th>From 12 July 2026</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Rule">Divisor</td><td data-label="Before">166</td><td data-label="Now">139</td></tr>
+        <tr><td data-label="Rule">Measurement rounding</td><td data-label="Before">To the nearest inch</td><td data-label="Now">Up to the next whole inch</td></tr>
+        <tr><td data-label="Rule">When DIM weight applies</td><td data-label="Before">Parcels over 1 cubic foot</td><td data-label="Now">Parcels over 1 cubic foot (unchanged)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">The new rules cover Priority Mail Express, Priority Mail, USPS Ground Advantage (retail and commercial) and Parcel Select. Source: <a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">USPS Postal Bulletin 22705</a>. The previous divisor and rounding are as reported by <a href="https://blog.ordoro.com/2026/07/16/usps-shipping-changes-2026/" rel="noopener">Ordoro</a> and <a href="https://www.ship.com/post/usps-dimensional-weight-rules-2026" rel="noopener">Ship.com</a>.</p>
+
+  <h2>How to calculate USPS dimensional weight</h2>
+  <ol>
+    <li>Measure length, width and height of the packed parcel and <strong>round each up</strong> to the next whole inch.</li>
+    <li>Multiply them. If the result is <strong>1,728 in³ or less</strong>, stop: USPS prices the parcel by its actual weight.</li>
+    <li>If it is <strong>more than 1,728 in³</strong>, divide by <strong>139</strong> and round up to the next whole pound.</li>
+    <li>You pay for whichever is higher: that dimensional weight or the actual weight.</li>
+  </ol>
+
+  <div class="callout-cliff">
+    <strong>The one-cubic-foot cliff</strong>
+    <p>A 12 × 12 × 12 in box with a 3 lb product is 1,728 in³, so it's billed at 3 lb. Make one side 12.1 in and it rounds to 13 in: 13 × 12 × 12 = 1,872 in³, which is over the limit. 1,872 ÷ 139 = 13.47, so it's billed at 14 lb. A tenth of an inch costs you 11 lb.</p>
+  </div>
+
+  <h2>Worked examples</h2>
+  <div class="example-card">
+    <h3>Just under the limit</h3>
+    <p>Box 12 × 12 × 12 in, product 3 lb. Volume 1,728 in³, not over one cubic foot.</p>
+    <p class="answer">Billed weight: <b>3 lb</b> (actual weight)</p>
+    <a class="try-link" href={tryLink({ length: 12, width: 12, height: 12, actualWeight: 3 })} rel="nofollow">Open this example →</a>
+  </div>
+  <div class="example-card">
+    <h3>Just over the limit</h3>
+    <p>Box 12.1 × 12 × 12 in, product 3 lb. Rounded to 13 × 12 × 12 = 1,872 in³; 1,872 ÷ 139 = 13.47 → 14 lb.</p>
+    <p class="answer">Billed weight: <b>14 lb</b> (dimensional weight)</p>
+    <a class="try-link" href={tryLink({ length: 12.1, width: 12, height: 12, actualWeight: 3 })} rel="nofollow">Open this example →</a>
+  </div>
+  <div class="example-card">
+    <h3>Old rules vs new rules</h3>
+    <p>Box 18 × 14 × 12 in = 3,024 in³, product 8 lb. Old divisor: 3,024 ÷ 166 = 18.2 → 19 lb. New divisor: 3,024 ÷ 139 = 21.8 → 22 lb.</p>
+    <p class="answer">The same box is now billed <b>3 lb heavier</b>.</p>
+    <a class="try-link" href={tryLink({ length: 18, width: 14, height: 12, actualWeight: 8 })} rel="nofollow">Open this example →</a>
+  </div>
+
+  <h2>Box sizes that stay at or under 1,728 in³</h2>
+  <p>These common outside sizes are at or below one cubic foot, so USPS prices them by actual weight, as long as no side measures over the whole inch.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Box (inches)</th><th>Volume</th><th>Good for</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Box">12 × 12 × 12</td><td data-label="Volume">1,728 in³</td><td data-label="Good for">Cube-shaped items, gift sets</td></tr>
+        <tr><td data-label="Box">16 × 12 × 9</td><td data-label="Volume">1,728 in³</td><td data-label="Good for">Shoes, small appliances</td></tr>
+        <tr><td data-label="Box">18 × 12 × 8</td><td data-label="Volume">1,728 in³</td><td data-label="Good for">Longer flat items, apparel bundles</td></tr>
+        <tr><td data-label="Box">24 × 12 × 6</td><td data-label="Volume">1,728 in³</td><td data-label="Good for">Long, slim products</td></tr>
+        <tr><td data-label="Box">13 × 12 × 11</td><td data-label="Volume">1,716 in³</td><td data-label="Good for">A little extra length with room to spare</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Measure the outside of the packed box. Bulging sides or tape tabs can push a side over the whole inch and into dimensional pricing.</p>
+
+  <h2>How to avoid USPS dimensional weight charges</h2>
+  <ul>
+    <li><strong>Keep parcels at or under 1,728 in³</strong> whenever the product allows. That single threshold matters more than anything else at USPS.</li>
+    <li><strong>Measure precisely and avoid bulges</strong>, because every fraction is rounded up.</li>
+    <li><strong>Use poly mailers</strong> for soft goods that don't need a box.</li>
+    <li><strong>Compare carriers for large, light parcels.</strong> For boxes over one cubic foot, check UPS and FedEx too with the <a href="/dimensional-weight-calculator/">dimensional weight calculator</a>.</li>
+    <li><strong>Test your box range</strong> with the <a href="/box-margin-optimizer/">box optimizer</a>; choose USPS in its carrier settings.</li>
+  </ul>
+</ToolPage>

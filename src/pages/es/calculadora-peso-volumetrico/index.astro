@@ -1,0 +1,107 @@
+---
+import ToolPage from '../../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
+
+const path = '/es/calculadora-peso-volumetrico/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['¿Qué es el peso volumétrico?', 'Es el peso que una empresa de paquetería asigna a un paquete según el espacio que ocupa: largo × ancho × alto dividido entre un factor. Si es mayor que el peso real, el envío se cobra por el peso volumétrico.'],
+  ['¿Cómo se calcula el peso volumétrico de un paquete?', 'Mide el paquete en centímetros, multiplica largo × ancho × alto y divide entre el factor de tu empresa de paquetería, normalmente 5.000 o 6.000. Por ejemplo, 40 × 30 × 20 cm = 24.000 cm³; 24.000 ÷ 5.000 = 4,8 kg.'],
+  ['¿Se divide entre 5.000 o entre 6.000?', 'Depende de la empresa. DHL Express, Estafeta y FedEx usan 5.000. Correos (España) y Correos de México usan 6.000, que equivale a 167 kg/m³. Con 6.000 el peso volumétrico sale más bajo.'],
+  ['¿Cuál es el peso volumétrico de Correos?', 'Para Paq Estándar y Paq Premium, Correos aplica el criterio de 167 kg/m³, es decir, largo × alto × ancho en cm entre 6.000. Correos Express también aplica 167 kg/m³.'],
+  ['¿Qué es el peso tasable o peso facturable?', 'Es el peso por el que realmente pagas: el mayor entre el peso real y el peso volumétrico, después de aplicar el redondeo de cada empresa.'],
+  ['¿Cómo calculo el peso volumétrico en pulgadas?', 'Cambia la calculadora a Imperial y convertirá el divisor automáticamente: 5.000 cm³/kg equivale a unas 139 pulgadas³ por libra y 6.000 a unas 166. Si quieres el resultado en kg con medidas en pulgadas, divide las pulgadas³ entre unos 305 (para 5.000).'],
+  ['¿Qué significa 167 kg/m³ o 250 kg/m³?', 'Es el mismo factor expresado por metro cúbico. 167 kg/m³ equivale a dividir entre 6.000; 200 kg/m³ a dividir entre 5.000; 250 kg/m³ a dividir entre 4.000.'],
+  ['¿Mercado Libre cobra por peso volumétrico?', 'Mercado Libre calcula el envío con las medidas y el peso del paquete, pero no hemos podido confirmar el factor en una fuente oficial. Revisa su página de ayuda y usa una regla personalizada en la calculadora.'],
+];
+---
+<ToolPage
+  title="Calculadora de Peso Volumétrico de Paquetes | ShippingMath"
+  heading="Calculadora de peso volumétrico"
+  crumb="Calculadora de peso volumétrico"
+  eyebrow="España · México · Latinoamérica"
+  description="Calcula el peso volumétrico y el peso facturable de tu paquete con los factores de Correos, DHL, Estafeta, FedEx, Correos de México, Chilexpress y más. Gratis y sin registro."
+  path={path}
+  locale="es"
+  htmlLang="es"
+  alternates={VOLUMETRIC_CLUSTER}
+  presetGroup="es"
+  defaultPreset="correosEs"
+  example={{ length: 40, width: 30, height: 20, actualWeight: 3 }}
+  faq={faq}
+  showReviewed
+  showCountries
+>
+  <p class="lead">El peso volumétrico es el peso que te cobra la empresa de paquetería por el espacio que ocupa tu caja, no por lo que pesa. Si una caja grande y ligera ocupa más de lo que paga su peso, el envío se cobra por el peso volumétrico.</p>
+
+  <ul class="key-facts">
+    <li><b>5.000</b><span>DHL Express, Estafeta, FedEx (cm³/kg)</span></li>
+    <li><b>6.000</b><span>Correos España y Correos de México (167 kg/m³)</span></li>
+    <li><b>4.000</b><span>Chilexpress (250 kg/m³)</span></li>
+    <li><b>El mayor</b><span>Se paga el mayor entre peso real y volumétrico</span></li>
+  </ul>
+
+  <h2>Cómo calcular el peso volumétrico</h2>
+  <ol>
+    <li><strong>Mide el paquete cerrado por fuera</strong>, en centímetros, en sus puntos más largos.</li>
+    <li><strong>Multiplica</strong> largo × ancho × alto para obtener los cm³.</li>
+    <li><strong>Divide entre el factor</strong> de tu empresa: 5.000 o 6.000 son los más habituales.</li>
+    <li><strong>Compara con el peso real.</strong> Pagas el mayor: ese es el peso tasable o facturable.</li>
+  </ol>
+  <div class="formula-box">Peso volumétrico (kg) = largo × ancho × alto (cm) ÷ 5.000</div>
+
+  <h2>Factores por empresa de paquetería</h2>
+  <p>Cada opción de la calculadora usa estos valores. Si tu contrato usa otro factor, introdúcelo en <em>Ajustes avanzados</em>.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Empresa</th><th>País</th><th>Factor</th><th>Notas</th><th>Fuente</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Empresa">Correos (Paq Estándar / Premium)</td><td data-label="País">España</td><td data-label="Factor">6.000 (167 kg/m³)</td><td data-label="Notas">Hasta 30 kg de peso real</td><td data-label="Fuente"><a href="https://www.correos.es/es/es/empresas/enviar/envios-nacionales/paquete-estandar" rel="noopener">Correos</a></td></tr>
+        <tr><td data-label="Empresa">Correos Express (Paq 24)</td><td data-label="País">España</td><td data-label="Factor">167 kg/m³ (≈ 6.000)</td><td data-label="Notas">Hasta 40 kg por bulto</td><td data-label="Fuente"><a href="https://www.correosexpress.es/es/particulares/enviar/peninsulares/paq-24" rel="noopener">Correos Express</a></td></tr>
+        <tr><td data-label="Empresa">DHL Express</td><td data-label="País">España / México</td><td data-label="Factor">5.000</td><td data-label="Notas">Por pieza; redondeo a 0,5 kg (internacional)</td><td data-label="Fuente"><a href="https://mydhl.express.dhl/content/dam/downloads/es/es/rate-guide/service_and_rate_guide_es_es_2026.pdf" rel="noopener">Guía DHL 2026</a></td></tr>
+        <tr><td data-label="Empresa">Estafeta</td><td data-label="País">México</td><td data-label="Factor">5.000</td><td data-label="Notas">Hasta 70 kg</td><td data-label="Fuente"><a href="https://estafetamembers.zendesk.com/hc/es/articles/216674137--C%C3%B3mo-se-calcula-el-peso-de-mis-paquetes" rel="noopener">Estafeta</a></td></tr>
+        <tr><td data-label="Empresa">FedEx México</td><td data-label="País">México</td><td data-label="Factor">5.000</td><td data-label="Notas">Las fracciones de kilo se redondean hacia arriba</td><td data-label="Fuente"><a href="https://www.fedex.com/content/dam/fedex/international/rates/fedex-rates-all-es-mx-2026.pdf" rel="noopener">FedEx México 2026</a></td></tr>
+        <tr><td data-label="Empresa">Correos de México (Mexpost)</td><td data-label="País">México</td><td data-label="Factor">6.000</td><td data-label="Notas">Redondeo al kg superior; 25 kg real / 40 kg volumétrico</td><td data-label="Fuente"><a href="https://www.correosdemexico.gob.mx/DATOSABIERTOS/Tarifas/Mexpost/Tarifas_Mexpost.pdf" rel="noopener">Tarifario 2026</a></td></tr>
+        <tr><td data-label="Empresa">Chilexpress</td><td data-label="País">Chile</td><td data-label="Factor">4.000</td><td data-label="Notas">Se usa el mayor entre volumétrico y declarado</td><td data-label="Fuente"><a href="https://cxpgdastprod.blob.core.windows.net/mdn/documentos/Guia_de_servicios.pdf" rel="noopener">Guía de servicios</a></td></tr>
+        <tr><td data-label="Empresa">Coordinadora</td><td data-label="País">Colombia</td><td data-label="Factor">2.500</td><td data-label="Notas">"Peso volumen"</td><td data-label="Fuente"><a href="https://www.coordinadora.com/tarifas-e-informacion-general/" rel="noopener">Coordinadora</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">El divisor 5.000 de FedEx México aparece en su guía de 2020; la guía de 2026 confirma que aplica peso dimensional pero no repite el divisor. GLS (250 kg/m³ "orientativo"), MRW (publica 250 kg/m³ y "/5.000", que no coinciden), SEUR y Mercado Libre: confirma el factor con la empresa antes de usarlo.</p>
+
+  <h2>Ejemplos</h2>
+  <div class="example-card">
+    <h3>1. Caja de 40 × 30 × 20 cm con 3 kg (Correos España)</h3>
+    <p>Volumen: 24.000 cm³. 24.000 ÷ 6.000 = 4,0 kg, más que los 3 kg reales.</p>
+    <p class="answer">Peso facturable: <b>4,0 kg</b></p>
+    <a class="try-link" href={tryLink('correosEs', { length: 40, width: 30, height: 20, actualWeight: 3 })} rel="nofollow">Abrir este ejemplo →</a>
+  </div>
+  <div class="example-card">
+    <h3>2. La misma caja con DHL Express</h3>
+    <p>24.000 ÷ 5.000 = 4,8 kg, que se redondea a 5,0 kg.</p>
+    <p class="answer">Peso facturable: <b>5,0 kg</b></p>
+    <a class="try-link" href={tryLink('dhlExpress', { length: 40, width: 30, height: 20, actualWeight: 3 })} rel="nofollow">Abrir este ejemplo →</a>
+  </div>
+  <div class="example-card">
+    <h3>3. Correos de México redondea al kilo</h3>
+    <p>Caja de 40 × 30 × 21 cm con 1 kg: 25.200 ÷ 6.000 = 4,2 kg, que se cobra como 5 kg.</p>
+    <p class="answer">Peso facturable: <b>5 kg</b></p>
+    <a class="try-link" href={tryLink('mexpost', { length: 40, width: 30, height: 21, actualWeight: 1 })} rel="nofollow">Abrir este ejemplo →</a>
+  </div>
+
+  <h2>Peso volumétrico aéreo, terrestre y marítimo</h2>
+  <p>En paquetería urgente y aérea lo habitual es dividir entre 5.000 o 6.000. En transporte terrestre y marítimo muchas empresas expresan el factor en kg/m³ (por ejemplo 250 o 333 kg/m³ en algunas rutas de GLS y SEUR). Si tu empresa te da el factor en kg/m³, divide 1.000.000 entre ese número para obtener el divisor (250 kg/m³ = 4.000) y úsalo como regla personalizada.</p>
+
+  <h2>Cómo pagar menos por peso volumétrico</h2>
+  <ul>
+    <li><strong>Usa la caja más pequeña</strong> que proteja el producto y evita cajas abultadas.</li>
+    <li><strong>Envía ropa y productos blandos en sobres o bolsas</strong> cuando no necesiten caja rígida.</li>
+    <li><strong>Compara empresas:</strong> con un factor de 6.000 el peso volumétrico es un 17 % menor que con 5.000.</li>
+    <li><strong>Prueba tus cajas</strong> con el <a href="/es/optimizador-de-cajas/">optimizador de cajas</a>, que muestra la opción con el menor coste total.</li>
+  </ul>
+</ToolPage>

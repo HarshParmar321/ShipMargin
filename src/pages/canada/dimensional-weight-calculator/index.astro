@@ -1,0 +1,83 @@
+---
+import ToolPage from '../../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
+
+const path = '/canada/dimensional-weight-calculator/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['How does Canada Post calculate dimensional weight?', 'Canada Post divides the cubic volume by a density factor and charges the greater of the actual and volumetric weight. Priority, Xpresspost, Expedited Parcel and U.S./international services use 5,000 cm³ (139 in³); Regular Parcel uses 6,000 cm³ (166 in³). Prices go up in 0.5 kg steps.'],
+  ['What is the dimensional weight divisor for UPS Canada?', 'UPS Canada uses 5,000 cm³/kg (139 in³/lb) for most shipments and 4,100 cm³/kg (115 in³/lb) for domestic Air shipments. Each measurement is rounded up to the next whole number, and the result up to the next whole kg or lb.'],
+  ['What divisor does FedEx Canada use?', 'FedEx Canada divides by 139 cubic inches per pound, or 5,000 cubic centimetres per kilogram, rounding each dimension up to the next whole inch or centimetre.'],
+  ['Does Purolator use dimensional weight?', 'Yes. Purolator\'s terms say it may bill the cubic (dimensional) weight of a shipment, rounded up to the nearest whole number, but we could not confirm the factor for courier parcels. Use a custom rule with the figure from your account.'],
+  ['Should I measure in centimetres or inches?', 'Either. In centimetres use 5,000 or 6,000; in inches use 139 or 166. Switch the calculator between Metric and Imperial and the divisor is converted for you.'],
+];
+---
+<ToolPage
+  title="Dimensional Weight Calculator Canada | ShippingMath"
+  heading="Dimensional weight calculator Canada"
+  crumb="Dimensional weight (Canada)"
+  eyebrow="Canada Post · UPS · FedEx · Purolator"
+  description="Calculate dimensional (volumetric) weight for Canadian shipments with Canada Post's 5,000 and 6,000 factors, UPS Canada and FedEx Canada rules."
+  path={path}
+  htmlLang="en-CA"
+  alternates={VOLUMETRIC_CLUSTER}
+  presetGroup="ca"
+  defaultPreset="canadaPost"
+  example={{ length: 100, width: 60, height: 20, actualWeight: 5 }}
+  faq={faq}
+  showReviewed
+  showCountries
+>
+  <p class="lead">Canadian carriers charge for the greater of a parcel's actual weight and its dimensional weight, the weight implied by its size. The factor depends on the carrier and the service, so the same box can be billed very differently.</p>
+
+  <ul class="key-facts">
+    <li><b>5,000</b><span>Canada Post Priority, Xpresspost, Expedited; UPS and FedEx (cm³/kg)</span></li>
+    <li><b>6,000</b><span>Canada Post Regular Parcel</span></li>
+    <li><b>4,100</b><span>UPS Canada domestic Air</span></li>
+    <li><b>139 / 166</b><span>The same factors in in³ per lb</span></li>
+  </ul>
+
+  <h2>Canada Post's own example</h2>
+  <div class="example-card">
+    <h3>A 100 × 60 × 20 cm parcel</h3>
+    <p>Canada Post's customer guide shows this box: 120,000 cm³. By Xpresspost (÷ 5,000) it counts as 24 kg; by Regular Parcel (÷ 6,000) as 20 kg.</p>
+    <p class="answer">Xpresspost: <b>24 kg</b> · Regular Parcel: <b>20 kg</b></p>
+    <a class="try-link" href={tryLink('canadaPost', { length: 100, width: 60, height: 20, actualWeight: 5 })} rel="nofollow">Open with Xpresspost →</a>
+    <a class="try-link" style="margin-left: 16px" href={tryLink('canadaPostRegular', { length: 100, width: 60, height: 20, actualWeight: 5 })} rel="nofollow">Open with Regular Parcel →</a>
+  </div>
+
+  <h2>Carrier rules in Canada</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Carrier / service</th><th>Factor</th><th>Rounding</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Carrier">Canada Post Priority, Xpresspost, Expedited, U.S. & international</td><td data-label="Factor">5,000 cm³ (139 in³)</td><td data-label="Rounding">Priced in 0.5 kg steps</td><td data-label="Source"><a href="https://www.canadapost-postescanada.ca/cpc/doc/en/support/customer-guide/section_6_the_abcs_of_shipping.pdf" rel="noopener">Customer guide (Oct 2026)</a></td></tr>
+        <tr><td data-label="Carrier">Canada Post Regular Parcel</td><td data-label="Factor">6,000 cm³ (166 in³)</td><td data-label="Rounding">Priced in 0.5 kg steps</td><td data-label="Source"><a href="https://www.canadapost-postescanada.ca/cpc/doc/en/support/customer-guide/section_6_the_abcs_of_shipping.pdf" rel="noopener">Customer guide</a></td></tr>
+        <tr><td data-label="Carrier">UPS Canada</td><td data-label="Factor">5,000 cm³ (139 in³); domestic Air 4,100 (115)</td><td data-label="Rounding">Each side up; result up to whole kg/lb</td><td data-label="Source"><a href="https://www.ups.com/ca/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS Canada</a></td></tr>
+        <tr><td data-label="Carrier">FedEx Canada</td><td data-label="Factor">5,000 cm³ (139 in³)</td><td data-label="Rounding">Each side up; result up to whole kg/lb</td><td data-label="Source"><a href="https://www.fedex.com/en-ca/resources-tools/dimensional-weight.html" rel="noopener">FedEx Canada</a></td></tr>
+        <tr><td data-label="Carrier">Purolator</td><td data-label="Factor">Not published for parcels</td><td data-label="Rounding">Rounded up to whole number</td><td data-label="Source"><a href="https://www.purolator.com/en/media/18926/download?attachment=" rel="noopener">Terms</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Canada Post limits: 30 kg; no dimension over 2 m; length + girth up to 3 m. An oversized surcharge applies when any side is over 1 m or the second-longest side is over 76 cm.</p>
+
+  <h2>How to calculate it</h2>
+  <ol>
+    <li>Measure length, width and height in cm (or inches).</li>
+    <li>Multiply them and divide by the factor for your service: 5,000 or 6,000 (139 or 166 in inches).</li>
+    <li>Compare with the actual weight; you're charged the greater.</li>
+  </ol>
+  <div class="formula-box">Dimensional weight (kg) = L × W × H (cm) ÷ 5,000</div>
+
+  <h2>Ways to pay less</h2>
+  <ul>
+    <li>Regular Parcel's 6,000 factor gives 17% less dimensional weight than 5,000, if the slower service works for you.</li>
+    <li>Use the smallest box that protects the product and stay under the oversized thresholds.</li>
+    <li>Compare your cartons with the <a href="/box-margin-optimizer/">box optimizer</a>.</li>
+  </ul>
+</ToolPage>

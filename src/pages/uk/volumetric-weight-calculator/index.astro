@@ -1,0 +1,94 @@
+---
+import ToolPage from '../../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
+
+const path = '/uk/volumetric-weight-calculator/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['How do I calculate volumetric weight in the UK?', 'Measure the parcel in centimetres, multiply length × width × height and divide by your carrier\'s divisor. UPS UK, Parcelforce international and Evri international use 5,000; DHL Parcel UK international uses 4,000. You pay for the higher of the volumetric and actual weight.'],
+  ['Does Royal Mail use volumetric weight?', 'Royal Mail prices UK parcels by size format and weight rather than volumetric weight: a Small Parcel is up to 45 × 35 × 16 cm and 2 kg, and a Medium Parcel up to 61 × 46 × 46 cm and 20 kg. Check the format your parcel fits before you buy postage.'],
+  ['Does Evri charge volumetric weight in the UK?', 'Evri says volumetric pricing applies to international deliveries, using length × width × height in cm ÷ 5,000. For UK parcels it uses weight and size limits: up to 15 kg and 120 cm long.'],
+  ['What divisor does DHL use in the UK?', 'DHL Parcel UK divides by 4,000 for international parcels. DHL Express services generally use 5,000. Always check the divisor for the exact service you book.'],
+  ['How does UPS UK round measurements?', 'UPS UK rounds each measurement to the nearest whole centimetre, divides by 5,000, and rounds the result up to the next half kilogram.'],
+  ['What is the difference between volumetric weight and actual weight?', 'Actual weight is what the scales show. Volumetric weight is calculated from the size of the parcel. Carriers charge whichever is higher, so a large, light box can cost more than its weight suggests.'],
+];
+---
+<ToolPage
+  title="Volumetric Weight Calculator UK (cm, kg) | ShippingMath"
+  heading="Volumetric weight calculator UK"
+  crumb="Volumetric weight (UK)"
+  eyebrow="UPS · Parcelforce · Evri · DHL · Royal Mail"
+  description="Work out volumetric and chargeable weight for UK parcels in centimetres and kilograms, with the divisors used by UPS UK, Parcelforce, Evri and DHL Parcel UK."
+  path={path}
+  htmlLang="en-GB"
+  alternates={VOLUMETRIC_CLUSTER}
+  presetGroup="uk"
+  defaultPreset="upsUk"
+  example={{ length: 45, width: 35, height: 30, actualWeight: 3 }}
+  faq={faq}
+  showReviewed
+  showCountries
+>
+  <p class="lead">Volumetric weight is the weight a courier charges for based on how much space your parcel takes up. If it's higher than the weight on the scales, you pay for the volumetric weight instead.</p>
+
+  <ul class="key-facts">
+    <li><b>5,000</b><span>UPS UK, Parcelforce and Evri international (cm³ per kg)</span></li>
+    <li><b>4,000</b><span>DHL Parcel UK international</span></li>
+    <li><b>0.5 kg</b><span>UPS UK rounds chargeable weight up to the next half kilo</span></li>
+    <li><b>No divisor</b><span>Royal Mail UK parcels are priced by size format</span></li>
+  </ul>
+
+  <h2>How to calculate volumetric weight</h2>
+  <ol>
+    <li>Measure the packed parcel in <strong>centimetres</strong> at its longest points.</li>
+    <li>Multiply <strong>length × width × height</strong>.</li>
+    <li><strong>Divide by your courier's divisor</strong>, usually 5,000.</li>
+    <li>Compare with the actual weight. The higher number is the <strong>chargeable weight</strong>.</li>
+  </ol>
+  <div class="formula-box">Volumetric weight (kg) = L × W × H (cm) ÷ 5,000</div>
+
+  <h2>UK courier rules</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Courier</th><th>Divisor</th><th>Applies to</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Courier">UPS UK</td><td data-label="Divisor">5,000</td><td data-label="Applies to">Domestic and international; nearest cm, weight up to next 0.5 kg</td><td data-label="Source"><a href="https://assets.ups.com/adobe/assets/urn:aaid:aem:f9426dfc-9318-4338-8a0e-fc1bf01dc65c/original/as/preview-rate-guide-base-gb-en.pdf" rel="noopener">UPS 2026 rate guide</a></td></tr>
+        <tr><td data-label="Courier">Parcelforce</td><td data-label="Divisor">5,000</td><td data-label="Applies to">International; UK domestic uses size limits instead</td><td data-label="Source"><a href="https://www.parcelforce.com/help-and-advice/sending/how-to-measure-a-parcel-for-international-delivery" rel="noopener">Parcelforce</a></td></tr>
+        <tr><td data-label="Courier">Evri</td><td data-label="Divisor">5,000</td><td data-label="Applies to">International; UK parcels up to 15 kg, 120 cm long</td><td data-label="Source"><a href="https://www.evri.com/send/parcel-size-and-weight-guide" rel="noopener">Evri</a></td></tr>
+        <tr><td data-label="Courier">DHL Parcel UK</td><td data-label="Divisor">4,000</td><td data-label="Applies to">International; up to 25 kg and 120 × 80 × 80 cm</td><td data-label="Source"><a href="https://send.dhlparcel.co.uk/resources/how-to-weigh-and-measure-a-parcel" rel="noopener">DHL Parcel UK</a></td></tr>
+        <tr><td data-label="Courier">Royal Mail (UK)</td><td data-label="Divisor">—</td><td data-label="Applies to">Priced by format: Small Parcel 45 × 35 × 16 cm / 2 kg; Medium 61 × 46 × 46 cm / 20 kg</td><td data-label="Source"><a href="https://www.royalmail.com/sending/uk" rel="noopener">Royal Mail</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">We couldn't confirm a published divisor for DPD UK or InPost (formerly Yodel). Use a custom rule with the figure from your account.</p>
+
+  <h2>Worked examples</h2>
+  <div class="example-card">
+    <h3>A 45 × 35 × 30 cm box weighing 3 kg (UPS UK)</h3>
+    <p>45 × 35 × 30 = 47,250 cm³; 47,250 ÷ 5,000 = 9.45 kg, rounded up to 9.5 kg.</p>
+    <p class="answer">Chargeable weight: <b>9.5 kg</b></p>
+    <a class="try-link" href={tryLink('upsUk', { length: 45, width: 35, height: 30, actualWeight: 3 })} rel="nofollow">Open this example →</a>
+  </div>
+  <div class="example-card">
+    <h3>The same box with DHL Parcel UK international</h3>
+    <p>47,250 ÷ 4,000 = 11.81 kg, shown as 11.9 kg in 0.1 kg steps. A lower divisor means a higher volumetric weight.</p>
+    <p class="answer">Volumetric weight: <b>11.9 kg</b></p>
+    <a class="try-link" href={tryLink('dhlParcelUk', { length: 45, width: 35, height: 30, actualWeight: 3 })} rel="nofollow">Open this example →</a>
+  </div>
+
+  <h2>Volumetric weight in inches</h2>
+  <p>If you measure in inches, switch the calculator to Imperial and it converts the divisor for you (5,000 cm³/kg is about 139 in³/lb). To get kilograms straight from inches, divide the cubic inches by about 305.</p>
+
+  <h2>Tips to cut volumetric charges</h2>
+  <ul>
+    <li>Use the smallest box that protects the item, and mailing bags for clothing.</li>
+    <li>For Royal Mail, check whether a slightly smaller box fits the Small Parcel format.</li>
+    <li>Compare couriers: a 4,000 divisor charges about 25% more volumetric weight than 5,000.</li>
+    <li>Test your box range with the <a href="/box-margin-optimizer/">box optimizer</a>.</li>
+  </ul>
+</ToolPage>

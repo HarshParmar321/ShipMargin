@@ -9,6 +9,15 @@ import { languagePaths } from '../../lib/locales';
     <h2>Dimensional weight</h2><div class="formula-box">length × width × height ÷ divisor</div><p>The selected divisor is a planning preset, not a promise that a named carrier will use it for every service. Users can enter their own contract divisor and rounding increment.</p>
     <h2>Billable weight</h2><p>The calculator compares the rounded physical weight and the rounded dimensional weight and displays the greater value. Real invoices can include service thresholds, minimums, negotiated rules and surcharges not represented here.</p>
     <h2>Profit estimate</h2><p>Estimated order profit subtracts product, packaging, shipping and marketplace fees from selling price. Taxes, returns, discounts, overhead and currency conversion are outside this simplified estimate.</p>
-    <p class="notice">Rule data will include a review date before public production launch. Please report a suspected error through the contact page.</p>
+    <h2>Carrier presets and sources</h2>
+    <p><strong>Rules last reviewed: 24 October 2026.</strong> Each preset sets the divisor, dimension rounding, weight rounding and threshold. You can change any of them under advanced settings.</p>
+    <ul>
+      <li><strong>UPS Daily Rates:</strong> divisor 139 in³/lb, measurements rounded up to the next whole inch. <strong>UPS Retail Rates:</strong> divisor 166. Source: <a href="https://www.ups.com/us/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS package dimensions and weight guide</a>.</li>
+      <li><strong>USPS:</strong> divisor 139 in³/lb, each measurement rounded up to the next whole inch, and dimensional weight applies only to parcels larger than 1 cubic foot (1,728 in³), effective 12 July 2026. Source: <a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">USPS Postal Bulletin 22705</a>.</li>
+      <li><strong>FedEx:</strong> divisor 139 in³/lb. FedEx's <a href="https://www.fedex.com/en-ca/resources-tools/dimensional-weight.html" rel="noopener">Canada dimensional weight page</a> says to round each dimension up to the next whole inch, while its <a href="https://www.fedex.com/en-us/shipping/packaging/what-is-dimensional-weight.html" rel="noopener">US help page</a> says to round to the nearest whole inch. We default to rounding up; switch to “nearest” if your FedEx invoices show otherwise.</li>
+      <li><strong>International express (metric):</strong> 5,000 cm³/kg is common for express services; some air and economy services use 6,000 cm³/kg. Check your service.</li>
+    </ul>
+    <p>Negotiated contracts can use different divisors or thresholds. Enter yours under advanced settings.</p>
+    <p class="notice">Found a rule that has changed? Please report it through the <a href="/contact/">contact page</a> with a link to the carrier's published rule.</p>
   </article>
 </BaseLayout>

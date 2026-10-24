@@ -2,14 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShippingCalculator from '../components/ShippingCalculator.astro';
 import { languagePaths } from '../lib/locales';
+import { TOOLS } from '../lib/tools';
 ---
 
-<BaseLayout title="ShippingMath — Know what your package really costs" description="Free dimensional-weight, shipping-margin and batch package audit tools for sellers. No sign-up; package data stays in your browser." canonicalPath="/" languagePaths={languagePaths.home}>
+<BaseLayout title="Shipping Calculator for Sellers: DIM Weight & Margin | ShippingMath" description="Free shipping calculator for online sellers: dimensional weight with 2026 UPS, FedEx and USPS rules, box comparison and order margin. No sign-up." canonicalPath="/" languagePaths={languagePaths.home}>
   <section class="quick-hero">
     <div>
       <span class="eyebrow">Free shipping audit</span>
-      <h1>Know the weight you will actually pay for.</h1>
-      <p>Enter the package size and scale weight. Instantly see billable weight, wasted space and margin.</p>
+      <h1>Shipping calculator for <span>online sellers</span></h1>
+      <p>Know the weight you will actually pay for. Enter the package size and scale weight to see billable weight, wasted space and margin, with 2026 UPS, FedEx and USPS rules built in.</p>
     </div>
     <div class="quick-trust" aria-label="Product benefits"><span>✓ No sign-up</span><span>✓ Metric + imperial</span><span>✓ Runs locally</span></div>
   </section>
@@ -19,6 +20,13 @@ import { languagePaths } from '../lib/locales';
   <section class="optimizer-callout">
     <div><span class="eyebrow">New · box optimizer</span><h2>Which carton costs less after shipping?</h2><p>Compare every available box by fit, billable weight and estimated monthly savings.</p></div>
     <a class="primary-button" href="/box-margin-optimizer/">Compare my boxes →</a>
+  </section>
+
+  <section class="related-tools home-tools">
+    <h2>All free shipping tools</h2>
+    <div class="related-grid">
+      {TOOLS.map((tool) => <a href={tool.href}><strong>{tool.name}</strong><span>{tool.blurb}</span></a>)}
+    </div>
   </section>
 
   <section class="value-section">

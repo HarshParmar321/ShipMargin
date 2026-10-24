@@ -1,166 +1,193 @@
 ---
+import { PRESETS, PRESET_GROUPS, PRESET_LABELS } from '../lib/shipping.mjs';
+import { CALCULATOR_COPY, NUMBER_LOCALE, type CalculatorLocale } from '../lib/calculatorCopy';
+
+type PresetKey = keyof typeof PRESETS;
+type GroupKey = keyof typeof PRESET_GROUPS;
+
 interface Props {
   defaultTab?: 'single' | 'batch';
   showMargin?: boolean;
   compactIntro?: boolean;
+  /** Carrier preset selected when the page opens (a share link still wins). */
+  defaultPreset?: PresetKey;
+  /** Which carrier presets this page offers. */
+  presetGroup?: GroupKey;
+  locale?: CalculatorLocale;
+  /** Example package shown when the page opens. */
+  example?: { length: number; width: number; height: number; actualWeight: number };
 }
-
-const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astro.props;
+const { defaultTab = 'single', showMargin = false, compactIntro = false, defaultPreset = 'ups139', presetGroup = 'us', locale = 'en', example } = Astro.props;
+const t = CALCULATOR_COPY[locale];
+const rule = PRESETS[defaultPreset];
+const metric = rule.unit === 'metric';
+const pkg = example ?? (metric ? { length: 40, width: 30, height: 20, actualWeight: 3 } : { length: 18, width: 14, height: 12, actualWeight: 8 });
+const labels = (PRESET_LABELS as Record<string, Record<string, string>>)[locale] ?? {};
+const group = PRESET_GROUPS[presetGroup] as readonly string[];
+const presetOptions: [string, string][] = [
+  ...group.map((key): [string, string] => [key, labels[key] ?? PRESETS[key as PresetKey].label]),
+  ['custom', t.custom],
+];
+const dimUnit = metric ? 'cm' : 'in';
+const weightUnit = metric ? 'kg' : 'lb';
+const volumeUnit = metric ? 'cm³' : 'in³';
+const scriptCopy = {
+  basisDim: t.basisDim, basisScale: t.basisScale, basisThreshold: t.basisThreshold, signalAir: t.signalAir, signalScale: t.signalScale,
+  noRows: t.noRows, copied: t.copied, copy: t.copy, shared: t.shared, linkCopied: t.linkCopied, share: t.share, shareTitle: t.shareTitle, copyText: t.copyText,
+};
 ---
 
-<section class="calculator-shell" data-workspace data-default-tab={defaultTab} data-show-margin={String(showMargin)}>
+<section class="calculator-shell" data-workspace data-default-tab={defaultTab} data-show-margin={String(showMargin)} data-locale={NUMBER_LOCALE[locale]} data-group={JSON.stringify(group)} data-copy={JSON.stringify(scriptCopy)}>
   {!compactIntro && (
     <div class="workspace-intro">
-      <span class="eyebrow">Free · no sign-up · private by design</span>
-      <h2>Audit one package—or a whole catalogue.</h2>
-      <p>Your measurements and CSV stay in this browser. The result updates as you type.</p>
+      <span class="eyebrow">{t.introEyebrow}</span>
+      <h2>{t.introHeading}</h2>
+      <p>{t.introText}</p>
     </div>
   )}
 
   <div class="workspace-card">
-    <div class="workspace-tabs" role="tablist" aria-label="Audit mode">
-      <button class="tab-button" type="button" role="tab" data-tab-target="single">Single package</button>
-      <button class="tab-button" type="button" role="tab" data-tab-target="batch">Batch CSV audit <span>Free</span></button>
+    <div class="workspace-tabs" role="tablist" aria-label={t.modeLabel}>
+      <button class="tab-button" type="button" role="tab" data-tab-target="single">{t.single}</button>
+      <button class="tab-button" type="button" role="tab" data-tab-target="batch">{t.batch} <span>{t.free}</span></button>
     </div>
 
     <div class="workspace-panel" data-panel="single">
       <form class="input-panel" data-calculator-form>
         <div class="panel-heading">
           <div>
-            <span class="step-label">01 / Package</span>
-            <h3>What are you shipping?</h3>
+            <span class="step-label">{t.step}</span>
+            <h3>{t.heading}</h3>
           </div>
-          <button class="text-button" type="button" data-reset>Reset</button>
+          <button class="text-button" type="button" data-reset>{t.reset}</button>
         </div>
 
         <fieldset class="segmented-control">
-          <legend class="sr-only">Measurement system</legend>
-          <label><input type="radio" name="unit" value="imperial" checked /> Imperial <small>in · lb</small></label>
-          <label><input type="radio" name="unit" value="metric" /> Metric <small>cm · kg</small></label>
+          <legend class="sr-only">{t.measurement}</legend>
+          <label><input type="radio" name="unit" value="imperial" checked={!metric} /> {t.imperial} <small>in · lb</small></label>
+          <label><input type="radio" name="unit" value="metric" checked={metric} /> {t.metric} <small>cm · kg</small></label>
         </fieldset>
 
         <div class="dimension-grid">
-          <label class="field"><span>Length <b data-dimension-unit>in</b></span><input name="length" inputmode="decimal" type="number" min="0" step="0.1" value="18" /></label>
-          <label class="field"><span>Width <b data-dimension-unit>in</b></span><input name="width" inputmode="decimal" type="number" min="0" step="0.1" value="14" /></label>
-          <label class="field"><span>Height <b data-dimension-unit>in</b></span><input name="height" inputmode="decimal" type="number" min="0" step="0.1" value="12" /></label>
+          <label class="field"><span>{t.length} <b data-dimension-unit>{dimUnit}</b></span><input name="length" inputmode="decimal" enterkeyhint="next" type="number" min="0" step="0.1" value={pkg.length} /></label>
+          <label class="field"><span>{t.width} <b data-dimension-unit>{dimUnit}</b></span><input name="width" inputmode="decimal" enterkeyhint="next" type="number" min="0" step="0.1" value={pkg.width} /></label>
+          <label class="field"><span>{t.height} <b data-dimension-unit>{dimUnit}</b></span><input name="height" inputmode="decimal" enterkeyhint="next" type="number" min="0" step="0.1" value={pkg.height} /></label>
         </div>
 
         <div class="two-column-fields">
-          <label class="field"><span>Scale weight <b data-weight-unit>lb</b></span><input name="actualWeight" inputmode="decimal" type="number" min="0" step="0.1" value="8" /></label>
-          <label class="field"><span>Packages</span><input name="quantity" inputmode="numeric" type="number" min="1" step="1" value="1" /></label>
+          <label class="field"><span>{t.scaleWeight} <b data-weight-unit>{weightUnit}</b></span><input name="actualWeight" inputmode="decimal" enterkeyhint="done" type="number" min="0" step="0.1" value={pkg.actualWeight} /></label>
+          <label class="field"><span>{t.packages}</span><input name="quantity" inputmode="numeric" type="number" min="1" step="1" value="1" /></label>
         </div>
 
         <div class="mobile-live-result" aria-hidden="true">
-          <span>Billable weight</span>
-          <strong><b data-result="billable">22</b> <em data-weight-unit>lb</em></strong>
-          <small data-result="basis">Dimensional weight controls this shipment.</small>
+          <span>{t.billable}</span>
+          <strong><b data-result="billable">–</b> <em data-weight-unit>{weightUnit}</em></strong>
+          <small data-result="basis"></small>
         </div>
 
         <label class="field full-field rule-field">
-          <span>Calculation rule <button class="info-dot" type="button" aria-label="About divisors" title="Carriers divide package volume by a rule-specific divisor.">?</button></span>
+          <span>{t.rule} <button class="info-dot" type="button" aria-label={t.ruleHelp} title={t.ruleTitle}>?</button></span>
           <select name="preset">
-            <option value="imperial139">Common parcel · 139 in³/lb</option>
-            <option value="imperial166">Retail / legacy · 166 in³/lb</option>
-            <option value="metric5000">Express metric · 5,000 cm³/kg</option>
-            <option value="metric6000">Air metric · 6,000 cm³/kg</option>
-            <option value="custom">Custom rule</option>
+            {presetOptions.map(([value, label]) => <option value={value} selected={value === defaultPreset}>{label}</option>)}
           </select>
         </label>
 
         <details class="advanced" data-margin-details>
-          <summary>Profit and cost details <span>Optional</span></summary>
+          <summary>{t.profitSummary} <span>{t.optional}</span></summary>
           <div class="currency-row">
-            <label class="field"><span>Currency</span><select name="currency"><option>USD</option><option>EUR</option><option>GBP</option><option>INR</option><option>BRL</option><option>CAD</option><option>AUD</option></select></label>
-            <label class="field"><span>Selling price</span><input name="salePrice" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.currency}</span><select name="currency">{['USD', 'EUR', 'GBP', 'INR', 'BRL', 'MXN', 'CAD', 'AUD', 'COP', 'CLP'].map((code) => <option selected={code === (locale === 'pt-br' ? 'BRL' : locale === 'es' ? 'EUR' : 'USD')}>{code}</option>)}</select></label>
+            <label class="field"><span>{t.salePrice}</span><input name="salePrice" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
           </div>
           <div class="cost-grid">
-            <label class="field"><span>Product cost</span><input name="productCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
-            <label class="field"><span>Packaging</span><input name="packagingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
-            <label class="field"><span>Label / carrier cost</span><input name="shippingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
-            <label class="field"><span>Marketplace fees</span><input name="fees" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.productCost}</span><input name="productCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.packaging}</span><input name="packagingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.shippingCost}</span><input name="shippingCost" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
+            <label class="field"><span>{t.fees}</span><input name="fees" inputmode="decimal" type="number" min="0" step="0.01" placeholder="0.00" /></label>
           </div>
         </details>
 
         <details class="advanced">
-          <summary>Advanced calculation settings</summary>
+          <summary>{t.advanced}</summary>
           <div class="two-column-fields advanced-fields">
-            <label class="field"><span>Custom divisor</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value="139" /></label>
-            <label class="field"><span>Weight rounding</span><select name="billableStep"><option value="1">Next whole unit</option><option value="0.5">Next 0.5 unit</option><option value="0.1">Next 0.1 unit</option></select></label>
+            <label class="field"><span>{t.divisor}</span><input name="divisor" inputmode="decimal" type="number" min="1" step="1" value={rule.divisor} /></label>
+            <label class="field"><span>{t.weightRounding}</span><select name="billableStep">{[['1', t.stepWhole], ['0.5', t.stepHalf], ['0.1', t.stepTenth]].map(([value, label]) => <option value={value} selected={Number(value) === rule.billableStep}>{label}</option>)}</select></label>
+            <label class="field"><span>{t.dimRounding}</span><select name="dimRounding">{[['up', t.roundUp], ['nearest', t.roundNearest], ['none', t.roundNone]].map(([value, label]) => <option value={value} selected={value === rule.dimRounding}>{label}</option>)}</select></label>
+            <label class="field"><span>{t.threshold} <b data-volume-unit>{volumeUnit}</b></span><input name="dimThreshold" inputmode="numeric" type="number" min="0" step="1" value={rule.dimThreshold} /></label>
           </div>
-          <label class="check-field"><input name="roundDimensions" type="checkbox" checked /> Round each outside dimension up before calculating</label>
+          <p class="result-note">{t.advancedNote}</p>
         </details>
       </form>
 
       <aside class="result-panel" aria-live="polite">
-        <div class="result-kicker"><span>Live audit</span><span class="status-dot">Ready</span></div>
+        <div class="result-kicker"><span>{t.liveAudit}</span><span class="status-dot">{t.ready}</span></div>
         <div class="primary-result">
-          <span>Estimated billable weight</span>
-          <strong><b data-result="billable">22</b> <em data-weight-unit>lb</em></strong>
-          <p data-result="basis">Dimensional weight controls this shipment.</p>
+          <span>{t.estimated}</span>
+          <strong><b data-result="billable">–</b> <em data-weight-unit>{weightUnit}</em></strong>
+          <p data-result="basis"></p>
         </div>
 
         <div class="air-card" data-air-card>
           <div class="air-visual" aria-hidden="true"><span data-air-bar></span></div>
           <div>
-            <span>You may be paying for</span>
-            <strong><b data-result="airWeight">14</b> <em data-weight-unit>lb</em> of air</strong>
-            <small><b data-result="airPercent">64</b>% of billable weight</small>
+            <span>{t.payingFor}</span>
+            <strong><b data-result="airWeight">–</b> <em data-weight-unit>{weightUnit}</em> {t.ofAir}</strong>
+            <small><b data-result="airPercent">–</b>{t.ofBillable}</small>
           </div>
         </div>
 
         <dl class="result-grid">
-          <div><dt>Scale weight</dt><dd><span data-result="actual">8</span> <em data-weight-unit>lb</em></dd></div>
-          <div><dt>DIM weight</dt><dd><span data-result="dim">22</span> <em data-weight-unit>lb</em></dd></div>
-          <div><dt>Package volume</dt><dd><span data-result="volume">3,024</span> <em data-volume-unit>in³</em></dd></div>
-          <div><dt>Length + girth</dt><dd><span data-result="girth">70</span> <em data-dimension-unit>in</em></dd></div>
+          <div><dt>{t.scaleWeight}</dt><dd><span data-result="actual">–</span> <em data-weight-unit>{weightUnit}</em></dd></div>
+          <div><dt>{t.dimWeight}</dt><dd><span data-result="dim">–</span> <em data-weight-unit>{weightUnit}</em></dd></div>
+          <div><dt>{t.volume}</dt><dd><span data-result="volume">–</span> <em data-volume-unit>{volumeUnit}</em></dd></div>
+          <div><dt>{t.girth}</dt><dd><span data-result="girth">–</span> <em data-dimension-unit>{dimUnit}</em></dd></div>
         </dl>
 
         <div class="recommendation" data-recommendation>
           <span class="recommendation-icon">↘</span>
-          <div><strong>A smaller carton can help.</strong><p>To reach scale weight, target roughly <b data-result="target">13.5 × 10.5 × 9 in</b>.</p></div>
+          <div><strong>{t.smallerTitle}</strong><p>{t.smallerText} <b data-result="target">–</b>.</p></div>
         </div>
 
         <div class="profit-card" data-profit-card hidden>
-          <span>Estimated order profit</span>
+          <span>{t.profit}</span>
           <strong><span data-result="profit">0.00</span></strong>
-          <small><span data-result="margin">0</span>% margin before tax</small>
+          <small><span data-result="margin">0</span>{t.marginBeforeTax}</small>
         </div>
 
         <div class="result-actions">
-          <button class="primary-button" type="button" data-copy>Copy result</button>
-          <button class="secondary-button" type="button" data-share>Share link</button>
-          <button class="icon-button" type="button" data-print aria-label="Print result">⌘P</button>
+          <button class="primary-button" type="button" data-copy>{t.copy}</button>
+          <button class="secondary-button" type="button" data-share>{t.share}</button>
+          <button class="icon-button" type="button" data-print aria-label={t.printLabel}>{t.print}</button>
         </div>
-        <p class="result-note">Planning estimate. Confirm the rule in your carrier agreement before buying a label.</p>
+        <p class="result-note">{t.note}</p>
       </aside>
     </div>
 
     <div class="workspace-panel batch-panel" data-panel="batch" hidden>
       <div class="batch-input">
-        <span class="step-label">Batch audit</span>
-        <h3>Paste a product or package list.</h3>
-        <p>Use six columns: <code>sku,length,width,height,weight,quantity</code>. Everything stays on this device.</p>
-        <textarea data-csv-input rows="10" spellcheck="false" aria-label="CSV package data" placeholder="sku,length,width,height,weight,quantity&#10;TSHIRT-M,12,10,3,1.2,24&#10;MUG-RED,8,6,5,2.1,12"></textarea>
+        <span class="step-label">{t.batchStep}</span>
+        <h3>{t.batchHeading}</h3>
+        <p>{t.batchHelpBefore} <code>sku,length,width,height,weight,quantity</code>. {t.batchHelpAfter}</p>
+        <textarea data-csv-input rows="10" spellcheck="false" aria-label={t.csvLabel} placeholder="sku,length,width,height,weight,quantity&#10;TSHIRT-M,12,10,3,1.2,24&#10;MUG-RED,8,6,5,2.1,12"></textarea>
         <div class="batch-controls">
-          <label class="file-button">Choose CSV<input data-csv-file type="file" accept=".csv,text/csv" /></label>
-          <button class="text-button" type="button" data-sample>Load example</button>
-          <button class="primary-button" type="button" data-run-batch>Audit packages</button>
+          <label class="file-button">{t.chooseCsv}<input data-csv-file type="file" accept=".csv,text/csv" /></label>
+          <button class="text-button" type="button" data-sample>{t.loadExample}</button>
+          <button class="primary-button" type="button" data-run-batch>{t.runBatch}</button>
         </div>
-        <p class="privacy-line"><span>◆</span> CSV contents are processed locally and are never uploaded.</p>
+        <p class="privacy-line"><span>◆</span> {t.csvPrivacy}</p>
       </div>
       <div class="batch-results">
         <div class="batch-summary">
-          <div><span>Valid rows</span><strong data-batch="rows">0</strong></div>
-          <div><span>DIM-controlled</span><strong data-batch="dimRows">0</strong></div>
-          <div><span>Total air weight</span><strong><b data-batch="air">0</b> <em data-weight-unit>lb</em></strong></div>
+          <div><span>{t.validRows}</span><strong data-batch="rows">0</strong></div>
+          <div><span>{t.dimRows}</span><strong data-batch="dimRows">0</strong></div>
+          <div><span>{t.totalAir}</span><strong><b data-batch="air">0</b> <em data-weight-unit>{weightUnit}</em></strong></div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>SKU</th><th>Scale</th><th>DIM</th><th>Billable</th><th>Signal</th></tr></thead>
-            <tbody data-batch-body><tr><td colspan="5" class="empty-cell">Paste CSV data to see the audit.</td></tr></tbody>
+            <thead><tr><th>SKU</th><th>{t.colScale}</th><th>{t.colDim}</th><th>{t.colBillable}</th><th>{t.colSignal}</th></tr></thead>
+            <tbody data-batch-body><tr><td colspan="5" class="empty-cell">{t.emptyBatch}</td></tr></tbody>
           </table>
         </div>
-        <button class="secondary-button download-button" type="button" data-download disabled>Download audited CSV</button>
+        <button class="secondary-button download-button" type="button" data-download disabled>{t.download}</button>
       </div>
     </div>
   </div>
@@ -168,7 +195,7 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
 
 <script>
   // @ts-nocheck -- DOM controls are progressively enhanced and guarded at runtime.
-  import { PRESETS, calculatePackage, escapeCsv, formatNumber, parseAuditCsv } from '../lib/shipping.mjs';
+  import { IN3_PER_LB_TO_CM3_PER_KG, PRESETS, calculatePackage, decodeShareParams, defaultPresetFor, encodeShareParams, escapeCsv, formatNumber, parseAuditCsv } from '../lib/shipping.mjs';
 
   const getValue = (form, name) => form.elements.namedItem(name)?.value ?? '';
 
@@ -181,6 +208,10 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
     const divisor = form.elements.namedItem('divisor');
     const unitRadios = form.elements.namedItem('unit');
     let batchRows = [];
+    const copy = JSON.parse(workspace.getAttribute('data-copy') || '{}');
+    const numberLocale = workspace.getAttribute('data-locale') || 'en';
+    const group = JSON.parse(workspace.getAttribute('data-group') || '[]');
+    const fmt = (value, digits) => formatNumber(value, digits, numberLocale);
 
     const activateTab = (name) => {
       tabs.forEach((tab) => {
@@ -206,7 +237,9 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
       quantity: getValue(form, 'quantity'),
       divisor: getValue(form, 'divisor'),
       billableStep: getValue(form, 'billableStep'),
-      roundDimensions: form.elements.namedItem('roundDimensions')?.checked,
+      preset: getValue(form, 'preset'),
+      dimRounding: getValue(form, 'dimRounding'),
+      dimThreshold: getValue(form, 'dimThreshold'),
       currency: getValue(form, 'currency'),
       salePrice: getValue(form, 'salePrice'),
       productCost: getValue(form, 'productCost'),
@@ -220,15 +253,15 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
     const calculate = () => {
       const result = calculatePackage(collect());
       setUnitLabels(result.unit);
-      put('billable', formatNumber(result.billableWeight));
-      put('basis', result.isDimensional ? 'Dimensional weight controls this shipment.' : 'Scale weight controls this shipment.');
-      put('airWeight', formatNumber(result.airWeight));
-      put('airPercent', formatNumber(result.airPercent, 0));
-      put('actual', formatNumber(result.actualWeight));
-      put('dim', formatNumber(result.dimWeight));
-      put('volume', formatNumber(result.volume, 0));
-      put('girth', formatNumber(result.lengthPlusGirth));
-      put('target', `${result.targetDimensions.map((n) => formatNumber(n, 1)).join(' × ')} ${result.unit === 'metric' ? 'cm' : 'in'}`);
+      put('billable', fmt(result.billableWeight));
+      put('basis', !result.dimApplies ? copy.basisThreshold : result.isDimensional ? copy.basisDim : copy.basisScale);
+      put('airWeight', fmt(result.airWeight));
+      put('airPercent', fmt(result.airPercent, 0));
+      put('actual', fmt(result.actualWeight));
+      put('dim', fmt(result.dimWeight));
+      put('volume', fmt(result.volume, 0));
+      put('girth', fmt(result.lengthPlusGirth));
+      put('target', `${result.targetDimensions.map((n) => fmt(n, 1)).join(' × ')} ${result.unit === 'metric' ? 'cm' : 'in'}`);
       const airBar = workspace.querySelector('[data-air-bar]');
       if (airBar instanceof HTMLElement) airBar.style.height = `${Math.max(5, Math.min(100, result.airPercent))}%`;
       const recommendation = workspace.querySelector('[data-recommendation]');
@@ -239,9 +272,9 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
       const hasPrice = Number(result.salePrice) > 0;
       if (profitCard instanceof HTMLElement) profitCard.hidden = !hasPrice;
       if (hasPrice) {
-        const money = new Intl.NumberFormat('en', { style: 'currency', currency: result.currency, maximumFractionDigits: 2 }).format(result.profit);
+        const money = new Intl.NumberFormat(numberLocale, { style: 'currency', currency: result.currency, maximumFractionDigits: 2 }).format(result.profit);
         put('profit', money);
-        put('margin', formatNumber(result.marginPercent, 1));
+        put('margin', fmt(result.marginPercent, 1));
         profitCard?.classList.toggle('is-loss', result.profit < 0);
       }
       return result;
@@ -253,32 +286,43 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
       if (divisor instanceof HTMLInputElement) divisor.value = String(selected.divisor);
       const radio = form.querySelector(`input[name="unit"][value="${selected.unit}"]`);
       if (radio instanceof HTMLInputElement) radio.checked = true;
-      const rounding = form.elements.namedItem('billableStep');
-      if (rounding instanceof HTMLSelectElement) rounding.value = selected.unit === 'metric' ? '0.5' : '1';
+      const setField = (name, fieldValue) => {
+        const control = form.elements.namedItem(name);
+        if (control instanceof HTMLInputElement || control instanceof HTMLSelectElement) control.value = String(fieldValue);
+      };
+      setField('billableStep', selected.billableStep);
+      setField('dimRounding', selected.dimRounding);
+      setField('dimThreshold', selected.dimThreshold);
       calculate();
     };
+
+    // Editing the rule by hand turns it into a custom rule, so the label never disagrees with the maths.
+    ['divisor', 'billableStep', 'dimRounding', 'dimThreshold'].forEach((name) => {
+      form.elements.namedItem(name)?.addEventListener('change', () => {
+        if (preset instanceof HTMLSelectElement) preset.value = 'custom';
+      });
+    });
 
     const shareUrl = () => {
       const data = collect();
       const url = new URL(window.location.href);
-      const map = { length: 'l', width: 'w', height: 'h', actualWeight: 'wt', unit: 'u', divisor: 'd' };
-      Object.entries(map).forEach(([key, query]) => url.searchParams.set(query, String(data[key])));
+      url.search = encodeShareParams(data);
       return url.toString();
     };
 
     const loadQuery = () => {
-      const query = new URLSearchParams(window.location.search);
-      const map = { l: 'length', w: 'width', h: 'height', wt: 'actualWeight', d: 'divisor' };
-      Object.entries(map).forEach(([key, field]) => {
-        const value = query.get(key);
-        const control = form.elements.namedItem(field);
-        if (value && control instanceof HTMLInputElement) control.value = value;
-      });
-      const unit = query.get('u');
-      if (unit === 'metric' || unit === 'imperial') {
-        const radio = form.querySelector(`input[name="unit"][value="${unit}"]`);
+      const shared = decodeShareParams(window.location.search);
+      if (!Object.keys(shared).length) return false;
+      if (shared.unit) {
+        const radio = form.querySelector(`input[name="unit"][value="${shared.unit}"]`);
         if (radio instanceof HTMLInputElement) radio.checked = true;
       }
+      if (preset instanceof HTMLSelectElement) preset.value = shared.preset ?? 'custom';
+      ['length', 'width', 'height', 'actualWeight', 'quantity', 'divisor', 'dimThreshold', 'billableStep', 'dimRounding'].forEach((field) => {
+        const control = form.elements.namedItem(field);
+        if (shared[field] !== undefined && (control instanceof HTMLInputElement || control instanceof HTMLSelectElement)) control.value = String(shared[field]);
+      });
+      return true;
     };
 
     const runBatch = () => {
@@ -288,13 +332,13 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
       batchRows = parseAuditCsv(input.value).map((row) => ({ ...row, result: calculatePackage({ ...settings, ...row }) }));
       const body = workspace.querySelector('[data-batch-body]');
       if (body) {
-        body.innerHTML = batchRows.length ? batchRows.map(({ sku, result }) => `<tr><td>${String(sku).replaceAll('<', '&lt;')}</td><td>${formatNumber(result.actualWeight)}</td><td>${formatNumber(result.dimWeight)}</td><td><strong>${formatNumber(result.billableWeight)}</strong></td><td><span class="signal ${result.isDimensional ? 'warn' : 'good'}">${result.isDimensional ? 'Paying for air' : 'Scale-led'}</span></td></tr>`).join('') : '<tr><td colspan="5" class="empty-cell">No valid rows found. Check the six-column format.</td></tr>';
+        body.innerHTML = batchRows.length ? batchRows.map(({ sku, result }) => `<tr><td>${String(sku).replaceAll('<', '&lt;')}</td><td>${fmt(result.actualWeight)}</td><td>${fmt(result.dimWeight)}</td><td><strong>${fmt(result.billableWeight)}</strong></td><td><span class="signal ${result.isDimensional ? 'warn' : 'good'}">${result.isDimensional ? copy.signalAir : copy.signalScale}</span></td></tr>`).join('') : `<tr><td colspan="5" class="empty-cell">${copy.noRows}</td></tr>`;
       }
       const dimRows = batchRows.filter(({ result }) => result.isDimensional).length;
       const air = batchRows.reduce((sum, { result }) => sum + result.airWeight * result.quantity, 0);
       workspace.querySelector('[data-batch="rows"]').textContent = String(batchRows.length);
       workspace.querySelector('[data-batch="dimRows"]').textContent = String(dimRows);
-      workspace.querySelector('[data-batch="air"]').textContent = formatNumber(air);
+      workspace.querySelector('[data-batch="air"]').textContent = fmt(air);
       const download = workspace.querySelector('[data-download]');
       if (download instanceof HTMLButtonElement) download.disabled = !batchRows.length;
     };
@@ -303,23 +347,40 @@ const { defaultTab = 'single', showMargin = false, compactIntro = false } = Astr
     form.addEventListener('input', calculate);
     preset?.addEventListener('change', updatePreset);
     unitRadios?.forEach?.((radio) => radio.addEventListener('change', () => {
-      if (preset instanceof HTMLSelectElement) preset.value = radio.value === 'metric' ? 'metric5000' : 'imperial139';
+      const next = defaultPresetFor(radio.value, group);
+      if (preset instanceof HTMLSelectElement) preset.value = next;
+      if (next === 'custom') {
+        // No preset for this unit on this page: convert the current rule so the answer stays comparable.
+        const toMetric = radio.value === 'metric';
+        const divisorField = form.elements.namedItem('divisor');
+        const thresholdField = form.elements.namedItem('dimThreshold');
+        if (divisorField instanceof HTMLInputElement) divisorField.value = String(Math.round(toMetric ? Number(divisorField.value) * IN3_PER_LB_TO_CM3_PER_KG : Number(divisorField.value) / IN3_PER_LB_TO_CM3_PER_KG));
+        if (thresholdField instanceof HTMLInputElement) thresholdField.value = String(Math.round(toMetric ? Number(thresholdField.value) * 16.387064 : Number(thresholdField.value) / 16.387064));
+        calculate();
+        return;
+      }
       updatePreset();
     }));
     workspace.querySelector('[data-reset]')?.addEventListener('click', () => { form.reset(); updatePreset(); });
     workspace.querySelector('[data-copy]')?.addEventListener('click', async (event) => {
+      const button = event.currentTarget;
       const result = calculate();
       const unit = result.unit === 'metric' ? 'kg' : 'lb';
-      await navigator.clipboard.writeText(`ShippingMath audit: ${formatNumber(result.billableWeight)} ${unit} billable; ${formatNumber(result.airWeight)} ${unit} air weight; ${formatNumber(result.lengthPlusGirth)} ${result.unit === 'metric' ? 'cm' : 'in'} length + girth.`);
-      event.currentTarget.textContent = 'Copied';
-      setTimeout(() => { event.currentTarget.textContent = 'Copy result'; }, 1400);
+      const dimUnitLabel = result.unit === 'metric' ? 'cm' : 'in';
+      await navigator.clipboard.writeText(String(copy.copyText)
+        .replace('{billable}', `${fmt(result.billableWeight)} ${unit}`)
+        .replace('{air}', `${fmt(result.airWeight)} ${unit}`)
+        .replace('{girth}', `${fmt(result.lengthPlusGirth)} ${dimUnitLabel}`));
+      button.textContent = copy.copied;
+      setTimeout(() => { button.textContent = copy.copy; }, 1400);
     });
     workspace.querySelector('[data-share]')?.addEventListener('click', async (event) => {
+      const button = event.currentTarget;
       const url = shareUrl();
-      if (navigator.share) await navigator.share({ title: 'ShippingMath package audit', url });
+      if (navigator.share) await navigator.share({ title: copy.shareTitle, url });
       else await navigator.clipboard.writeText(url);
-      event.currentTarget.textContent = navigator.share ? 'Shared' : 'Link copied';
-      setTimeout(() => { event.currentTarget.textContent = 'Share link'; }, 1400);
+      button.textContent = navigator.share ? copy.shared : copy.linkCopied;
+      setTimeout(() => { button.textContent = copy.share; }, 1400);
     });
     workspace.querySelector('[data-print]')?.addEventListener('click', () => window.print());
     workspace.querySelector('[data-sample]')?.addEventListener('click', () => {

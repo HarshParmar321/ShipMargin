@@ -1,8 +1,17 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languagePaths } from '../../lib/locales';
+import { SUPPORT_EMAIL } from '../../lib/site';
 ---
 <BaseLayout title="Contact ShippingMath" description="Contact ShippingMath about calculation corrections, feedback and partnerships." canonicalPath="/contact/" languagePaths={languagePaths.contact}>
   <header class="tool-hero"><span class="eyebrow">Feedback improves the tool</span><h1>Found a rule we should check?</h1><p>We welcome calculation corrections, workflow feedback and partnership enquiries.</p></header>
-  <article class="content-section"><h2>Before production launch</h2><p>The public support address will be added with the production domain so users can report incorrect rules and include the carrier, service, country and source documentation.</p><div class="notice"><strong>Please protect customer privacy.</strong> Never send names, addresses, tracking numbers, invoices or unredacted order exports when reporting a calculator issue.</div></article>
+  <article class="content-section">
+    <h2>Email</h2>
+    {SUPPORT_EMAIL
+      ? <p>Write to <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. ShippingMath is run by Harsh Parmar, and every message is read personally.</p>
+      : <p>Our support email address is being set up and will be published here soon. ShippingMath is run by Harsh Parmar.</p>}
+    <h2>Reporting a calculation issue</h2>
+    <p>Please include the carrier, service, destination country, the package measurements and weight you entered, and a link to the public rule or rate document you are comparing against.</p>
+    <div class="notice"><strong>Please protect customer privacy.</strong> Never send names, addresses, tracking numbers, invoices or unredacted order exports when reporting a calculator issue.</div>
+  </article>
 </BaseLayout>

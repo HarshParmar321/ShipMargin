@@ -1,15 +1,59 @@
 ---
 import ToolPage from '../../components/ToolPage.astro';
+
+const faq: [string, string][] = [
+  ['What is billable weight?', 'Billable weight (also called chargeable weight) is the weight a carrier uses to price your shipment. It is the higher of the actual scale weight and the dimensional weight, after each has been rounded according to the carrier\'s rules.'],
+  ['How is billable weight calculated?', 'Round the actual weight up to the next whole pound, calculate the dimensional weight (length × width × height ÷ divisor, rounded up), and take the larger of the two. For USPS, dimensional weight only counts for parcels larger than 1,728 cubic inches.'],
+  ['Is billable weight always higher than actual weight?', 'No. It is never lower than the rounded actual weight, but for small, dense packages it is usually the same as the actual weight. It is only higher when the box is large compared with what is inside.'],
+  ['Why is actual weight rounded up?', 'Carriers price by whole pounds (or 0.5 kg steps internationally), so any fraction is rounded up. A package that weighs 5.1 lb is charged as 6 lb.'],
+  ['Does billable weight include surcharges?', 'No. Billable weight decides which weight bracket you are charged at. Surcharges such as additional handling, large package fees or fuel surcharges are added on top of the base rate.'],
+];
 ---
 <ToolPage
-  title="Billable Weight Calculator — Scale vs DIM Weight | ShippingMath"
+  title="Billable Weight Calculator: Actual vs DIM | ShippingMath"
   heading="Billable weight calculator"
-  eyebrow="Know the weight that matters"
-  description="Compare rounded physical weight with dimensional weight and identify which one may control the base shipping charge."
-  formula="Estimated billable weight = greater of applicable scale and DIM weight"
-  explanation={[
-    'The number printed by a scale is not always the weight used for rating a shipment. A service may calculate dimensional weight, apply thresholds and rounding, then compare the applicable result with physical weight.',
-    'ShippingMath keeps both figures visible. This helps sellers understand adjustments and test packaging changes before purchasing a label.',
-  ]}
+  crumb="Billable weight calculator"
+  eyebrow="Actual weight vs DIM weight"
+  description="Find the weight your carrier will charge for: the higher of the rounded scale weight and the dimensional weight, with UPS, FedEx and USPS rules."
   path="/billable-weight-calculator/"
-/>
+  defaultPreset="ups139"
+  example={{ length: 12, width: 10, height: 8, actualWeight: 9.4 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">Billable weight is the number your shipping price is actually based on. It isn't always what your scale says: carriers compare the real weight with the dimensional weight of the box and charge for whichever is higher.</p>
+
+  <div class="formula-box">Billable weight = the higher of (rounded actual weight, dimensional weight)</div>
+
+  <h2>The three steps</h2>
+  <ol>
+    <li><strong>Round the actual weight up</strong> to the next whole pound. 9.4 lb counts as 10 lb.</li>
+    <li><strong>Calculate the dimensional weight</strong>: round each side up to the next inch, multiply, divide by the divisor (139 for most US services) and round up. Use the <a href="/dimensional-weight-calculator/">dimensional weight calculator</a> for the details.</li>
+    <li><strong>Take the higher number.</strong> That's your billable weight.</li>
+  </ol>
+
+  <h2>When does the box size decide the price?</h2>
+  <p>It depends on how dense the package is. The same 139 divisor gives very different answers for a heavy, compact package and a light, bulky one.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Package</th><th>Actual weight</th><th>DIM weight (÷139)</th><th>Billable</th><th>Set by</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Package">Books, 12 × 10 × 8 in</td><td data-label="Actual">9.4 → 10 lb</td><td data-label="DIM">960 ÷ 139 = 6.9 → 7 lb</td><td data-label="Billable">10 lb</td><td data-label="Set by">Scale weight</td></tr>
+        <tr><td data-label="Package">Pillow, 20 × 16 × 10 in</td><td data-label="Actual">2.2 → 3 lb</td><td data-label="DIM">3,200 ÷ 139 = 23.0 → 24 lb</td><td data-label="Billable">24 lb</td><td data-label="Set by">Box size</td></tr>
+        <tr><td data-label="Package">Shoes, 14 × 10 × 5 in</td><td data-label="Actual">2.6 → 3 lb</td><td data-label="DIM">700 ÷ 139 = 5.04 → 6 lb</td><td data-label="Billable">6 lb</td><td data-label="Set by">Box size</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">UPS Daily Rates / FedEx rules. At USPS, the books and shoes would be priced by actual weight because they are under 1,728 in³.</p>
+
+  <h2>Carrier differences that change billable weight</h2>
+  <ul>
+    <li><strong>Divisor:</strong> 139 for UPS Daily Rates, FedEx and USPS; 166 for UPS Retail Rates.</li>
+    <li><strong>USPS threshold:</strong> dimensional weight only applies to parcels over 1,728 in³ (see the <a href="/usps-dimensional-weight-calculator/">USPS 2026 calculator</a>).</li>
+    <li><strong>Rounding:</strong> UPS and USPS round each side up to the next inch; check FedEx on your invoices.</li>
+    <li><strong>Metric services:</strong> 5,000 or 6,000 cm³/kg, often in 0.5 kg steps (see the <a href="/volumetric-weight-calculator/">volumetric weight calculator</a>).</li>
+  </ul>
+
+  <h2>How to bring billable weight down</h2>
+  <p>If the box size sets your price, the fix is packaging, not product weight. Compare the boxes you have with the <a href="/box-margin-optimizer/">box optimizer</a>, and use the <a href="/shipping-margin-calculator/">shipping margin calculator</a> to see what the difference means for your profit per order.</p>
+</ToolPage>

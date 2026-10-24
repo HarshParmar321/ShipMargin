@@ -1,13 +1,30 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languagePaths } from '../../lib/locales';
+import { CLOUDFLARE_ANALYTICS_TOKEN, SUPPORT_EMAIL } from '../../lib/site';
 ---
-<BaseLayout title="Privacy | ShippingMath" description="ShippingMath privacy information and local-processing principles." canonicalPath="/privacy/" languagePaths={languagePaths.privacy}>
-  <header class="tool-hero"><span class="eyebrow">Privacy by design</span><h1>Your shipment data stays yours.</h1><p>The calculator and batch CSV audit are designed to run in your browser without uploading package data.</p></header>
+<BaseLayout title="Privacy Policy | ShippingMath" description="How ShippingMath handles calculator data, and how analytics, advertising and cookies may be used." canonicalPath="/privacy/" languagePaths={languagePaths.privacy}>
+  <header class="tool-hero"><span class="eyebrow">Privacy by design</span><h1>Your shipment data stays yours.</h1><p>The calculators and batch CSV audit run in your browser. Package data is not uploaded to ShippingMath.</p></header>
   <article class="content-section">
-    <h2>Local calculations</h2><p>Measurements, weights, prices and CSV contents are processed on the device running the page. The free version does not require an account or store submitted calculator data on a ShippingMath server.</p>
-    <h2>Share links</h2><p>A generated link may include basic measurements, measurement system and divisor in its URL. Do not include customer information or confidential data. CSV contents, filenames, SKUs and cost fields are not included automatically.</p>
-    <h2>Analytics and advertising</h2><p>Before public launch, this notice will identify the exact analytics and advertising providers in use. Product analytics must not contain measurements, prices, filenames, SKUs or CSV contents. Consent controls will be provided where legally required.</p>
-    <h2>Contact</h2><p>Questions about privacy can be sent through the contact details published on the production site.</p>
+    <p><strong>Last updated:</strong> 24 October 2026. This site is operated by Harsh Parmar (“ShippingMath”, “we”).</p>
+    <h2>Calculator and CSV data</h2>
+    <p>Measurements, weights, prices, box lists and CSV contents are processed on your device. We do not receive or store them, and no account is needed.</p>
+    <h2>Share links</h2>
+    <p>A share link includes the package measurements, weight, quantity, measurement system and the calculation rule (carrier preset, divisor, rounding and threshold) in its URL, so anyone you send it to can see those values. CSV contents, filenames, SKUs and cost fields are never added to links.</p>
+    <h2>Analytics</h2>
+    {CLOUDFLARE_ANALYTICS_TOKEN && <p>We use Cloudflare Web Analytics to count page views and see which pages, countries and devices visitors use. It does not use cookies, does not track you across websites and does not collect calculator inputs. See <a href="https://www.cloudflare.com/web-analytics/" rel="noopener">Cloudflare Web Analytics</a>.</p>}
+    <p>We do not currently use analytics cookies. In the future we may use Google Analytics 4 to understand which pages are visited and from which countries and devices. If we do, calculator inputs, prices, filenames, SKUs and CSV contents will not be sent to analytics, and this page will be updated before it is switched on.</p>
+    <h2>Advertising</h2>
+    <p>We do not currently show ads. In the future we may use Google AdSense to keep the tools free. Google and its partners may then use cookies to show ads based on visits to this and other websites, and you will be able to turn off personalised advertising in <a href="https://adssettings.google.com" rel="noopener">Google Ads Settings</a>. See <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">how Google uses information from sites that use its services</a>.</p>
+    <h2>Consent</h2>
+    <p>Before any analytics or advertising cookies are used, visitors in the EEA, UK and Switzerland will be asked for consent through a Google-certified consent tool, and those tags will follow your choice.</p>
+    <h2>Hosting and security</h2>
+    <p>The site is hosted on Cloudflare, which processes technical data such as IP addresses to deliver pages securely and protect against abuse.</p>
+    <h2>Children</h2>
+    <p>ShippingMath is a business tool and is not directed at children under 13.</p>
+    <h2>Contact</h2>
+    {SUPPORT_EMAIL
+      ? <p>Questions about privacy: <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.</p>
+      : <p>Questions about privacy can be sent through the <a href="/contact/">contact page</a>.</p>}
   </article>
 </BaseLayout>

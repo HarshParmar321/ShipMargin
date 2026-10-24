@@ -1,0 +1,19 @@
+// Cloudflare Workers (static assets) config for ShippingMath.
+// Deploy with: npm run deploy   (first time: npx wrangler login)
+{
+  "name": "shippingmath",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+  // No duplicate *.workers.dev copy of the site (avoids duplicate content in Google).
+  "workers_dev": false,
+  "preview_urls": false,
+  // Serve the site on your own domain. The domain must already be added to your
+  // Cloudflare account (nameservers switched) before the first deploy.
+  "routes": [
+    { "pattern": "shippingmath.com", "custom_domain": true }
+  ]
+}

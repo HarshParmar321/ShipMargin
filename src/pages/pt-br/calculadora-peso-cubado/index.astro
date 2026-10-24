@@ -1,0 +1,116 @@
+---
+import ToolPage from '../../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
+
+const path = '/pt-br/calculadora-peso-cubado/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['O que é peso cubado?', 'Peso cubado (ou peso cúbico) é o peso que a transportadora calcula a partir do tamanho da embalagem: comprimento × largura × altura dividido por um fator de cubagem. Se ele for maior que o peso real, o frete é cobrado pelo peso cubado.'],
+  ['Como calcular o peso cubado?', 'Meça a caixa em centímetros, multiplique comprimento × largura × altura e divida pelo fator de cubagem da transportadora. Nos Correios o fator é 6.000. Exemplo: 50 × 40 × 30 cm = 60.000 cm³; 60.000 ÷ 6.000 = 10 kg.'],
+  ['Qual é o fator de cubagem dos Correios?', 'O fator volumétrico dos Correios para SEDEX e PAC é 6.000, segundo o Termo de Condições de Prestação de Serviços de Encomendas Nacionais.'],
+  ['Os Correios cobram peso cubado em toda encomenda?', 'Não. Pelo termo de condições dos Correios, a encomenda com peso volumétrico de até 5 kg é sempre precificada pelo peso físico. Na prática, caixas com até 30.000 cm³ (por exemplo 40 × 30 × 25 cm) pagam pelo peso real.'],
+  ['Qual a diferença entre peso cubado e peso real?', 'Peso real é o que a balança mostra. Peso cubado é calculado pelo tamanho da caixa. A transportadora cobra o maior dos dois, respeitando as regras de cada serviço.'],
+  ['Qual é a cubagem máxima dos Correios?', 'Para pacotes no SEDEX e no PAC, a maior dimensão é de 100 cm, a soma de comprimento + largura + altura é de no máximo 200 cm e o peso máximo é 30 kg.'],
+  ['O Mercado Livre usa peso cubado?', 'Sim, o Mercado Livre calcula o custo de envio a partir das medidas e do peso do pacote, mas não conseguimos confirmar o fator usado em uma fonte oficial. Confira a página de ajuda do Mercado Livre sobre medidas e peso e use uma regra personalizada na calculadora.'],
+  ['Como calcular o peso cubado de uma caixa em metros cúbicos?', 'Multiplique as medidas em metros e depois pelo fator em kg/m³. Um fator de 6.000 cm³/kg equivale a cerca de 167 kg/m³: uma caixa de 0,06 m³ tem 0,06 × 167 ≈ 10 kg de peso cubado.'],
+];
+---
+<ToolPage
+  title="Calculadora de Peso Cubado (Correios e Loggi) | ShippingMath"
+  heading="Calculadora de peso cubado"
+  crumb="Calculadora de peso cubado"
+  eyebrow="Correios · Loggi · Amazon · regras de 2026"
+  description="Calcule o peso cubado e o peso cobrado da sua encomenda com o fator de cubagem dos Correios (6.000), da Loggi e da Amazon. Grátis, sem cadastro."
+  path={path}
+  locale="pt-br"
+  htmlLang="pt-BR"
+  alternates={VOLUMETRIC_CLUSTER}
+  presetGroup="br"
+  defaultPreset="correios"
+  example={{ length: 50, width: 40, height: 30, actualWeight: 2 }}
+  faq={faq}
+  showReviewed
+  showCountries
+>
+  <p class="lead">Peso cubado é o peso que a transportadora cobra pelo espaço que a sua caixa ocupa, e não pelo que ela pesa. Se uma caixa grande e leve ocupa mais espaço do que o peso dela paga, o frete é calculado pelo peso cubado.</p>
+
+  <ul class="key-facts">
+    <li><b>6.000</b><span>Fator de cubagem dos Correios (SEDEX e PAC)</span></li>
+    <li><b>5 kg</b><span>Até esse peso cúbico, os Correios cobram o peso real</span></li>
+    <li><b>167 kg/m³</b><span>Fator da Loggi (≈ 5.988 cm³/kg)</span></li>
+    <li><b>200 cm</b><span>Soma máxima C + L + A no SEDEX e no PAC</span></li>
+  </ul>
+
+  <h2>Como calcular o peso cubado</h2>
+  <ol>
+    <li><strong>Meça a caixa pronta por fora</strong>, em centímetros, incluindo qualquer volume que saia da embalagem.</li>
+    <li><strong>Multiplique</strong> comprimento × largura × altura para ter o volume em cm³.</li>
+    <li><strong>Divida pelo fator de cubagem</strong> da transportadora: 6.000 nos Correios.</li>
+    <li><strong>Compare com o peso real.</strong> A transportadora cobra o maior dos dois.</li>
+    <li><strong>Nos Correios</strong>, se o peso cubado for de até 5 kg, vale sempre o peso real.</li>
+  </ol>
+  <div class="formula-box">Peso cubado (kg) = C × L × A (cm) ÷ 6.000</div>
+
+  <h2>Fator de cubagem por transportadora</h2>
+  <p>Cada opção da calculadora acima usa estas regras. Contratos negociados podem ter outro fator; informe-o em <em>Configurações avançadas</em>.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Transportadora</th><th>Fator</th><th>Quando se aplica</th><th>Fonte</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Transportadora">Correios (SEDEX e PAC)</td><td data-label="Fator">6.000 cm³/kg</td><td data-label="Quando">Só quando o peso cubado passa de 5 kg</td><td data-label="Fonte"><a href="https://www.correios.com.br/enviar/precisa-de-ajuda/contrate-os-correios/arquivos/contratos-formalizados-ate-fevereiro-de-2020/18-termo-de-condicoes-de-prestacao-de-servicos-de-encomendas-nacio-ns-sedex-e-pac.pdf" rel="noopener">Termo de condições</a></td></tr>
+        <tr><td data-label="Transportadora">Loggi</td><td data-label="Fator">167 kg/m³ (≈ 5.988)</td><td data-label="Quando">Sempre vale o maior peso</td><td data-label="Fonte"><a href="https://www.loggi.com/termos-condicoes-clientes/" rel="noopener">Termos da Loggi</a></td></tr>
+        <tr><td data-label="Transportadora">Amazon FBA Brasil</td><td data-label="Fator">6.000 cm³/kg (+20 g de embalagem)</td><td data-label="Quando">Tarifa de logística: o maior entre peso real e dimensional</td><td data-label="Fonte"><a href="https://venda.amazon.com.br/precos" rel="noopener">Amazon</a></td></tr>
+        <tr><td data-label="Transportadora">Mercado Livre</td><td data-label="Fator">Não confirmado</td><td data-label="Quando">Usa medidas e peso do anúncio</td><td data-label="Fonte"><a href="https://www.mercadolivre.com.br/ajuda/Dimensoes-permitidas_3163" rel="noopener">Ajuda do Mercado Livre</a></td></tr>
+        <tr><td data-label="Transportadora">Jadlog, Total Express e outras</td><td data-label="Fator">Confirme no contrato</td><td data-label="Quando">Cobram o maior entre peso real e cubado</td><td data-label="Fonte">Seu contrato ou plataforma de frete</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Não encontramos regra oficial de arredondamento das medidas para essas transportadoras; por isso a calculadora usa as medidas exatas. Você pode mudar isso nas configurações avançadas.</p>
+
+  <h2>Cubagem nos Correios: regras e limites</h2>
+  <ul>
+    <li><strong>Fator de cubagem 6.000</strong> para encomendas SEDEX e PAC; o maior valor entre peso físico e peso cúbico define o preço.</li>
+    <li><strong>Até 5 kg de peso cúbico, vale o peso real.</strong> É a regra mais importante para quem vende online: caixas de até 30.000 cm³ não pagam por peso cubado.</li>
+    <li><strong>Envelopes</strong> (objetos bidimensionais) não têm precificação volumétrica.</li>
+    <li><strong>Limites de pacote:</strong> maior dimensão 100 cm, soma C + L + A de no máximo 200 cm e peso máximo de 30 kg.</li>
+    <li><strong>SEDEX 10 e SEDEX 12</strong> também têm precificação cúbica.</li>
+  </ul>
+  <p class="table-note">Fontes: <a href="https://www.correios.com.br/enviar/encomendas/nacional" rel="noopener">Correios, encomendas nacionais</a> e o termo de condições do SEDEX e PAC.</p>
+
+  <h2>Exemplos de cálculo</h2>
+  <div class="example-card">
+    <h3>1. Caixa média nos Correios</h3>
+    <p>Caixa de 50 × 40 × 30 cm com um produto de 2 kg. Volume: 60.000 cm³. 60.000 ÷ 6.000 = 10 kg, acima do limite de 5 kg.</p>
+    <p class="answer">Peso cobrado: <b>10 kg</b> (peso cubado)</p>
+    <a class="try-link" href={tryLink('correios', { length: 50, width: 40, height: 30, actualWeight: 2 })} rel="nofollow">Abrir este exemplo →</a>
+  </div>
+  <div class="example-card">
+    <h3>2. Caixa no limite de 5 kg</h3>
+    <p>Caixa de 40 × 30 × 25 cm com 2 kg. Volume: 30.000 cm³ ÷ 6.000 = 5 kg. Como o peso cubado é de até 5 kg, os Correios cobram o peso real.</p>
+    <p class="answer">Peso cobrado: <b>2 kg</b> (peso real)</p>
+    <a class="try-link" href={tryLink('correios', { length: 40, width: 30, height: 25, actualWeight: 2 })} rel="nofollow">Abrir este exemplo →</a>
+  </div>
+  <div class="example-card">
+    <h3>3. A mesma caixa média na Loggi</h3>
+    <p>Volume: 0,5 × 0,4 × 0,3 m = 0,06 m³. 0,06 × 167 kg/m³ ≈ 10,0 kg. Na Loggi não há o limite de 5 kg: vale sempre o maior peso.</p>
+    <p class="answer">Peso cobrado: <b>≈ 10,1 kg</b> (peso cubado, arredondado para 0,1 kg)</p>
+    <a class="try-link" href={tryLink('loggi', { length: 50, width: 40, height: 30, actualWeight: 2 })} rel="nofollow">Abrir este exemplo →</a>
+  </div>
+
+  <h2>Peso cubado aéreo e rodoviário</h2>
+  <p>No transporte aéreo e expresso, o padrão é dividir o volume em cm³ por 6.000 (o fator da IATA, também usado pela Amazon) ou por 5.000 em alguns serviços expressos internacionais, como a DHL Express. No transporte rodoviário de cargas, o mais comum é um fator em kg/m³ definido em contrato. Use a opção <em>Regra personalizada</em> e informe o fator da sua transportadora.</p>
+
+  <h2>Como pagar menos frete por peso cubado</h2>
+  <ul>
+    <li><strong>Mantenha a caixa em até 30.000 cm³ nos Correios</strong> sempre que o produto permitir: assim o frete é pelo peso real.</li>
+    <li><strong>Use envelopes</strong> para produtos finos e macios; nos Correios eles não têm precificação volumétrica.</li>
+    <li><strong>Escolha a menor caixa que protege o produto</strong> e evite caixas estufadas.</li>
+    <li><strong>Compare suas caixas</strong> com o <a href="/pt-br/otimizador-de-caixas/">otimizador de caixas</a>, que mostra a opção com o menor custo total.</li>
+    <li><strong>Cadastre medidas corretas</strong> nos marketplaces para não ter diferença de peso cobrada depois.</li>
+  </ul>
+</ToolPage>

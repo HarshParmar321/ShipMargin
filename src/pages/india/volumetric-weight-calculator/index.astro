@@ -1,0 +1,81 @@
+---
+import ToolPage from '../../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
+
+const path = '/india/volumetric-weight-calculator/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['What is the volumetric weight formula in India?', 'Most Indian couriers use length × breadth × height in centimetres divided by 5,000. Delhivery, Blue Dart (air) and Amazon Easy Ship all publish this formula. You are charged the higher of the volumetric weight and the dead weight.'],
+  ['How do I calculate volumetric weight in inches?', 'Multiply length × breadth × height in inches and divide by about 305 to get kilograms (the same as ÷ 5,000 in centimetres). Or switch the calculator to Imperial and it converts the divisor for you.'],
+  ['How does Delhivery calculate volumetric weight?', 'Delhivery uses (length × breadth × height) / 5,000 for Surface and Express, and charges max(dead weight, volumetric weight). Shipments packed in flyers are charged on dead weight up to 1 kg.'],
+  ['How does Amazon Easy Ship charge weight?', 'Amazon.in uses (L × B × H in cm) / 5,000 and charges the higher of volumetric and actual weight. The minimum chargeable weight is 500 g and weight is charged in 500 g steps for standard-size items.'],
+  ['Does India Post use volumetric weight?', 'Yes. Post Office rules define the weight as the gross or volumetric weight, whichever is higher, but we could not find the published formula, so check at the counter or with your account.'],
+  ['What is dead weight vs volumetric weight?', 'Dead weight is what the scale shows. Volumetric weight is calculated from the box size. Couriers charge the higher one, so a big, light parcel can cost much more than its dead weight.'],
+];
+---
+<ToolPage
+  title="Volumetric Weight Calculator India (cm, inches) | ShippingMath"
+  heading="Volumetric weight calculator India"
+  crumb="Volumetric weight (India)"
+  eyebrow="Delhivery · Blue Dart · Amazon · Shiprocket"
+  description="Calculate courier volumetric weight in India with the L × B × H ÷ 5,000 formula used by Delhivery, Blue Dart and Amazon Easy Ship, in centimetres or inches."
+  path={path}
+  htmlLang="en-IN"
+  alternates={VOLUMETRIC_CLUSTER}
+  presetGroup="in"
+  defaultPreset="delhivery"
+  example={{ length: 30, width: 20, height: 15, actualWeight: 1 }}
+  faq={faq}
+  showReviewed
+  showCountries
+>
+  <p class="lead">Indian couriers charge for the higher of a parcel's dead weight and its volumetric weight, which is worked out from the box size. For light products in big boxes, volumetric weight decides your shipping cost.</p>
+
+  <ul class="key-facts">
+    <li><b>÷ 5,000</b><span>Delhivery, Blue Dart air, Amazon Easy Ship (cm)</span></li>
+    <li><b>÷ 305</b><span>The same formula with inches, giving kg</span></li>
+    <li><b>500 g</b><span>Amazon Easy Ship charging steps</span></li>
+    <li><b>1 kg</b><span>Delhivery flyers: dead weight up to 1 kg</span></li>
+  </ul>
+
+  <h2>Volumetric weight formula</h2>
+  <div class="formula-box">Volumetric weight (kg) = L × B × H (cm) ÷ 5,000</div>
+  <p>Compare the result with the dead weight. The higher of the two is the chargeable weight.</p>
+
+  <h2>Worked example</h2>
+  <div class="example-card">
+    <h3>A 30 × 20 × 15 cm box weighing 1 kg (Delhivery)</h3>
+    <p>30 × 20 × 15 = 9,000 cm³; 9,000 ÷ 5,000 = 1.8 kg, more than the 1 kg dead weight.</p>
+    <p class="answer">Chargeable weight: <b>1.8 kg</b> (Amazon Easy Ship: <b>2.0 kg</b> in 500 g steps)</p>
+    <a class="try-link" href={tryLink('delhivery', { length: 30, width: 20, height: 15, actualWeight: 1 })} rel="nofollow">Open with Delhivery →</a>
+    <a class="try-link" style="margin-left: 16px" href={tryLink('amazonIn', { length: 30, width: 20, height: 15, actualWeight: 1 })} rel="nofollow">Open with Amazon →</a>
+  </div>
+
+  <h2>Courier rules in India</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Courier</th><th>Formula</th><th>Notes</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Courier">Delhivery</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Surface and Express; flyers on dead weight up to 1 kg</td><td data-label="Source"><a href="https://help.delhivery.com/docs/calculating-volumetric-weight" rel="noopener">Delhivery</a></td></tr>
+        <tr><td data-label="Courier">Blue Dart (air)</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Rounded to the next half kg or kg; surface uses 1 cubic foot = 10 kg</td><td data-label="Source"><a href="https://www.bluedart.com/terms-condition" rel="noopener">Blue Dart terms</a></td></tr>
+        <tr><td data-label="Courier">Amazon Easy Ship</td><td data-label="Formula">÷ 5,000</td><td data-label="Notes">Minimum 500 g, charged in 500 g steps</td><td data-label="Source"><a href="https://sell.amazon.in/fees-and-pricing" rel="noopener">Amazon.in fees</a></td></tr>
+        <tr><td data-label="Courier">Shiprocket</td><td data-label="Formula">÷ 5,000 (most partners)</td><td data-label="Notes">Some partners differ (e.g. Aramex 6,000)</td><td data-label="Source"><a href="https://support.shiprocket.in/support/solutions/articles/43000664204-how-to-calculate-the-volumetric-weight-of-my-shipment-" rel="noopener">Shiprocket</a></td></tr>
+        <tr><td data-label="Courier">India Post / Speed Post</td><td data-label="Formula">Not published</td><td data-label="Notes">Gross or volumetric weight, whichever is higher; 35 kg</td><td data-label="Source"><a href="https://www.indiapost.gov.in/mailproducts/domesticservices/speedpostparceldomestic" rel="noopener">India Post</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">We could not confirm official volumetric rules for DTDC, Ekart or Flipkart. Use a custom rule with the figure from your courier account.</p>
+
+  <h2>How to reduce volumetric weight</h2>
+  <ul>
+    <li>Use flyers or poly bags for clothing and soft items where your courier allows it.</li>
+    <li>Pick the smallest box that protects the product; every centimetre multiplies.</li>
+    <li>Declare accurate dimensions on Amazon and other marketplaces to avoid weight disputes.</li>
+    <li>Compare boxes with the <a href="/box-margin-optimizer/">box optimizer</a>.</li>
+  </ul>
+</ToolPage>

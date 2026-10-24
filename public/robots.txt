@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://shipmargin-audit.gujjuweb3.chatgpt.site/sitemap-index.xml
+Sitemap: https://shippingmath.com/sitemap-index.xml

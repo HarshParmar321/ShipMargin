@@ -2,6 +2,12 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BoxOptimizer from '../../components/BoxOptimizer.astro';
 import { languagePaths, localizedSites } from '../../lib/locales';
+import { CLOUDFLARE_ANALYTICS_TOKEN, SUPPORT_EMAIL } from '../../lib/site';
+
+const cfNotice = {
+  'pt-br': 'Usamos o Cloudflare Web Analytics para contar visitas e ver páginas, países e dispositivos. Ele não usa cookies, não rastreia você entre sites e não coleta dados das calculadoras. ',
+  es: 'Usamos Cloudflare Web Analytics para contar visitas y ver páginas, países y dispositivos. No usa cookies, no te rastrea entre sitios y no recoge datos de las calculadoras. ',
+} as const;
 
 export function getStaticPaths() {
   const routes = [];
@@ -48,7 +54,9 @@ const canonicalPath = pageType === 'optimizer' ? site.optimizerPath : `${site.ho
   <BaseLayout title={page.title} description={page.description} canonicalPath={canonicalPath} locale={site.locale} languagePaths={alternates}>
     <header class="tool-hero"><span class="eyebrow">{page.eyebrow}</span><h1>{page.heading}</h1><p>{page.intro}</p></header>
     <article class="content-section">
-      {(page.sections as readonly (readonly [string, string])[]).map(([heading, text]) => <><h2>{heading}</h2><p>{text}</p></>)}
+      {(page.sections as readonly (readonly [string, string])[])
+        .filter(([, text]) => SUPPORT_EMAIL || !text.includes('{email}'))
+        .map(([heading, text]) => <><h2>{heading}</h2><p>{text.replaceAll('{email}', SUPPORT_EMAIL).replace('{cf}', CLOUDFLARE_ANALYTICS_TOKEN ? cfNotice[site.locale] : '')}</p></>)}
     </article>
   </BaseLayout>
 )}

@@ -1,41 +1,150 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShippingCalculator from './ShippingCalculator.astro';
+import { TOOLS } from '../lib/tools';
+import { PRESETS, PRESET_GROUPS, RULES_REVIEWED_ON } from '../lib/shipping.mjs';
+import { COUNTRY_LINKS } from '../lib/alternates';
+
+type Locale = 'en' | 'pt-br' | 'es';
 
 interface Props {
   title: string;
   heading: string;
   description: string;
   eyebrow: string;
+  path: string;
+  /** Short name used in the breadcrumb, e.g. "DIM weight calculator". */
+  crumb?: string;
+  locale?: Locale;
+  /** hreflang tag for <html lang>, e.g. en-GB. */
+  htmlLang?: string;
+  /** hreflang alternates (country/language versions of this page). */
+  alternates?: [string, string][];
+  /** Show the "calculate for another country" picker. */
+  showCountries?: boolean;
   defaultTab?: 'single' | 'batch';
   showMargin?: boolean;
+  defaultPreset?: keyof typeof PRESETS;
+  presetGroup?: keyof typeof PRESET_GROUPS;
+  example?: { length: number; width: number; height: number; actualWeight: number };
   formula?: string;
-  explanation: string[];
-  path: string;
+  /** Short intro paragraphs, used by pages without long-form content. */
+  explanation?: string[];
+  /** Visible FAQ, also published as FAQPage structured data. Plain-text answers. */
+  faq?: [string, string][];
+  /** Show the "rules last reviewed" line. */
+  showReviewed?: boolean;
 }
 
-const { title, heading, description, eyebrow, defaultTab = 'single', showMargin = false, formula, explanation, path } = Astro.props;
+const {
+  title, heading, description, eyebrow, path, crumb = heading, locale = 'en', htmlLang, alternates, showCountries = false,
+  defaultTab = 'single', showMargin = false, defaultPreset = 'ups139', presetGroup = 'us', example,
+  formula, explanation = [], faq = [], showReviewed = false,
+} = Astro.props;
+
+const copy = {
+  en: {
+    home: '/', how: 'How it works', faq: 'Frequently asked questions', related: 'More free shipping tools', countries: 'Calculate for another country',
+    notice: '<strong>Planning estimate:</strong> carrier rules, service thresholds, contracts and measurement methods can change. Confirm the current rule before buying a label or quoting a customer.',
+    reviewed: (date: string) => `Carrier rules last reviewed on ${date}. See the <a href="/methodology/">methodology and sources</a>.`,
+    dateLocale: 'en-US',
+  },
+  'pt-br': {
+    home: '/pt-br/', how: 'Como funciona', faq: 'Perguntas frequentes', related: 'Mais ferramentas grátis', countries: 'Calcular para outro país',
+    notice: '<strong>Estimativa para planejamento:</strong> regras, limites, contratos e formas de medição das transportadoras podem mudar. Confirme a regra atual antes de comprar a etiqueta ou passar um orçamento.',
+    reviewed: (date: string) => `Regras das transportadoras revisadas em ${date}. Veja a <a href="/pt-br/metodologia/">metodologia</a>.`,
+    dateLocale: 'pt-BR',
+  },
+  es: {
+    home: '/es/', how: 'Cómo funciona', faq: 'Preguntas frecuentes', related: 'Más herramientas gratuitas', countries: 'Calcular para otro país',
+    notice: '<strong>Estimación orientativa:</strong> las reglas, límites, contratos y formas de medir de cada empresa pueden cambiar. Confirma la regla actual antes de comprar la etiqueta o dar un presupuesto.',
+    reviewed: (date: string) => `Reglas de las empresas de paquetería revisadas el ${date}. Consulta la <a href="/es/metodologia/">metodología</a>.`,
+    dateLocale: 'es-ES',
+  },
+}[locale];
+
+const origin = Astro.site ?? Astro.url.origin;
+const reviewed = new Date(`${RULES_REVIEWED_ON}T00:00:00Z`).toLocaleDateString(copy.dateLocale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const localTools = {
+  en: TOOLS.map((tool) => ({ href: tool.href, name: tool.name, blurb: tool.blurb })),
+  'pt-br': [
+    { href: '/pt-br/calculadora-peso-cubado/', name: 'Calculadora de peso cubado', blurb: 'Correios, Loggi e Amazon com as regras atuais.' },
+    { href: '/pt-br/otimizador-de-caixas/', name: 'Otimizador de caixas e margem', blurb: 'Encontre a caixa com o menor custo total.' },
+    { href: '/pt-br/metodologia/', name: 'Metodologia', blurb: 'Como calculamos e de onde vêm as regras.' },
+  ],
+  es: [
+    { href: '/es/calculadora-peso-volumetrico/', name: 'Calculadora de peso volumétrico', blurb: 'Correos, DHL, Estafeta, FedEx y más.' },
+    { href: '/es/optimizador-de-cajas/', name: 'Optimizador de cajas y margen', blurb: 'Encuentra la caja con el menor coste total.' },
+    { href: '/es/metodologia/', name: 'Metodología', blurb: 'Cómo calculamos y de dónde salen las reglas.' },
+  ],
+}[locale];
+const related = localTools.filter((tool) => tool.href !== path).slice(0, 6);
+const homeUrl = new URL(copy.home, origin).toString();
+const jsonLd: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'ShippingMath', item: homeUrl },
+      { '@type': 'ListItem', position: 2, name: crumb, item: new URL(path, origin).toString() },
+    ],
+  },
+];
+if (faq.length) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: htmlLang ?? locale,
+    mainEntity: faq.map(([question, answer]) => ({ '@type': 'Question', name: question, acceptedAnswer: { '@type': 'Answer', text: answer } })),
+  });
+}
 ---
 
-<BaseLayout title={title} description={description} canonicalPath={path}>
+<BaseLayout title={title} description={description} canonicalPath={path} jsonLd={jsonLd} locale={locale} htmlLang={htmlLang} alternates={alternates}>
   <header class="tool-hero">
-    <div class="crumbs"><a href="/">ShippingMath</a> / Free tool</div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href={copy.home}>ShippingMath</a> / <span aria-current="page">{crumb}</span></nav>
     <span class="eyebrow">{eyebrow}</span>
     <h1>{heading}</h1>
     <p>{description}</p>
   </header>
-  <ShippingCalculator defaultTab={defaultTab} showMargin={showMargin} compactIntro />
-  <article class="content-section">
-    <h2>One answer, with the assumptions visible.</h2>
-    {explanation.map((paragraph) => <p>{paragraph}</p>)}
+  <ShippingCalculator defaultTab={defaultTab} showMargin={showMargin} defaultPreset={defaultPreset} presetGroup={presetGroup} locale={locale} example={example} compactIntro />
+  <article class="content-section long">
+    {explanation.length > 0 && (
+      <>
+        <h2>{copy.how}</h2>
+        {explanation.map((paragraph) => <p>{paragraph}</p>)}
+      </>
+    )}
     {formula && <div class="formula-box">{formula}</div>}
-    <div class="notice"><strong>Important:</strong> ShippingMath provides a planning estimate. Carrier rules, service thresholds, contracts and measurement methods can change. Confirm the current rule before purchasing a label or quoting a customer.</div>
-    <h2>Why sellers check this before shipping</h2>
-    <ul>
-      <li>See whether the scale or the carton size controls the billed weight.</li>
-      <li>Understand how much of the charge comes from empty package volume.</li>
-      <li>Test a smaller box before changing packaging or product pricing.</li>
-      <li>Copy or share a reproducible result without creating an account.</li>
-    </ul>
+    <slot />
+    {faq.length > 0 && (
+      <>
+        <h2 id="faq">{copy.faq}</h2>
+        <div class="faq">
+          {faq.map(([question, answer]) => (
+            <details>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))}
+        </div>
+      </>
+    )}
+    {showCountries && (
+      <>
+        <h2>{copy.countries}</h2>
+        <ul class="country-picker">
+          {COUNTRY_LINKS.map((country) => <li><a href={country.href} hreflang={country.hreflang} aria-current={country.href === path ? 'page' : undefined}><span aria-hidden="true">{country.flag}</span>{country.label}</a></li>)}
+        </ul>
+      </>
+    )}
+    <div class="notice" style="margin-top: 40px" set:html={copy.notice} />
+    {showReviewed && <p class="updated-line" set:html={copy.reviewed(reviewed)} />}
   </article>
+  <section class="related-tools" aria-labelledby="related-heading">
+    <h2 id="related-heading">{copy.related}</h2>
+    <div class="related-grid">
+      {related.map((tool) => <a href={tool.href}><strong>{tool.name}</strong><span>{tool.blurb}</span></a>)}
+    </div>
+  </section>
 </BaseLayout>

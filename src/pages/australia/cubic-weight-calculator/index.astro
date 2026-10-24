@@ -1,0 +1,83 @@
+---
+import ToolPage from '../../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
+
+const path = '/australia/cubic-weight-calculator/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['What is cubic weight?', 'Cubic weight is the weight a carrier assigns to a parcel based on its size. In Australia it is usually the volume in cubic metres multiplied by 250. You pay for the greater of the cubic weight and the actual (dead) weight.'],
+  ['How do I calculate cubic weight for Australia Post?', 'Convert length, width and height to metres, multiply them, then multiply by 250. For example, 0.5 × 0.4 × 0.3 m = 0.06 m³, and 0.06 × 250 = 15 kg. In centimetres, that is the same as L × W × H ÷ 4,000.'],
+  ['Does Australia Post charge cubic weight on every parcel?', 'No. Cubic weight does not apply to eligible Australia Post packaging, and for non-contract MyPost Business customers it generally does not apply to parcels under 1 kg actual weight, although Australia Post may still apply it to large, irregular or cylindrical items.'],
+  ['What cubic factor do StarTrack and Aramex use?', 'StarTrack Road Express and Premium use 250 kg/m³, and Fixed Price Premium uses 190 kg/m³. Aramex Australia also calculates cubic weight with a factor of 250.'],
+  ['Does Sendle use cubic weight?', 'Sendle prices by size bands that cap both weight and volume in litres (length × width × height in cm ÷ 1,000). If weight and volume fall in different bands, the larger band applies.'],
+  ['What is the cubic weight vs dead weight difference?', 'Dead weight is what the scales show. Cubic weight is calculated from the parcel\'s size. Carriers charge whichever is higher.'],
+];
+---
+<ToolPage
+  title="Australia Post Cubic Weight Calculator | ShippingMath"
+  heading="Cubic weight calculator Australia"
+  crumb="Cubic weight (Australia)"
+  eyebrow="Australia Post · StarTrack · Aramex · Sendle"
+  description="Calculate cubic weight for Australian parcels with the 250 kg/m³ factor used by Australia Post, StarTrack and Aramex, and compare it with dead weight."
+  path={path}
+  htmlLang="en-AU"
+  alternates={VOLUMETRIC_CLUSTER}
+  presetGroup="au"
+  defaultPreset="auspost"
+  example={{ length: 50, width: 40, height: 30, actualWeight: 4 }}
+  faq={faq}
+  showReviewed
+  showCountries
+>
+  <p class="lead">Cubic weight is the weight Australian carriers charge for based on a parcel's size. If a light parcel takes up a lot of space, you pay for its cubic weight rather than its dead weight.</p>
+
+  <ul class="key-facts">
+    <li><b>250 kg/m³</b><span>Cubic factor for Australia Post, StarTrack and Aramex</span></li>
+    <li><b>÷ 4,000</b><span>The same factor using centimetres</span></li>
+    <li><b>22 kg</b><span>Australia Post maximum weight (105 cm, 0.25 m³)</span></li>
+    <li><b>Under 1 kg</b><span>Generally no cubic charge for non-contract MyPost Business parcels</span></li>
+  </ul>
+
+  <h2>Cubic weight formula</h2>
+  <div class="formula-box">Cubic weight (kg) = L × W × H (m) × 250</div>
+  <p>In centimetres: multiply length × width × height and divide by 4,000. The carrier charges whichever is greater, the cubic weight or the dead weight.</p>
+
+  <h2>Worked example</h2>
+  <div class="example-card">
+    <h3>A 50 × 40 × 30 cm box weighing 4 kg</h3>
+    <ol>
+      <li>0.5 × 0.4 × 0.3 m = 0.06 m³</li>
+      <li>0.06 × 250 = 15 kg cubic weight</li>
+      <li>15 kg is more than the 4 kg dead weight</li>
+    </ol>
+    <p class="answer">Charged weight: <b>15 kg</b></p>
+    <a class="try-link" href={tryLink('auspost', { length: 50, width: 40, height: 30, actualWeight: 4 })} rel="nofollow">Open this example →</a>
+  </div>
+
+  <h2>Australian carrier rules</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Carrier</th><th>Factor</th><th>Notes</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Carrier">Australia Post</td><td data-label="Factor">250 kg/m³</td><td data-label="Notes">Not on eligible Australia Post packaging; max 22 kg, 105 cm, 0.25 m³</td><td data-label="Source"><a href="https://auspost.com.au/business/business-ideas/ecommerce-jargon-busters/what-is-cubic-weight" rel="noopener">Australia Post</a></td></tr>
+        <tr><td data-label="Carrier">StarTrack</td><td data-label="Factor">250 kg/m³ (Fixed Price Premium 190)</td><td data-label="Notes">From 1 October 2026</td><td data-label="Source"><a href="https://auspost.com.au/content/dam/startrack_corp/documents/startrack-additional-charges.pdf" rel="noopener">StarTrack charges</a></td></tr>
+        <tr><td data-label="Carrier">Aramex Australia</td><td data-label="Factor">250 kg/m³</td><td data-label="Notes">Check the parcel limit for your service</td><td data-label="Source"><a href="https://www.aramex.com.au/terms-and-conditions/conditions-of-carriage/domestic-conditions-of-carriage/" rel="noopener">Conditions of carriage</a></td></tr>
+        <tr><td data-label="Carrier">Sendle</td><td data-label="Factor">Size bands (kg and litres)</td><td data-label="Notes">Litres = L × W × H (cm) ÷ 1,000</td><td data-label="Source"><a href="https://support.sendle.com/hc/en-au/articles/205230938-Sendle-parcel-sizes-and-weights-for-domestic-parcels" rel="noopener">Sendle</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Australia Post doesn't publish a rounding rule for cubic weight, so the calculator shows it in 0.1 kg steps.</p>
+
+  <h2>How to reduce cubic weight</h2>
+  <ul>
+    <li>Use Australia Post's own eligible packaging where it fits: cubing doesn't apply to it.</li>
+    <li>Choose the smallest box that protects the item, or a satchel for soft goods.</li>
+    <li>Keep under 105 cm on the longest side to avoid length limits and fees.</li>
+    <li>Compare boxes with the <a href="/box-margin-optimizer/">box optimizer</a>.</li>
+  </ul>
+</ToolPage>

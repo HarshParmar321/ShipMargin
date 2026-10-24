@@ -1,5 +1,8 @@
 ---
 import '../styles/global.css';
+import { TOOLS } from '../lib/tools';
+import { CLOUDFLARE_ANALYTICS_TOKEN } from '../lib/site';
+import { COUNTRY_LINKS } from '../lib/alternates';
 
 type Locale = 'en' | 'pt-br' | 'es';
 
@@ -9,6 +12,13 @@ interface Props {
   canonicalPath?: string;
   locale?: Locale;
   languagePaths?: Partial<Record<Locale, string>>;
+  noindex?: boolean;
+  /** Extra structured data blocks (breadcrumbs, FAQ…). */
+  jsonLd?: object[];
+  /** hreflang alternates for this page, e.g. [['en-GB', '/uk/...'], ['x-default', '/...']]. Overrides languagePaths. */
+  alternates?: [string, string][];
+  /** Language tag for <html lang>, e.g. en-GB. Defaults to the locale's tag. */
+  htmlLang?: string;
 }
 
 const {
@@ -17,81 +27,119 @@ const {
   canonicalPath = Astro.url.pathname,
   locale = 'en',
   languagePaths,
+  noindex = false,
+  jsonLd = [],
+  alternates,
+  htmlLang,
 } = Astro.props;
 
 const localeTags: Record<Locale, string> = { en: 'en', 'pt-br': 'pt-BR', es: 'es' };
 const homePaths: Record<Locale, string> = { en: '/', 'pt-br': '/pt-br/', es: '/es/' };
 const copy = {
   en: {
-    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Runs locally',
-    nav: [['Box optimizer', '/box-margin-optimizer/'], ['DIM weight', '/dimensional-weight-calculator/'], ['Margin', '/shipping-margin-calculator/'], ['Batch audit', '/batch-shipping-audit/']],
+    skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Runs locally', toolsLabel: 'Free tools', countriesLabel: 'Countries',
+    nav: [['DIM weight', '/dimensional-weight-calculator/'], ['USPS 2026', '/usps-dimensional-weight-calculator/'], ['Box optimizer', '/box-margin-optimizer/'], ['Margin', '/shipping-margin-calculator/']],
+    strip: TOOLS.map((tool) => [tool.short, tool.href]),
     tagline: 'Clear shipping math for sellers everywhere.',
-    footer: [['Box optimizer', '/box-margin-optimizer/'], ['Methodology', '/methodology/'], ['Privacy', '/privacy/'], ['Terms', '/terms/'], ['About', '/about/'], ['Contact', '/contact/']],
+    footerTools: TOOLS.map((tool) => [tool.name, tool.href]),
+    footer: [['Methodology', '/methodology/'], ['Privacy', '/privacy/'], ['Terms', '/terms/'], ['About', '/about/'], ['Contact', '/contact/']],
     fine: 'Planning estimates only. Confirm current rules and rates with your carrier or contract.',
   },
   'pt-br': {
-    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Processado localmente',
-    nav: [['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/'], ['Privacidade', '/pt-br/privacidade/']],
+    skip: 'Ir para a calculadora', home: 'Página inicial da ShippingMath', local: 'Processado localmente', toolsLabel: 'Ferramentas', countriesLabel: 'Países',
+    nav: [['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
+    strip: [['Início', '/pt-br/'], ['Peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/']],
     tagline: 'Cálculos de frete claros para vendedores em qualquer lugar.',
-    footer: [['Otimizador', '/pt-br/otimizador-de-caixas/'], ['Metodologia', '/pt-br/metodologia/'], ['Privacidade', '/pt-br/privacidade/'], ['Termos', '/pt-br/termos/'], ['Sobre', '/pt-br/sobre/'], ['Contato', '/pt-br/contato/']],
+    footerTools: [['Calculadora de peso cubado', '/pt-br/calculadora-peso-cubado/'], ['Otimizador de caixas', '/pt-br/otimizador-de-caixas/']],
+    footer: [['Metodologia', '/pt-br/metodologia/'], ['Privacidade', '/pt-br/privacidade/'], ['Termos', '/pt-br/termos/'], ['Sobre', '/pt-br/sobre/'], ['Contato', '/pt-br/contato/']],
     fine: 'Estimativas para planejamento. Confirme as regras e tarifas atuais com a transportadora ou no seu contrato.',
   },
   es: {
-    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Procesado localmente',
-    nav: [['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/'], ['Privacidad', '/es/privacidad/']],
+    skip: 'Ir a la calculadora', home: 'Inicio de ShippingMath', local: 'Procesado localmente', toolsLabel: 'Herramientas', countriesLabel: 'Países',
+    nav: [['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
+    strip: [['Inicio', '/es/'], ['Peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/']],
     tagline: 'Cálculos de envío claros para vendedores de todo el mundo.',
-    footer: [['Optimizador', '/es/optimizador-de-cajas/'], ['Metodología', '/es/metodologia/'], ['Privacidad', '/es/privacidad/'], ['Términos', '/es/terminos/'], ['Acerca de', '/es/acerca-de/'], ['Contacto', '/es/contacto/']],
+    footerTools: [['Calculadora de peso volumétrico', '/es/calculadora-peso-volumetrico/'], ['Optimizador de cajas', '/es/optimizador-de-cajas/']],
+    footer: [['Metodología', '/es/metodologia/'], ['Privacidad', '/es/privacidad/'], ['Términos', '/es/terminos/'], ['Acerca de', '/es/acerca-de/'], ['Contacto', '/es/contacto/']],
     fine: 'Estimaciones para planificación. Confirma las reglas y tarifas actuales con el transportista o tu contrato.',
   },
 } as const;
 
 const labels: Record<Locale, string> = { en: 'EN', 'pt-br': 'PT', es: 'ES' };
 const t = copy[locale];
-const canonical = new URL(canonicalPath, Astro.site ?? Astro.url.origin);
-const switchPaths = { ...homePaths, ...(languagePaths ?? {}) };
+const origin = Astro.site ?? Astro.url.origin;
+const canonical = new URL(canonicalPath, origin);
+const ogImage = new URL('/og-image.png', origin);
+const findAlt = (prefix: string) => alternates?.find(([tag]) => tag.toLowerCase() === prefix) ?? alternates?.find(([tag]) => tag.toLowerCase().startsWith(prefix));
+const switchPaths = alternates
+  ? { en: findAlt('en')?.[1] ?? homePaths.en, 'pt-br': findAlt('pt')?.[1] ?? homePaths['pt-br'], es: findAlt('es')?.[1] ?? homePaths.es }
+  : { ...homePaths, ...(languagePaths ?? {}) };
+const pageLang = htmlLang ?? localeTags[locale];
+const suggestAlternates = (alternates ?? (languagePaths ? [...(Object.entries(languagePaths) as [Locale, string][]).map(([code, path]) => [localeTags[code], path])] : []))
+  .filter(([tag]) => tag !== 'x-default');
+const here = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const isHere = (href: string) => here === href;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'ShippingMath',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Any',
+    inLanguage: localeTags[locale],
+    url: canonical.toString(),
+    description,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  ...jsonLd,
+];
 ---
 
 <!doctype html>
-<html lang={localeTags[locale]}>
+<html lang={pageLang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="description" content={description} />
     <meta name="theme-color" content="#f3f1e8" />
+    <meta name="format-detection" content="telephone=no" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="canonical" href={canonical} />
-    {languagePaths && (Object.entries(languagePaths) as [Locale, string][]).map(([code, path]) => (
-      <link rel="alternate" hreflang={localeTags[code]} href={new URL(path, Astro.site ?? Astro.url.origin)} />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {alternates && alternates.map(([tag, path]) => <link rel="alternate" hreflang={tag} href={new URL(path, origin)} />)}
+    {!alternates && languagePaths && (Object.entries(languagePaths) as [Locale, string][]).map(([code, path]) => (
+      <link rel="alternate" hreflang={localeTags[code]} href={new URL(path, origin)} />
     ))}
-    {languagePaths?.en && <link rel="alternate" hreflang="x-default" href={new URL(languagePaths.en, Astro.site ?? Astro.url.origin)} />}
+    {!alternates && languagePaths?.en && <link rel="alternate" hreflang="x-default" href={new URL(languagePaths.en, origin)} />}
+    <meta property="og:site_name" content="ShippingMath" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="ShippingMath: free shipping calculators for online sellers" />
     <meta property="og:locale" content={localeTags[locale].replace('-', '_')} />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
-    <script type="application/ld+json" set:html={JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'ShippingMath',
-      applicationCategory: 'BusinessApplication',
-      operatingSystem: 'Any',
-      inLanguage: localeTags[locale],
-      url: canonical.toString(),
-      description,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    })} />
+    {structuredData.map((block) => <script type="application/ld+json" set:html={JSON.stringify(block)} />)}
+    {CLOUDFLARE_ANALYTICS_TOKEN && (
+      <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon={JSON.stringify({ token: CLOUDFLARE_ANALYTICS_TOKEN })}></script>
+    )}
   </head>
   <body>
     <a class="skip-link" href="#main">{t.skip}</a>
     <header class="site-header">
       <a class="brand" href={homePaths[locale]} aria-label={t.home}>
-        <span class="brand-mark" aria-hidden="true">↗</span>
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" width="100%" height="100%"><path d="M14 22 32 12l18 10-18 10-18-10Zm0 0v20l18 10 18-10V22M32 32v20" fill="none" stroke="#d8ff70" stroke-width="5" stroke-linejoin="round"/></svg></span>
         <span>ShippingMath</span>
       </a>
-      <nav aria-label="Main navigation">
-        {t.nav.map(([label, href]) => <a href={href}>{label}</a>)}
+      <nav class="main-nav" aria-label="Main navigation">
+        {t.nav.map(([label, href]) => <a href={href} aria-current={isHere(href) ? 'page' : undefined}>{label}</a>)}
       </nav>
       <div class="header-actions">
         <span class="privacy-pill"><i></i> {t.local}</span>
@@ -102,18 +150,87 @@ const switchPaths = { ...homePaths, ...(languagePaths ?? {}) };
         </nav>
       </div>
     </header>
+    <nav class="tool-strip" aria-label={t.toolsLabel}>
+      {t.strip.map(([label, href]) => <a href={href} aria-current={isHere(href) ? 'page' : undefined}>{label}</a>)}
+    </nav>
+    {suggestAlternates.length > 1 && (
+      <div class="lang-suggest" hidden data-lang-suggest data-alternates={JSON.stringify(suggestAlternates)}>
+        <span data-lang-suggest-text></span>
+        <a class="lang-suggest-go" data-lang-suggest-link href="/"></a>
+        <button type="button" class="lang-suggest-close" data-lang-suggest-close aria-label="Close">×</button>
+      </div>
+    )}
     <main id="main">
       <slot />
     </main>
     <footer class="site-footer">
       <div>
-        <a class="brand footer-brand" href={homePaths[locale]}><span class="brand-mark" aria-hidden="true">↗</span>ShippingMath</a>
+        <a class="brand footer-brand" href={homePaths[locale]}><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" width="100%" height="100%"><path d="M14 22 32 12l18 10-18 10-18-10Zm0 0v20l18 10 18-10V22M32 32v20" fill="none" stroke="#d8ff70" stroke-width="5" stroke-linejoin="round"/></svg></span>ShippingMath</a>
         <p>{t.tagline}</p>
       </div>
-      <div class="footer-links">
-        {t.footer.map(([label, href]) => <a href={href}>{label}</a>)}
+      <div class="footer-columns">
+        <div class="footer-links">
+          <strong>{t.toolsLabel}</strong>
+          {t.footerTools.map(([label, href]) => <a href={href}>{label}</a>)}
+        </div>
+        <div class="footer-links">
+          <strong>{t.countriesLabel}</strong>
+          {COUNTRY_LINKS.map((country) => <a href={country.href} hreflang={country.hreflang}>{country.label}</a>)}
+        </div>
+        <div class="footer-links">
+          <strong>ShippingMath</strong>
+          {t.footer.map(([label, href]) => <a href={href}>{label}</a>)}
+        </div>
       </div>
       <p class="fine-print">{t.fine}</p>
     </footer>
+    <script>
+      // @ts-nocheck -- small progressive enhancement, guarded at runtime.
+      // Suggest the version of this page that matches the visitor's browser language/country. Never redirects.
+      (() => {
+        const box = document.querySelector('[data-lang-suggest]');
+        if (!(box instanceof HTMLElement)) return;
+        const messages = {
+          'pt-br': ['🇧🇷 Ver esta página em português (Brasil)', 'Abrir'],
+          es: ['🇪🇸 Ver esta página en español', 'Abrir'],
+          'en-gb': ['🇬🇧 Shipping from the UK? See UK carrier rules', 'Open'],
+          'en-ca': ['🇨🇦 Shipping from Canada? See Canadian carrier rules', 'Open'],
+          'en-au': ['🇦🇺 Shipping from Australia? See cubic weight rules', 'Open'],
+          'en-in': ['🇮🇳 Shipping from India? See Indian courier rules', 'Open'],
+          'en-us': ['🇺🇸 See the US version (UPS, FedEx, USPS)', 'Open'],
+          en: ['See this page in English', 'Open'],
+        };
+        const alternates = JSON.parse(box.getAttribute('data-alternates') || '[]').map(([tag, path]) => [String(tag).toLowerCase(), path]);
+        const here = location.pathname.endsWith('/') ? location.pathname : `${location.pathname}/`;
+        const pick = (lang) => {
+          const l = lang.toLowerCase();
+          return alternates.find(([tag]) => tag === l) ?? alternates.find(([tag]) => tag === l.split('-')[0]) ?? alternates.find(([tag]) => tag.split('-')[0] === l.split('-')[0]);
+        };
+        let match;
+        for (const lang of navigator.languages || [navigator.language || '']) { match = lang && pick(lang); if (match) break; }
+        if (!match || match[1] === here) return;
+        const [tag, path] = match;
+        try { if (localStorage.getItem('sm-lang-dismissed') === tag) return; } catch {}
+        const [text, cta] = messages[tag] ?? messages[tag.split('-')[0]] ?? [];
+        if (!text) return;
+        box.querySelector('[data-lang-suggest-text]').textContent = text;
+        const link = box.querySelector('[data-lang-suggest-link]');
+        link.textContent = cta;
+        link.setAttribute('href', path);
+        link.setAttribute('hreflang', tag);
+        box.querySelector('[data-lang-suggest-close]')?.addEventListener('click', () => {
+          box.hidden = true;
+          try { localStorage.setItem('sm-lang-dismissed', tag); } catch {}
+        });
+        box.hidden = false;
+      })();
+
+      // Keep the active tool visible in the scrollable mobile tool strip.
+      const strip = document.querySelector('.tool-strip');
+      const active = strip?.querySelector('[aria-current="page"]');
+      if (strip instanceof HTMLElement && active instanceof HTMLElement) {
+        strip.scrollLeft = active.offsetLeft - (strip.clientWidth - active.clientWidth) / 2;
+      }
+    </script>
   </body>
 </html>

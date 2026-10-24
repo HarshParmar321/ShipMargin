@@ -1,15 +1,88 @@
 ---
 import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../lib/shipping.mjs';
+
+const path = '/volumetric-weight-calculator/';
+const tryLink = (preset: 'metric5000' | 'metric6000', pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['How do I calculate volumetric weight in kg?', 'Measure the packed parcel in centimetres, multiply length × width × height and divide by the divisor your service uses, usually 5,000 or 6,000. For example, 40 × 30 × 20 cm = 24,000 cm³; 24,000 ÷ 5,000 = 4.8 kg. Compare it with the actual weight and pay for the higher one.'],
+  ['Should I use 5,000 or 6,000?', 'Use the divisor stated by your carrier or contract. 5,000 cm³/kg is common for international express services. Some air, economy and postal services use 6,000, which gives a lower volumetric weight for the same box.'],
+  ['What is volumetric weight?', 'Volumetric weight is the weight a carrier assigns to a parcel based on how much space it takes up. If it is higher than the real weight, the parcel is charged at the volumetric weight. In the US the same idea is usually called dimensional or DIM weight.'],
+  ['How many kilograms is one cubic metre?', 'With a 5,000 divisor, one cubic metre counts as 200 kg (1,000,000 ÷ 5,000). With a 6,000 divisor it counts as about 166.7 kg.'],
+  ['Is a 5,000 divisor the same as 139 in inches?', 'Almost. 5,000 cm³ per kg works out to about 138.4 cubic inches per pound, and 6,000 cm³ per kg to about 166.1. That is why the US divisors 139 and 166 give very similar results.'],
+  ['Is volumetric weight rounded?', 'Usually. Many services round dimensions up to the next whole centimetre and the result up to the next 0.5 kg or whole kg. The calculator rounds up to the next 0.5 kg by default; change it under Advanced calculation settings to match your service.'],
+];
 ---
 <ToolPage
-  title="Volumetric Weight Calculator — Metric & Imperial | ShippingMath"
+  title="Volumetric Weight Calculator (kg, 5000/6000) | ShippingMath"
   heading="Volumetric weight calculator"
-  eyebrow="International parcel planning"
-  description="Work in centimetres and kilograms or inches and pounds. Compare volumetric weight against the package's physical weight without uploading shipment data."
-  formula="Volumetric weight = package volume ÷ service divisor"
-  explanation={[
-    'Volumetric weight and dimensional weight describe the same basic idea: a lightweight carton can occupy enough vehicle or aircraft space to be rated above its scale weight.',
-    'International services use different factors and rounding rules. Switch to metric, choose a planning preset, or type the exact divisor from your contract before relying on the result.',
-  ]}
-  path="/volumetric-weight-calculator/"
-/>
+  crumb="Volumetric weight (kg)"
+  eyebrow="Metric · international shipping"
+  description="Calculate volumetric weight in kilograms from centimetres with a 5,000 or 6,000 cm³/kg divisor, and see whether volume or real weight sets your shipping charge."
+  path={path}
+  defaultPreset="metric5000"
+  example={{ length: 40, width: 30, height: 20, actualWeight: 3 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">Volumetric weight turns the size of a parcel into kilograms. International carriers charge for whichever is higher, the volumetric weight or the real weight, so a large, light parcel can cost far more than its weight suggests.</p>
+
+  <ul class="key-facts">
+    <li><b>5,000</b><span>cm³ per kg, common for international express</span></li>
+    <li><b>6,000</b><span>cm³ per kg, used by some air and economy services</span></li>
+    <li><b>200 kg</b><span>What one cubic metre counts as with a 5,000 divisor</span></li>
+    <li><b>0.5 kg</b><span>Typical billing step for international parcels</span></li>
+  </ul>
+
+  <h2>How to calculate volumetric weight</h2>
+  <ol>
+    <li>Measure the packed parcel in centimetres at its longest points and <strong>round each side up</strong> to the next whole centimetre.</li>
+    <li>Multiply <strong>length × width × height</strong> to get cubic centimetres.</li>
+    <li><strong>Divide by your divisor</strong>: 5,000 or 6,000.</li>
+    <li>Round up to your service's billing step, often the next <strong>0.5 kg</strong>.</li>
+    <li>Compare with the real weight. The higher number is the chargeable weight.</li>
+  </ol>
+  <div class="formula-box">Volumetric weight (kg) = L × W × H (cm) ÷ 5,000</div>
+
+  <h2>5,000 vs 6,000: what difference does it make?</h2>
+  <p>The divisor is the biggest single factor. A higher divisor means a lower volumetric weight for the same parcel.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Parcel (cm)</th><th>Volume</th><th>÷ 5,000</th><th>÷ 6,000</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Parcel">30 × 20 × 15</td><td data-label="Volume">9,000 cm³</td><td data-label="÷ 5,000">1.8 → 2.0 kg</td><td data-label="÷ 6,000">1.5 kg</td></tr>
+        <tr><td data-label="Parcel">40 × 30 × 20</td><td data-label="Volume">24,000 cm³</td><td data-label="÷ 5,000">4.8 → 5.0 kg</td><td data-label="÷ 6,000">4.0 kg</td></tr>
+        <tr><td data-label="Parcel">60 × 40 × 40</td><td data-label="Volume">96,000 cm³</td><td data-label="÷ 5,000">19.2 → 19.5 kg</td><td data-label="÷ 6,000">16.0 kg</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Results rounded up to the next 0.5 kg.</p>
+
+  <h2>Worked example</h2>
+  <div class="example-card">
+    <h3>A 40 × 30 × 20 cm parcel weighing 3 kg</h3>
+    <ol>
+      <li>Volume: 40 × 30 × 20 = 24,000 cm³</li>
+      <li>24,000 ÷ 5,000 = 4.8 kg → rounded up to 5.0 kg</li>
+      <li>5.0 kg is more than the real 3 kg</li>
+    </ol>
+    <p class="answer">Chargeable weight: <b>5.0 kg</b> (or 4.0 kg with a 6,000 divisor)</p>
+    <a class="try-link" href={tryLink('metric5000', { length: 40, width: 30, height: 20, actualWeight: 3 })} rel="nofollow">Open with 5,000 →</a>
+    <a class="try-link" style="margin-left: 16px" href={tryLink('metric6000', { length: 40, width: 30, height: 20, actualWeight: 3 })} rel="nofollow">Open with 6,000 →</a>
+  </div>
+
+  <h2>Volumetric weight vs dimensional weight</h2>
+  <p>They are the same calculation in different units. In the US, carriers use inches, pounds and divisors of 139 or 166; internationally, centimetres, kilograms and divisors of 5,000 or 6,000. In fact 5,000 cm³/kg is about 138.4 in³/lb and 6,000 is about 166.1 in³/lb. For US carriers, use the <a href="/dimensional-weight-calculator/">dimensional weight calculator</a> or the <a href="/usps-dimensional-weight-calculator/">USPS 2026 calculator</a>.</p>
+
+  <h2>Tips to lower volumetric weight</h2>
+  <ul>
+    <li>Pick the smallest carton that protects the product, and use the <a href="/box-margin-optimizer/">box optimizer</a> to compare cartons.</li>
+    <li>Use mailers or soft packaging for clothing and textiles.</li>
+    <li>Check which divisor each service uses; a 6,000 service can be cheaper for bulky, light parcels.</li>
+    <li>Watch the rounding: a side of 30.2 cm counts as 31 cm.</li>
+  </ul>
+</ToolPage>

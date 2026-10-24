@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languagePaths, localizedSites } from '../../lib/locales';
+import ShippingCalculator from '../../components/ShippingCalculator.astro';
 
 export function getStaticPaths() {
   return Object.entries(localizedSites).map(([locale, site]) => ({ params: { locale }, props: { site } }));
@@ -8,6 +9,9 @@ export function getStaticPaths() {
 
 const { site } = Astro.props;
 const t = site.home;
+const local = site.locale === 'pt-br'
+  ? { calcPath: '/pt-br/calculadora-peso-cubado/', calcCta: 'Calcular peso cubado →', group: 'br' as const, preset: 'correios' as const, optimizerLink: 'Comparar minhas caixas' }
+  : { calcPath: '/es/calculadora-peso-volumetrico/', calcCta: 'Calcular peso volumétrico →', group: 'es' as const, preset: 'correosEs' as const, optimizerLink: 'Comparar mis cajas' };
 ---
 
 <BaseLayout title={t.title} description={t.description} canonicalPath={site.homePath} locale={site.locale} languagePaths={languagePaths.home}>
@@ -16,10 +20,12 @@ const t = site.home;
       <span class="eyebrow">{t.eyebrow}</span>
       <h1>{t.heading}</h1>
       <p>{t.intro}</p>
-      <a class="primary-button localized-cta" href={site.optimizerPath}>{t.cta}</a>
+      <p class="hero-actions"><a class="primary-button localized-cta" href={local.calcPath}>{local.calcCta}</a> <a class="text-button" href={site.optimizerPath}>{local.optimizerLink}</a></p>
     </div>
     <div class="quick-trust" aria-label="Product benefits">{t.trust.map((item) => <span>✓ {item}</span>)}</div>
   </section>
+
+  <ShippingCalculator locale={site.locale} presetGroup={local.group} defaultPreset={local.preset} compactIntro />
 
   <section class="value-section localized-value-section">
     <header>

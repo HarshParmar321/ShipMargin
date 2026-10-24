@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BoxOptimizer from '../../components/BoxOptimizer.astro';
 import { languagePaths } from '../../lib/locales';
+import { TOOLS } from '../../lib/tools';
 ---
 
 <BaseLayout title="Box & Margin Optimizer — Compare Shipping Boxes | ShippingMath" description="Compare available shipping boxes, reduce billable weight, estimate monthly savings and calculate the selling price needed for your target margin." canonicalPath="/box-margin-optimizer/" languagePaths={languagePaths.optimizer}>
@@ -24,4 +25,10 @@ import { languagePaths } from '../../lib/locales';
     </ul>
     <div class="notice"><strong>Planning estimate:</strong> carrier prices, surcharges, measurement methods and contract rules can differ. Confirm the selected box and actual label price before changing packaging.</div>
   </article>
+  <section class="related-tools" aria-labelledby="related-heading">
+    <h2 id="related-heading">More free shipping tools</h2>
+    <div class="related-grid">
+      {TOOLS.filter((tool) => tool.href !== '/box-margin-optimizer/').slice(0, 6).map((tool) => <a href={tool.href}><strong>{tool.name}</strong><span>{tool.blurb}</span></a>)}
+    </div>
+  </section>
 </BaseLayout>

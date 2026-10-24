@@ -1,15 +1,111 @@
 ---
 import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, encodeShareParams } from '../../lib/shipping.mjs';
+import { VOLUMETRIC_CLUSTER } from '../../lib/alternates';
+
+const path = '/dimensional-weight-calculator/';
+const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: number; height: number; actualWeight: number }) => {
+  const rule = PRESETS[preset];
+  return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const faq: [string, string][] = [
+  ['What is dimensional weight?', 'Dimensional (DIM) weight is a weight that carriers calculate from the size of a package: length × width × height divided by a divisor. If it is higher than the weight on the scale, you are billed for the DIM weight instead. It exists because large, light boxes take up space on trucks and planes.'],
+  ['How do I calculate dimensional weight?', 'Measure the outside of the packed box at its longest points, round each side up to the next whole inch, multiply length × width × height, divide by your carrier\'s divisor (139 for UPS Daily Rates, FedEx and USPS) and round the result up to the next whole pound. Compare it with the scale weight; the larger number is your billable weight.'],
+  ['What DIM divisor do UPS, FedEx and USPS use?', 'UPS uses 139 for Daily Rates and 166 for Retail Rates. FedEx uses 139 for US shipments. USPS has used 139 since 12 July 2026, but only for parcels larger than one cubic foot (1,728 cubic inches). Negotiated contracts can use a different divisor.'],
+  ['Do carriers round package dimensions up?', 'UPS and USPS publish round-up rules: any fraction of an inch counts as the next whole inch, so 12.1 inches is billed as 13. FedEx\'s Canada guide also says to round up, while its US help page still says nearest whole inch. This calculator rounds up by default and lets you switch to nearest or no rounding.'],
+  ['Does dimensional weight apply to small packages?', 'For UPS and FedEx it applies to every package, but for small dense items the scale weight is usually higher anyway. For USPS it only applies to parcels larger than 1,728 cubic inches; smaller USPS parcels are billed by scale weight.'],
+  ['Is dimensional weight the same as volumetric weight?', 'Yes, they are two names for the same idea. "Dimensional weight" is common in the US with inches and pounds; "volumetric weight" is common internationally with centimetres, kilograms and divisors such as 5,000 or 6,000 cm³/kg.'],
+  ['How can I lower dimensional weight charges?', 'Use the smallest box that protects the product, switch soft goods to poly mailers, remove empty space and bulges, and check whether a slightly smaller box drops below a rounding step or the USPS 1,728 in³ threshold. The box optimizer compares your available boxes for you.'],
+  ['Why is my label more expensive than this estimate?', 'This calculator estimates billable weight, not the price. Your label price also depends on the service, zone, surcharges (for example additional handling or large package fees), fuel surcharges and any negotiated discounts.'],
+];
 ---
 <ToolPage
-  title="Dimensional Weight Calculator — Free DIM & Billable Weight | ShippingMath"
+  title="Dimensional Weight Calculator (2026 Rules) | ShippingMath"
   heading="Dimensional weight calculator"
-  eyebrow="DIM weight · free calculator"
-  description="Calculate dimensional and billable weight, compare it with scale weight, and see how much empty space may be affecting the shipment."
-  formula="DIM weight = length × width × height ÷ divisor"
-  explanation={[
-    'Dimensional weight converts package volume into a planning weight. Many shipping services compare that value with the physical scale weight and use the larger applicable value.',
-    'Select a planning preset or enter the divisor and rounding rule from your own agreement. ShippingMath shows the inputs, rounded dimensions and billing basis so the result is easy to reproduce.',
-  ]}
-  path="/dimensional-weight-calculator/"
-/>
+  crumb="DIM weight calculator"
+  eyebrow="UPS · FedEx · USPS · 2026 rules"
+  description="Calculate dimensional (DIM) and billable weight with current UPS, FedEx and USPS divisors and rounding rules. See how much of your shipping charge is empty space."
+  path={path}
+  defaultPreset="ups139"
+  faq={faq}
+  showReviewed
+  showCountries
+  htmlLang="en-US"
+  alternates={VOLUMETRIC_CLUSTER}
+>
+  <p class="lead">Dimensional weight is the weight a carrier charges for based on the size of your box, not what it weighs. If a big, light box takes up more space than its weight pays for, you're billed for the DIM weight instead.</p>
+
+  <ul class="key-facts">
+    <li><b>139</b><span>Divisor for UPS Daily Rates, FedEx and USPS (in³ per lb)</span></li>
+    <li><b>166</b><span>Divisor for UPS Retail Rates</span></li>
+    <li><b>1,728 in³</b><span>USPS only applies DIM weight above this size (1 cubic foot)</span></li>
+    <li><b>Round up</b><span>Any fraction of an inch counts as the next whole inch</span></li>
+  </ul>
+
+  <h2>How to calculate dimensional weight</h2>
+  <ol>
+    <li><strong>Measure the packed box from the outside</strong> at its longest points, including any bulge, handle or padding that sticks out.</li>
+    <li><strong>Round each side up</strong> to the next whole inch. A side of 12.1 in counts as 13 in.</li>
+    <li><strong>Multiply</strong> length × width × height to get the volume in cubic inches.</li>
+    <li><strong>Divide by your carrier's divisor</strong>, for example 139.</li>
+    <li><strong>Round the result up</strong> to the next whole pound. That's the dimensional weight.</li>
+    <li><strong>Compare it with the scale weight</strong> (also rounded up). The larger of the two is the <a href="/billable-weight-calculator/">billable weight</a> you pay for.</li>
+  </ol>
+  <div class="formula-box">DIM weight = (L × W × H) ÷ divisor</div>
+
+  <h2>DIM weight divisors by carrier (2026)</h2>
+  <p>Each preset in the calculator above uses these rules. Your contract may use a different divisor; enter it under <em>Advanced calculation settings</em>.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Carrier and rate</th><th>Divisor</th><th>Dimension rounding</th><th>When DIM weight applies</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Carrier">UPS Daily Rates</td><td data-label="Divisor">139 in³/lb</td><td data-label="Rounding">Up to next whole inch</td><td data-label="Applies">All packages</td><td data-label="Source"><a href="https://www.ups.com/us/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS guide</a></td></tr>
+        <tr><td data-label="Carrier">UPS Retail Rates</td><td data-label="Divisor">166 in³/lb</td><td data-label="Rounding">Up to next whole inch</td><td data-label="Applies">All packages</td><td data-label="Source"><a href="https://www.ups.com/us/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS guide</a></td></tr>
+        <tr><td data-label="Carrier">FedEx (US)</td><td data-label="Divisor">139 in³/lb</td><td data-label="Rounding">Up (our default, see note)</td><td data-label="Applies">All packages</td><td data-label="Source"><a href="https://www.fedex.com/en-us/shipping/packaging/what-is-dimensional-weight.html" rel="noopener">FedEx US</a> · <a href="https://www.fedex.com/en-ca/resources-tools/dimensional-weight.html" rel="noopener">FedEx CA</a></td></tr>
+        <tr><td data-label="Carrier">USPS (Priority Mail Express, Priority Mail, Ground Advantage, Parcel Select)</td><td data-label="Divisor">139 in³/lb</td><td data-label="Rounding">Up to next whole inch</td><td data-label="Applies">Only parcels over 1,728 in³</td><td data-label="Source"><a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">Postal Bulletin 22705</a></td></tr>
+        <tr><td data-label="Carrier">International express (metric)</td><td data-label="Divisor">5,000 cm³/kg</td><td data-label="Rounding">Up to next whole cm</td><td data-label="Applies">Depends on service</td><td data-label="Source"><a href="https://www.fedex.com/en-ca/resources-tools/dimensional-weight.html" rel="noopener">FedEx CA</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note"><strong>FedEx note:</strong> FedEx's US help page says to round to the nearest whole inch, while its Canada guide says to round up. We default to rounding up; if your FedEx invoices show otherwise, switch <em>Dimension rounding</em> to "nearest".</p>
+
+  <h2>Worked examples</h2>
+  <div class="example-card">
+    <h3>1. A medium box with a light product (UPS Daily Rates)</h3>
+    <p>Box 18 × 14 × 12 in, scale weight 8 lb.</p>
+    <ol>
+      <li>Volume: 18 × 14 × 12 = 3,024 in³</li>
+      <li>3,024 ÷ 139 = 21.76 → rounded up to 22 lb</li>
+      <li>22 lb is more than the 8 lb scale weight</li>
+    </ol>
+    <p class="answer">Billable weight: <b>22 lb</b>. You pay for 14 lb of empty space.</p>
+    <a class="try-link" href={tryLink('ups139', { length: 18, width: 14, height: 12, actualWeight: 8 })} rel="nofollow">Open this example in the calculator →</a>
+  </div>
+  <div class="example-card">
+    <h3>2. The same box at UPS Retail Rates</h3>
+    <p>3,024 ÷ 166 = 18.22 → rounded up to 19 lb. The higher retail divisor lowers the DIM weight, but retail prices per pound are usually higher.</p>
+    <p class="answer">Billable weight: <b>19 lb</b></p>
+    <a class="try-link" href={tryLink('ups166', { length: 18, width: 14, height: 12, actualWeight: 8 })} rel="nofollow">Open this example →</a>
+  </div>
+  <div class="example-card">
+    <h3>3. Why rounding matters</h3>
+    <p>Box 10.2 × 8.1 × 6.1 in, scale weight 2 lb. Rounded up, the box counts as 11 × 9 × 7 in = 693 in³, and 693 ÷ 139 = 4.99 → 5 lb. With the exact measurements it would be 3.63 → 4 lb.</p>
+    <p class="answer">Rounding the sides up adds <b>1 lb</b> to this package.</p>
+    <a class="try-link" href={tryLink('ups139', { length: 10.2, width: 8.1, height: 6.1, actualWeight: 2 })} rel="nofollow">Open this example →</a>
+  </div>
+
+  <h2>How to reduce dimensional weight</h2>
+  <ul>
+    <li><strong>Use the smallest box that protects the product.</strong> Every inch counts three times, because it multiplies with the other two sides.</li>
+    <li><strong>Check the rounding steps.</strong> A box of 12.1 in is billed as 13 in. Trimming to exactly 12 in can drop a whole pound or more.</li>
+    <li><strong>Stay under 1,728 in³ for USPS</strong> where you can. A 12 × 12 × 12 in box is billed by scale weight; the same box at 12.1 in is billed by DIM weight. See the <a href="/usps-dimensional-weight-calculator/">USPS 2026 calculator</a>.</li>
+    <li><strong>Ship soft goods in poly mailers</strong> instead of boxes when they don't need rigid protection.</li>
+    <li><strong>Avoid bulges.</strong> Overfilled boxes are measured at the widest point.</li>
+    <li><strong>Stock a few well-chosen box sizes</strong> and use the <a href="/box-margin-optimizer/">box optimizer</a> to pick the cheapest one for each product.</li>
+    <li><strong>Ask about your divisor.</strong> Higher-volume shippers can sometimes negotiate a higher divisor, which lowers DIM weight.</li>
+  </ul>
+
+  <h2>Dimensional, volumetric and billable weight</h2>
+  <p><strong>Dimensional weight</strong> and <strong>volumetric weight</strong> are the same idea. Volumetric is the usual term for metric shipping; use the <a href="/volumetric-weight-calculator/">volumetric weight calculator</a> for centimetres and kilograms. <strong>Billable weight</strong> is what you are actually charged for: the larger of the scale weight and the DIM weight.</p>
+</ToolPage>
