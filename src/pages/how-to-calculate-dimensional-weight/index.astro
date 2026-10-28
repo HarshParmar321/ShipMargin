@@ -1,0 +1,91 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { IN3_PER_LB_TO_CM3_PER_KG, PRESETS, calculatePackage } from '../../lib/shipping.mjs';
+
+const path = '/how-to-calculate-dimensional-weight/';
+type Key = keyof typeof PRESETS;
+const calc = (key: Key, l: number, w: number, h: number, wt: number) => {
+  const rule = PRESETS[key];
+  return calculatePackage({ length: l, width: w, height: h, actualWeight: wt, ...rule, unit: rule.unit as 'imperial' | 'metric' });
+};
+const inch = calc('ups139', 16, 12, 10, 6);
+const frac = calc('ups139', 16.3, 12.2, 10.1, 6);
+const cm5 = calc('metric5000', 40, 30, 20, 3);
+const cm6 = calc('metric6000', 40, 30, 20, 3);
+const equiv = Math.round((139 * IN3_PER_LB_TO_CM3_PER_KG) / 10) * 10;
+const fmt = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 2 });
+
+const faq: [string, string][] = [
+  ['What is the formula for dimensional weight?', 'Length × width × height ÷ the carrier’s divisor. In inches and pounds UPS, FedEx and USPS divide by 139. In centimetres and kilograms most international services divide by 5,000, some by 6,000.'],
+  ['How do you calculate dimensional weight in cm?', `Multiply length × width × height in centimetres and divide by 5,000 (or 6,000 if your courier uses it). A 40 × 30 × 20 cm box is 24,000 cm³ ÷ 5,000 = ${fmt(cm5.dimRaw)} kg.`],
+  ['How do you calculate the dimensional weight of a box?', 'Measure the outside of the packed box, round each side the way your carrier does (usually up to the next whole inch or centimetre), multiply the three sides, divide by the divisor and round the result up. You pay for whichever is higher: that number or the actual weight.'],
+  ['Is dimensional weight the same as volumetric weight?', 'Yes. US carriers say dimensional (DIM) weight; most other countries say volumetric weight; Australia says cubic weight. The idea is the same: a weight worked out from the box size.'],
+  ['What is 139 in cm?', `A divisor of 139 in³/lb is about ${equiv.toLocaleString('en-US')} cm³/kg, almost the same as the 5,000 used internationally.`],
+  ['Do I need a scale to calculate dimensional weight?', 'No. Dimensional weight only needs the box size. You need a scale for the actual weight, which you compare it with.'],
+];
+---
+<ToolPage
+  title="How to Calculate Dimensional Weight: Formula | ShippingMath"
+  heading="How to calculate dimensional weight"
+  crumb="How to calculate DIM weight"
+  eyebrow="Formula, inches and cm"
+  description="How to calculate dimensional weight step by step: the formula, divisors for UPS, FedEx, USPS and international couriers, and worked examples in inches and cm."
+  path={path}
+  defaultPreset="ups139"
+  example={{ length: 16, width: 12, height: 10, actualWeight: 6 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">Dimensional weight is a weight worked out from the size of your box. Carriers charge for it when it is higher than what the box really weighs. You can calculate it in under a minute with a tape measure.</p>
+
+  <div class="formula-box">Dimensional weight = length × width × height ÷ divisor</div>
+
+  <h2>Step by step</h2>
+  <ol>
+    <li><strong>Measure the outside of the packed box:</strong> length, width and height, including any bulge.</li>
+    <li><strong>Round each side</strong> the way your carrier does. UPS and USPS round up to the next whole inch; FedEx (US) rounds to the nearest inch.</li>
+    <li><strong>Multiply</strong> the three sides to get the volume.</li>
+    <li><strong>Divide by the divisor</strong>: 139 for inches and pounds at UPS, FedEx and USPS; 5,000 or 6,000 for centimetres and kilograms.</li>
+    <li><strong>Round the result up</strong> to the carrier’s weight step (next whole pound in the US).</li>
+    <li><strong>Compare with the actual weight.</strong> The higher one is the billable weight you pay for.</li>
+  </ol>
+
+  <h2>Example in inches and pounds</h2>
+  <div class="example-card">
+    <h3>A 16 × 12 × 10 in box weighing 6 lb (UPS)</h3>
+    <p>16 × 12 × 10 = {fmt(inch.volume)} in³. {fmt(inch.volume)} ÷ 139 = {fmt(inch.dimRaw)}, rounded up to {inch.dimWeight} lb. That beats the 6 lb actual weight.</p>
+    <p class="answer">You pay for <b>{inch.billableWeight} lb</b></p>
+  </div>
+  <div class="example-card">
+    <h3>The same box measured 16.3 × 12.2 × 10.1 in</h3>
+    <p>UPS rounds each side up: {frac.dimensions.join(' × ')} = {fmt(frac.volume)} in³ ÷ 139 = {fmt(frac.dimRaw)} → {frac.dimWeight} lb. A few millimetres of bulge cost {frac.dimWeight - inch.dimWeight} lb more.</p>
+    <p class="answer">You pay for <b>{frac.billableWeight} lb</b></p>
+  </div>
+
+  <h2>Example in centimetres and kilograms</h2>
+  <div class="example-card">
+    <h3>A 40 × 30 × 20 cm box weighing 3 kg</h3>
+    <p>40 × 30 × 20 = {fmt(cm5.volume)} cm³. Divided by 5,000 = {fmt(cm5.dimRaw)} kg; divided by 6,000 = {fmt(cm6.dimRaw)} kg. With 0.5 kg steps that’s {fmt(cm5.dimWeight)} kg or {fmt(cm6.dimWeight)} kg, both above the 3 kg actual weight.</p>
+    <p class="answer">You pay for <b>{fmt(cm5.billableWeight)} kg</b> at ÷5,000, <b>{fmt(cm6.billableWeight)} kg</b> at ÷6,000</p>
+  </div>
+
+  <h2>Divisors by carrier</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Carrier / service</th><th>Divisor</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Carrier">UPS Daily Rates, FedEx (US)</td><td data-label="Divisor">139 in³/lb</td><td data-label="Note">Every package</td></tr>
+        <tr><td data-label="Carrier">UPS Retail Rates</td><td data-label="Divisor">166 in³/lb</td><td data-label="Note">Counter prices</td></tr>
+        <tr><td data-label="Carrier">USPS (since 12 Jul 2026)</td><td data-label="Divisor">139 in³/lb</td><td data-label="Note">Only parcels over 1,728 in³</td></tr>
+        <tr><td data-label="Carrier">Amazon FBA (US)</td><td data-label="Divisor">139 in³/lb</td><td data-label="Note">2 in minimum for Bulky and Extra-Large</td></tr>
+        <tr><td data-label="Carrier">International express, Canada Post Priority, Delhivery</td><td data-label="Divisor">5,000 cm³/kg</td><td data-label="Note">Most common metric divisor</td></tr>
+        <tr><td data-label="Carrier">Correios, Canada Post Regular Parcel</td><td data-label="Divisor">6,000 cm³/kg</td><td data-label="Note">Lower volumetric weight</td></tr>
+        <tr><td data-label="Carrier">Australia Post, StarTrack</td><td data-label="Divisor">250 kg/m³ (= ÷4,000)</td><td data-label="Note">Called cubic weight</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Contract rates can use other divisors. Sources for every rule are on the <a href="/methodology/">methodology page</a>.</p>
+
+  <h2>Skip the maths</h2>
+  <p>The calculator above does all of this, with each carrier’s rounding built in. For standard box sizes, see the <a href="/dimensional-weight-chart/">dimensional weight chart</a>; to compare carriers, see <a href="/ups-vs-fedex-vs-usps-dimensional-weight/">UPS vs FedEx vs USPS</a>; to pay less, read <a href="/how-to-reduce-dimensional-weight/">how to reduce dimensional weight</a>.</p>
+</ToolPage>
