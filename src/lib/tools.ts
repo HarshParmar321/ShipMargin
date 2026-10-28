@@ -20,6 +20,7 @@ export const TOOLS: Tool[] = [
 
 /** English guide pages (footer, home page and related links). */
 export const GUIDES: Tool[] = [
+  { href: '/holiday-shipping-surcharges-2026/', name: 'Holiday surcharges 2026', short: 'Holiday 2026', blurb: 'USPS, UPS, FedEx and Amazon peak fees and dates.' },
   { href: '/how-to-calculate-dimensional-weight/', name: 'How to calculate DIM weight', short: 'DIM formula', blurb: 'The formula step by step, in inches and cm.' },
   { href: '/dimensional-weight-chart/', name: 'Dimensional weight chart', short: 'DIM chart', blurb: 'Billable weight of 26 common box sizes at UPS, FedEx and USPS.' },
   { href: '/ups-vs-fedex-vs-usps-dimensional-weight/', name: 'UPS vs FedEx vs USPS', short: 'Carrier rules', blurb: 'Divisors, rounding and size limits side by side.' },

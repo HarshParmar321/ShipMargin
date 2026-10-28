@@ -1,0 +1,132 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, calculatePackage } from '../../lib/shipping.mjs';
+
+const path = '/holiday-shipping-surcharges-2026/';
+const usps = PRESETS.usps139;
+const bigBox = calculatePackage({ length: 14, width: 12, height: 12, actualWeight: 2, ...usps, unit: 'imperial' });
+const smallBox = calculatePackage({ length: 12, width: 12, height: 12, actualWeight: 2, ...usps, unit: 'imperial' });
+
+const SRC = {
+  usps: 'https://about.usps.com/newsroom/national-releases/2026/0825-usps-announces-temporary-price-change-for-2026-holiday-shipping-season.htm',
+  uspsDates: 'https://about.usps.com/newsroom/national-releases/2026/0922-usps-recommends-2026-holiday-mailing-shipping-dates.htm',
+  ups: 'https://assets.ups.com/adobe/assets/urn:aaid:aem:2c542692-de10-4fa3-b507-3b4f181e0953/original/as/demand-surcharges-us-en.pdf',
+  upsSchedule: 'https://www.ups.com/us/en/support/shipping-support/shipping-services/holiday-shipping-schedule',
+  fedex: 'https://www.fedex.com/en-us/shipping/rate-changes/demand-surcharges.html',
+  fedexDates: 'https://www.fedex.com/en-us/holiday/last-days-to-ship.html',
+  amazon: 'https://sellercentral.amazon.com/help/hub/reference/external/GABBX6GZPA8MSZGW',
+};
+
+const faq: [string, string][] = [
+  ['When do holiday shipping surcharges start and end in 2026?', 'USPS temporary holiday prices run from 4 Oct 2026 to 17 Jan 2027. UPS residential demand surcharges run from 25 Oct 2026 to 16 Jan 2027, and FedEx residential demand surcharges from 26 Oct 2026 to 17 Jan 2027. Amazon FBA peak fees run from 15 Oct 2026 to 14 Jan 2027.'],
+  ['How much is the UPS holiday surcharge on residential ground packages?', 'For most shippers $0.50 per package from 25 Oct to 21 Nov, $0.75 from 22 Nov to 26 Dec, and $0.50 from 27 Dec to 16 Jan 2027, for UPS Ground Residential and Ground Saver. Very large shippers pay more, based on their weekly volume.'],
+  ['How much is the FedEx holiday surcharge on residential ground packages?', '$0.50 per package from 26 Oct to 22 Nov, $0.80 from 23 Nov to 27 Dec, and $0.50 from 28 Dec 2026 to 17 Jan 2027, for FedEx Ground Residential and Home Delivery.'],
+  ['How much more does USPS cost over the holidays?', 'It depends on service, zone and weight. For commercial USPS Ground Advantage and Priority Mail to zones 1 to 4, it is $0.40 more for 0 to 3 lb, $0.65 for 4 to 10 lb, $1.05 for 11 to 25 lb and $3.15 for 26 to 70 lb.'],
+  ['Does dimensional weight affect holiday surcharges?', 'Yes. USPS adds its holiday amount by weight band, and the band is set by the billed weight, which can be the dimensional weight. A light item in an oversized box can land in a higher band and pay a bigger holiday add-on.'],
+  ['What is the last day to ship by USPS for Christmas 2026?', 'For delivery to the lower 48 states before 25 Dec, USPS recommends sending USPS Ground Advantage and First-Class Mail by 17 Dec, Priority Mail by 18 Dec and Priority Mail Express by 19 Dec.'],
+];
+---
+<ToolPage
+  title="Holiday Peak Shipping Surcharges 2026 | ShippingMath"
+  heading="Holiday shipping surcharges 2026"
+  crumb="Holiday surcharges 2026"
+  eyebrow="Peak season, Oct 2026 – Jan 2027"
+  description="All 2026 holiday peak surcharges in one place: USPS holiday prices, UPS and FedEx demand surcharges, Amazon FBA peak fees and USPS ship-by dates, with sources."
+  path={path}
+  defaultPreset="usps139"
+  example={{ length: 14, width: 12, height: 12, actualWeight: 2 }}
+  faq={faq}
+>
+  <p class="lead">Every major US carrier charges more from October to mid-January. Here are the 2026 dates and amounts from each carrier's own announcement, and how the size of your box changes what you pay.</p>
+
+  <h2>Peak periods at a glance</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Carrier</th><th>What changes</th><th>Dates</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Carrier">USPS</td><td data-label="What">Temporary holiday prices on Priority Mail Express, Priority Mail, Ground Advantage and Parcel Select</td><td data-label="Dates">4 Oct 2026 – 17 Jan 2027</td></tr>
+        <tr><td data-label="Carrier">UPS</td><td data-label="What">Demand surcharges on residential and air packages</td><td data-label="Dates">25 Oct 2026 – 16 Jan 2027 (highest 22 Nov – 26 Dec)</td></tr>
+        <tr><td data-label="Carrier">FedEx</td><td data-label="What">Demand surcharges on residential and express packages</td><td data-label="Dates">26 Oct 2026 – 17 Jan 2027 (highest 23 Nov – 27 Dec)</td></tr>
+        <tr><td data-label="Carrier">UPS and FedEx</td><td data-label="What">Higher Additional Handling and Large Package / Oversize demand charges</td><td data-label="Dates">From 27–28 Sep 2026 to mid-January</td></tr>
+        <tr><td data-label="Carrier">Amazon FBA (US)</td><td data-label="What">Holiday peak fulfillment fees</td><td data-label="Dates">15 Oct 2026 – 14 Jan 2027</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>UPS and FedEx: extra per package</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Service</th><th>Early period</th><th>Peak weeks</th><th>After Christmas</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Service">UPS Ground Residential, Ground Saver</td><td data-label="Early">$0.50 (25 Oct – 21 Nov)</td><td data-label="Peak">$0.75 (22 Nov – 26 Dec)</td><td data-label="After">$0.50 (27 Dec – 16 Jan)</td></tr>
+        <tr><td data-label="Service">UPS Next Day Air and other UPS Air</td><td data-label="Early">$1.35</td><td data-label="Peak">$2.50</td><td data-label="After">$1.35</td></tr>
+        <tr><td data-label="Service">FedEx Ground Residential, Home Delivery</td><td data-label="Early">$0.50 (26 Oct – 22 Nov)</td><td data-label="Peak">$0.80 (23 Nov – 27 Dec)</td><td data-label="After">$0.50 (28 Dec – 17 Jan)</td></tr>
+        <tr><td data-label="Service">FedEx Overnight services</td><td data-label="Early">$1.30</td><td data-label="Peak">$2.55</td><td data-label="After">$1.30</td></tr>
+        <tr><td data-label="Service">FedEx 2Day, 2Day A.M., Express Saver</td><td data-label="Early">$1.20</td><td data-label="Peak">$2.35</td><td data-label="After">$1.20</td></tr>
+        <tr><td data-label="Service">FedEx Ground Economy (contract)</td><td data-label="Early">$2.55</td><td data-label="Peak">$4.05</td><td data-label="After">$2.55</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Standard amounts. UPS charges more to shippers billed for over 20,000 packages in a week, and FedEx's residential charge for its largest customers changes weekly. Sources: <a href={SRC.ups} rel="noopener">UPS demand surcharges (26 Aug 2026 update)</a>, <a href={SRC.fedex} rel="noopener">FedEx demand surcharges</a>.</p>
+
+  <h2>Big boxes pay much more in peak season</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Demand charge</th><th>UPS early / peak / after</th><th>FedEx early / peak / after</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Charge">Additional Handling</td><td data-label="UPS">$8.75 / $11.90 / $8.75</td><td data-label="FedEx">$8.80 / $11.85 / $8.80</td></tr>
+        <tr><td data-label="Charge">Large Package (UPS) / Oversize (FedEx)</td><td data-label="UPS">$96.25 / $117.50 / $96.25</td><td data-label="FedEx">$95.75 / $117.25 / $95.75</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">These come on top of the normal Additional Handling and Large Package charges. UPS peak weeks: 22 Nov – 26 Dec; FedEx: 23 Nov – 27 Dec. Check the <a href="/package-girth-calculator/">length + girth</a> of big parcels before the rush.</p>
+
+  <h2>USPS holiday price change</h2>
+  <p>Commercial prices (what you pay through most shipping software), added per package from 4 Oct 2026 to 17 Jan 2027:</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Service and zones</th><th>0–3 lb</th><th>4–10 lb</th><th>11–25 lb</th><th>26–70 lb</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Service">Priority Mail and Ground Advantage, zones 1–4</td><td data-label="0–3 lb">+$0.40</td><td data-label="4–10 lb">+$0.65</td><td data-label="11–25 lb">+$1.05</td><td data-label="26–70 lb">+$3.15</td></tr>
+        <tr><td data-label="Service">Priority Mail, zones 5–9</td><td data-label="0–3 lb">+$0.85</td><td data-label="4–10 lb">+$1.75</td><td data-label="11–25 lb">+$3.85</td><td data-label="26–70 lb">+$9.10</td></tr>
+        <tr><td data-label="Service">Ground Advantage, zones 5–9</td><td data-label="0–3 lb">+$0.55</td><td data-label="4–10 lb">+$1.05</td><td data-label="11–25 lb">+$1.75</td><td data-label="26–70 lb">+$7.70</td></tr>
+        <tr><td data-label="Service">Priority Mail Express, zones 1–4</td><td data-label="0–3 lb">+$1.40</td><td data-label="4–10 lb">+$2.10</td><td data-label="11–25 lb">+$4.90</td><td data-label="26–70 lb">+$12.55</td></tr>
+        <tr><td data-label="Service">Priority Mail Express, zones 5–9</td><td data-label="0–3 lb">+$2.35</td><td data-label="4–10 lb">+$5.55</td><td data-label="11–25 lb">+$10.50</td><td data-label="26–70 lb">+$18.20</td></tr>
+        <tr><td data-label="Service">Parcel Select</td><td data-label="0–3 lb">+$0.40</td><td data-label="4–10 lb">+$0.50</td><td data-label="11–25 lb">+$0.80</td><td data-label="26–70 lb">+$2.35</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Retail prices at the Post Office go up a little more (for example +$0.50 instead of +$0.40 for 0–3 lb in zones 1–4). Flat Rate: +$1.75 on the Large Flat Rate Box and +$0.85 on other Priority Mail Flat Rate products (commercial). Source: <a href={SRC.usps} rel="noopener">USPS announcement, 25 Aug 2026</a>.</p>
+
+  <div class="callout-cliff">
+    <strong>Your box size picks the holiday band</strong>
+    <p>USPS adds its holiday amount by weight band, and the band uses the billed weight. A 2 lb item in a 12 × 12 × 12 in box is billed at {smallBox.billableWeight} lb, so it pays +$0.40 (zones 1–4, commercial). Put the same item in a 14 × 12 × 12 in box and it goes over 1,728 in³: it's billed at {bigBox.billableWeight} lb and pays +$1.05, on top of a much higher base price.</p>
+  </div>
+
+  <h2>Amazon FBA peak fees</h2>
+  <p>From 15 Oct 2026 to 14 Jan 2027 Amazon charges its holiday peak rate card on FBA fulfillment fees, and the 3.5% fuel and logistics surcharge still applies. Example from Amazon: a 3.35 lb iron priced $10–$50 goes from $7.13 (non-peak) to $7.67 (peak), before the surcharge. Check your products with the <a href="/amazon-fba-dimensional-weight-calculator/">Amazon FBA calculator</a>, which uses both rate cards. Source: <a href={SRC.amazon} rel="noopener">Amazon Seller Central, 2026 US FBA fee changes</a>.</p>
+
+  <h2>Holiday ship-by dates</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>USPS service (lower 48 states)</th><th>Send by, for delivery before 25 Dec</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Service">USPS Ground Advantage</td><td data-label="Send by">17 Dec</td></tr>
+        <tr><td data-label="Service">First-Class Mail</td><td data-label="Send by">17 Dec</td></tr>
+        <tr><td data-label="Service">Priority Mail</td><td data-label="Send by">18 Dec</td></tr>
+        <tr><td data-label="Service">Priority Mail Express</td><td data-label="Send by">19 Dec</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Source: <a href={SRC.uspsDates} rel="noopener">USPS recommended dates, 22 Sep 2026</a>. FedEx publishes its last days to ship per service on its <a href={SRC.fedexDates} rel="noopener">holiday page</a>; FedEx is closed on 26 Nov, 25 Dec and 1 Jan. UPS lists its open and closed days on its <a href={SRC.upsSchedule} rel="noopener">holiday schedule</a>.</p>
+
+  <h2>How to pay less this peak season</h2>
+  <ul>
+    <li><strong>Check your top products' boxes now.</strong> A smaller box can drop the billed weight into a lower USPS band. Use the <a href="/dimensional-weight-chart/">dimensional weight chart</a> or the <a href="/batch-shipping-audit/">batch audit</a>.</li>
+    <li><strong>Stay at or under 1,728 in³ for USPS.</strong> Above it, dimensional weight applies and the holiday band jumps with it.</li>
+    <li><strong>Avoid Additional Handling and Large Package charges.</strong> In peak weeks they cost $11.85–$117.50 extra per package.</li>
+    <li><strong>Ship early.</strong> The highest UPS and FedEx amounts apply from 22–23 Nov to 26–27 Dec.</li>
+    <li><strong>Build the extra into your prices</strong> with the <a href="/shipping-margin-calculator/">margin calculator</a>, especially for free-shipping offers.</li>
+  </ul>
+  <p class="updated-line">Checked against each carrier's announcement on 28 Oct 2026. Carriers can change peak surcharges at short notice; confirm before quoting customers.</p>
+</ToolPage>
