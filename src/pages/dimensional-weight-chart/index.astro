@@ -1,0 +1,118 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, calculatePackage, encodeShareParams } from '../../lib/shipping.mjs';
+
+const path = '/dimensional-weight-chart/';
+type Key = keyof typeof PRESETS;
+const dimOf = (key: Key, l: number, w: number, h: number) => {
+  const rule = PRESETS[key] as { unit: string; divisor: number; dimThreshold: number; dimRounding: string; billableStep: number };
+  const r = calculatePackage({ length: l, width: w, height: h, actualWeight: 0, ...rule, unit: rule.unit as 'imperial' | 'metric' });
+  return r.dimApplies ? r.dimWeight : null;
+};
+const fmt = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 1 });
+
+const imperialBoxes: [number, number, number][] = [
+  [6, 6, 6], [8, 6, 4], [8, 8, 8], [9, 6, 3], [10, 8, 6], [10, 10, 10], [12, 9, 3], [12, 9, 6], [12, 10, 4],
+  [12, 12, 6], [12, 12, 8], [12, 12, 12], [14, 10, 6], [14, 12, 10], [14, 14, 14], [16, 12, 8], [16, 12, 12],
+  [16, 16, 16], [18, 12, 10], [18, 14, 12], [18, 18, 18], [20, 14, 10], [20, 20, 20], [24, 12, 12], [24, 18, 18], [24, 24, 24],
+];
+const imperialRows = imperialBoxes.map(([l, w, h]) => ({
+  box: `${l} × ${w} × ${h}`,
+  volume: l * w * h,
+  daily: dimOf('ups139', l, w, h)!,
+  retail: dimOf('ups166', l, w, h)!,
+  usps: dimOf('usps139', l, w, h),
+}));
+
+const metricBoxes: [number, number, number][] = [
+  [20, 15, 10], [25, 20, 10], [30, 20, 15], [30, 30, 30], [35, 25, 15], [40, 30, 20], [40, 30, 30], [45, 35, 25], [50, 40, 30], [60, 40, 40],
+];
+const metricRows = metricBoxes.map(([l, w, h]) => ({
+  box: `${l} × ${w} × ${h}`,
+  volume: l * w * h,
+  d5000: dimOf('metric5000', l, w, h)!,
+  d6000: dimOf('metric6000', l, w, h)!,
+}));
+
+const tryLink = (l: number, w: number, h: number, preset: Key = 'ups139') => {
+  const rule = PRESETS[preset];
+  return `/dimensional-weight-calculator/?${encodeShareParams({ length: l, width: w, height: h, actualWeight: 1, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const twelve = imperialRows.find((row) => row.box === '12 × 12 × 12')!;
+const sixteen = imperialRows.find((row) => row.box === '16 × 12 × 12')!;
+
+const faq: [string, string][] = [
+  ['How do I use a dimensional weight chart?', 'Find your box size and read the dimensional weight for your carrier. If your packed item weighs less than that number, you pay for the dimensional weight. If it weighs more, you pay for the actual weight.'],
+  [`What is the dimensional weight of a 12 × 12 × 12 box?`, `At UPS and FedEx (divisor 139) a 12 × 12 × 12 inch box is 1,728 ÷ 139 = 12.43, so it is billed at no less than ${twelve.daily} lb. At USPS it is exactly one cubic foot, which is not over the 1,728 in³ limit, so USPS charges the actual weight.`],
+  ['Why is the USPS column empty for small boxes?', 'Since 12 July 2026 USPS only applies dimensional weight to parcels larger than 1,728 cubic inches (one cubic foot). Smaller boxes are priced by their actual weight, so there is no dimensional weight to show.'],
+  ['What is the difference between 139 and 166?', 'UPS Daily Rates and FedEx divide by 139. UPS Retail Rates (the counter price) divide by 166, which gives a lower dimensional weight for the same box.'],
+  ['Do these numbers include rounding?', 'Yes. The chart uses whole-inch boxes and rounds the dimensional weight up to the next whole pound, as UPS, FedEx and USPS do. Metric weights are rounded up to the next 0.5 kg; some couriers use other steps, so check yours.'],
+  ['My box is not in the chart. What now?', 'Use the dimensional weight calculator above. Enter the outside length, width and height of the packed box and its scale weight, and pick your carrier.'],
+];
+---
+<ToolPage
+  title="Dimensional Weight Chart: Common Box Sizes | ShippingMath"
+  heading="Dimensional weight chart"
+  crumb="DIM weight chart"
+  eyebrow="UPS · FedEx · USPS · 2026"
+  description="Dimensional weight of 26 common box sizes at UPS, FedEx and USPS (2026 rules), plus metric boxes at 5,000 and 6,000. See the minimum you’ll pay per box."
+  path={path}
+  defaultPreset="ups139"
+  example={{ length: 12, width: 12, height: 12, actualWeight: 4 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">Every box has a <strong>minimum billable weight</strong>: its dimensional weight. If your packed item weighs less, the carrier charges you for the box size instead. Find your box below to see that number before you buy a label.</p>
+
+  <h2>Dimensional weight chart (inches, pounds)</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table dim-chart">
+      <thead><tr><th>Box (in)</th><th>Volume (in³)</th><th>UPS Daily / FedEx (÷139)</th><th>UPS Retail (÷166)</th><th>USPS (÷139, over 1,728 in³)</th></tr></thead>
+      <tbody>
+        {imperialRows.map((row) => (
+          <tr>
+            <td data-label="Box"><a href={tryLink(...(row.box.split(' × ').map(Number) as [number, number, number]))} rel="nofollow">{row.box}</a></td>
+            <td data-label="Volume">{fmt(row.volume)}</td>
+            <td data-label="UPS / FedEx">{row.daily} lb</td>
+            <td data-label="UPS Retail">{row.retail} lb</td>
+            <td data-label="USPS">{row.usps === null ? 'Actual weight' : `${row.usps} lb`}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Outside dimensions in whole inches; dimensional weight rounded up to the next whole pound. “Actual weight” means USPS doesn’t apply dimensional weight because the box is 1,728 in³ or smaller. Contract divisors can differ. Rules: <a href="/methodology/">methodology and sources</a>.</p>
+
+  <div class="callout-cliff">
+    <strong>Read it like this</strong>
+    <p>A 16 × 12 × 12 in box has a dimensional weight of {sixteen.daily} lb at UPS and FedEx. Ship a 5 lb product in it and you pay for {sixteen.daily} lb. Ship a {sixteen.daily + 3} lb product and you pay for {sixteen.daily + 3} lb, because then the actual weight is higher.</p>
+  </div>
+
+  <h2>Volumetric weight chart (centimetres, kilograms)</h2>
+  <p>International express services usually divide by 5,000; some air and postal services use 6,000. Here are common metric box sizes.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table dim-chart">
+      <thead><tr><th>Box (cm)</th><th>Volume (cm³)</th><th>÷ 5,000</th><th>÷ 6,000</th></tr></thead>
+      <tbody>
+        {metricRows.map((row) => (
+          <tr>
+            <td data-label="Box">{row.box}</td>
+            <td data-label="Volume">{fmt(row.volume)}</td>
+            <td data-label="÷ 5,000">{fmt(row.d5000)} kg</td>
+            <td data-label="÷ 6,000">{fmt(row.d6000)} kg</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Rounded up to the next 0.5 kg. Country rules differ: see the <a href="/uk/volumetric-weight-calculator/">UK</a>, <a href="/canada/dimensional-weight-calculator/">Canada</a>, <a href="/australia/cubic-weight-calculator/">Australia</a> and <a href="/india/volumetric-weight-calculator/">India</a> calculators for local carriers.</p>
+
+  <h2>How to use the chart to save money</h2>
+  <ul>
+    <li><strong>Pick the smallest box that protects the product.</strong> Going from 14 × 12 × 10 to 12 × 10 × 8 in drops the UPS and FedEx minimum from {dimOf('ups139', 14, 12, 10)} lb to {dimOf('ups139', 12, 10, 8)} lb.</li>
+    <li><strong>For USPS, stay at or under 1,728 in³.</strong> Every box in the chart marked “Actual weight” is priced by weight alone at USPS.</li>
+    <li><strong>Measure the packed box, not the empty one.</strong> A bulge can push a side over the whole inch, and carriers round up.</li>
+    <li><strong>Compare your whole box range</strong> with the <a href="/box-margin-optimizer/">box optimizer</a>, or read <a href="/how-to-reduce-dimensional-weight/">10 ways to reduce dimensional weight</a>.</li>
+  </ul>
+</ToolPage>

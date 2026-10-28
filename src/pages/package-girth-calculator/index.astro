@@ -1,15 +1,59 @@
 ---
 import ToolPage from '../../components/ToolPage.astro';
+
+const faq: [string, string][] = [
+  ['How do you calculate girth?', 'Girth is the distance around the package at its thickest point, measured around the two shorter sides: 2 × width + 2 × height. Length plus girth adds the longest side: length + 2 × width + 2 × height.'],
+  ['Which side is the length?', 'Always the longest side, whichever way the box is labelled. The calculator sorts the sides for you.'],
+  ['What is the maximum length plus girth for USPS?', 'Most USPS parcels may not exceed 108 inches in length and girth combined. USPS Ground Advantage accepts up to 130 inches, with the oversized price for parcels over 108 inches.'],
+  ['What is the maximum for UPS and FedEx?', 'UPS and FedEx Ground accept packages up to 165 inches in length plus girth, 108 inches long and 150 lb. Large-package surcharges apply well before those maximums, so check your carrier’s service guide.'],
+  ['What is a 24 × 12 × 12 box in length plus girth?', '24 + 2 × 12 + 2 × 12 = 72 inches, comfortably inside every carrier’s limit.'],
+  ['Does girth affect Amazon FBA fees?', 'Yes. Amazon’s Small Bulky and Large Bulky tiers allow up to 130 inches of length plus girth; bigger units are Extra-Large, and Extra-Large units over 130 inches also pay an Overmax handling fee.'],
+];
 ---
 <ToolPage
   title="Package Length and Girth Calculator | ShippingMath"
   heading="Package girth calculator"
   eyebrow="Oversize planning"
-  description="Calculate the longest side plus package girth while checking dimensional and billable weight in the same workspace."
+  description="Calculate length plus girth for any box and compare it with UPS, FedEx, USPS and Amazon FBA size limits, while checking dimensional and billable weight."
   formula="Length + girth = longest side + 2 × (width + height)"
-  explanation={[
-    'Length plus girth is commonly used when services classify large or irregular shipments. For a rectangular carton, identify the longest side and measure around the two remaining sides.',
-    'Service thresholds are not universal. Use this result to identify a package worth checking, then compare it with the current limits for the exact carrier, service and destination.',
-  ]}
   path="/package-girth-calculator/"
-/>
+  faq={faq}
+>
+  <p class="lead">Carriers use <strong>length plus girth</strong> to decide whether a parcel is too big for a service or needs an oversize price. Enter your box above: the calculator sorts the sides and shows the length plus girth next to the billable weight.</p>
+
+  <h2>How to measure length and girth</h2>
+  <ol>
+    <li>Measure the packed box’s three sides. The <strong>longest</strong> one is the length.</li>
+    <li>Add the two other sides and double them: that’s the <strong>girth</strong>, the distance around the box.</li>
+    <li>Add the length to the girth. Example: 30 × 16 × 12 in → 30 + 2 × (16 + 12) = <strong>86 in</strong>.</li>
+  </ol>
+
+  <h2>Length plus girth limits by carrier</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Carrier / service</th><th>Max length + girth</th><th>Other limits</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Carrier">USPS Priority Mail, Priority Mail Express</td><td data-label="Max L+G">108 in</td><td data-label="Other">70 lb</td></tr>
+        <tr><td data-label="Carrier">USPS Ground Advantage</td><td data-label="Max L+G">130 in (oversized price above 108 in)</td><td data-label="Other">70 lb</td></tr>
+        <tr><td data-label="Carrier">UPS</td><td data-label="Max L+G">165 in</td><td data-label="Other">108 in long, 150 lb</td></tr>
+        <tr><td data-label="Carrier">FedEx Ground</td><td data-label="Max L+G">165 in</td><td data-label="Other">108 in long, 150 lb</td></tr>
+        <tr><td data-label="Carrier">Amazon FBA (US) Small/Large Bulky</td><td data-label="Max L+G">130 in</td><td data-label="Other">Bigger units are Extra-Large</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Sources: <a href="https://faq.usps.com/articles/Knowledge/Parcel-Size-Weight-Fee-Standards" rel="noopener">USPS parcel size standards</a>, <a href="https://www.ups.com/us/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS size and weight guide</a>, <a href="https://www.fedex.com/en-us/shipping/ground.html" rel="noopener">FedEx Ground</a>, <a href="/amazon-fba-dimensional-weight-calculator/">Amazon FBA size tiers</a>. USPS also charges nonstandard fees for parcels longer than 22 in or 30 in and over 2 ft³; UPS and FedEx add large-package surcharges below their maximums.</p>
+
+  <h2>Common boxes</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Box (in)</th><th>Girth</th><th>Length + girth</th></tr></thead>
+      <tbody>
+        {[[12, 12, 12], [18, 14, 12], [24, 12, 12], [24, 18, 18], [30, 20, 20], [36, 24, 24], [48, 20, 20]].map(([l, w, h]) => (
+          <tr><td data-label="Box">{l} × {w} × {h}</td><td data-label="Girth">{2 * (w + h)} in</td><td data-label="L + G">{l + 2 * (w + h)} in</td></tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+
+  <p>Big parcels are usually billed on dimensional weight too. Check the <a href="/dimensional-weight-chart/">dimensional weight chart</a> or compare carriers in <a href="/ups-vs-fedex-vs-usps-dimensional-weight/">UPS vs FedEx vs USPS</a>.</p>
+</ToolPage>

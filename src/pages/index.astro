@@ -2,7 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShippingCalculator from '../components/ShippingCalculator.astro';
 import { languagePaths } from '../lib/locales';
-import { TOOLS } from '../lib/tools';
+import { GUIDES, TOOLS } from '../lib/tools';
+import PartnerTools from '../components/PartnerTools.astro';
 ---
 
 <BaseLayout title="Shipping Calculator for Online Sellers | ShippingMath" description="Free shipping calculator for online sellers: dimensional weight with 2026 UPS, FedEx and USPS rules, box comparison and order margin. No sign-up." canonicalPath="/" languagePaths={languagePaths.home}>
@@ -16,6 +17,7 @@ import { TOOLS } from '../lib/tools';
   </section>
 
   <ShippingCalculator compactIntro />
+  <PartnerTools region="us" />
 
   <section class="optimizer-callout">
     <div><span class="eyebrow">New · box optimizer</span><h2>Which carton costs less after shipping?</h2><p>Compare every available box by fit, billable weight and estimated monthly savings.</p></div>
@@ -26,6 +28,10 @@ import { TOOLS } from '../lib/tools';
     <h2>All free shipping tools</h2>
     <div class="related-grid">
       {TOOLS.map((tool) => <a href={tool.href}><strong>{tool.name}</strong><span>{tool.blurb}</span></a>)}
+    </div>
+    <h2 class="home-guides-heading">Guides for sellers</h2>
+    <div class="related-grid">
+      {GUIDES.map((guide) => <a href={guide.href}><strong>{guide.name}</strong><span>{guide.blurb}</span></a>)}
     </div>
   </section>
 

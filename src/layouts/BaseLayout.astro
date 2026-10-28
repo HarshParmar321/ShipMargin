@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { TOOLS } from '../lib/tools';
+import { GUIDES, TOOLS } from '../lib/tools';
 import { CLOUDFLARE_ANALYTICS_TOKEN, SUPPORT_EMAIL } from '../lib/site';
 import { RULES_REVIEWED_ON } from '../lib/shipping.mjs';
 import { COUNTRY_LINKS } from '../lib/alternates';
@@ -40,10 +40,11 @@ const homePaths: Record<Locale, string> = { en: '/', 'pt-br': '/pt-br/', es: '/e
 const copy = {
   en: {
     skip: 'Skip to calculator', home: 'ShippingMath home', local: 'Free · private', localTip: 'Calculations run in your browser. Nothing you type is sent to a server.', toolsLabel: 'Free tools', countriesLabel: 'Countries', regionTitle: 'Choose your country', langTitle: 'Language', regionButton: 'Country and language', close: 'Close', mainNav: 'Main navigation',
-    nav: [['DIM weight', '/dimensional-weight-calculator/'], ['USPS 2026', '/usps-dimensional-weight-calculator/'], ['Box optimizer', '/box-margin-optimizer/'], ['Margin', '/shipping-margin-calculator/']],
+    nav: [['DIM weight', '/dimensional-weight-calculator/'], ['USPS 2026', '/usps-dimensional-weight-calculator/'], ['Amazon FBA', '/amazon-fba-dimensional-weight-calculator/'], ['Box optimizer', '/box-margin-optimizer/'], ['Margin', '/shipping-margin-calculator/']],
     strip: TOOLS.map((tool) => [tool.short, tool.href]),
     tagline: 'Clear shipping math for sellers everywhere.', chipFree: 'Free, no sign-up', reviewed: 'Rules reviewed:',
     footerTools: TOOLS.map((tool) => [tool.name, tool.href]),
+    guidesLabel: 'Guides', footerGuides: GUIDES.map((guide) => [guide.name, guide.href]),
     footer: [['Methodology', '/methodology/'], ['Privacy', '/privacy/'], ['Terms', '/terms/'], ['About', '/about/'], ['Contact', '/contact/']],
     fine: 'Planning estimates only. Confirm current rules and rates with your carrier or contract.',
   },
@@ -223,7 +224,14 @@ const structuredData = [
               </div>
             </div>
             <div class="footer-col footer-col-company">
-              <p class="footer-heading">ShippingMath</p>
+              {'footerGuides' in t && (
+                <>
+                  <p class="footer-heading">{t.guidesLabel}</p>
+                  {t.footerGuides.map(([label, href]) => <a href={href}>{label}</a>)}
+                  <p class="footer-heading footer-heading-gap">ShippingMath</p>
+                </>
+              )}
+              {!('footerGuides' in t) && <p class="footer-heading">ShippingMath</p>}
               {t.footer.map(([label, href]) => <a href={href}>{label}</a>)}
             </div>
           </div>

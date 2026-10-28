@@ -1,10 +1,12 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ShippingCalculator from './ShippingCalculator.astro';
-import { TOOLS } from '../lib/tools';
+import { GUIDES, TOOLS } from '../lib/tools';
 import { PRESETS, PRESET_GROUPS, RULES_REVIEWED_ON } from '../lib/shipping.mjs';
 import { COUNTRY_LINKS } from '../lib/alternates';
 import Flag from './Flag.astro';
+import PartnerTools from './PartnerTools.astro';
+import type { PartnerRegion } from '../lib/partners';
 
 type Locale = 'en' | 'pt-br' | 'es';
 
@@ -35,12 +37,16 @@ interface Props {
   faq?: [string, string][];
   /** Show the "rules last reviewed" line. */
   showReviewed?: boolean;
+  /** 'slot' renders the page's own calculator (slot="calculator") instead of the shipping calculator. */
+  calculator?: 'shipping' | 'slot';
+  /** Shipping-software suggestions shown under the calculator ('none' to hide). English pages only. */
+  partners?: PartnerRegion | 'none';
 }
 
 const {
   title, heading, description, eyebrow, path, crumb = heading, locale = 'en', htmlLang, alternates, showCountries = false,
   defaultTab = 'single', showMargin = false, defaultPreset = 'ups139', presetGroup = 'us', example,
-  formula, explanation = [], faq = [], showReviewed = false,
+  formula, explanation = [], faq = [], showReviewed = false, calculator = 'shipping', partners = 'us',
 } = Astro.props;
 
 const copy = {
@@ -79,7 +85,9 @@ const localTools = {
     { href: '/es/metodologia/', name: 'Metodología', blurb: 'Cómo calculamos y de dónde salen las reglas.' },
   ],
 }[locale];
-const related = localTools.filter((tool) => tool.href !== path).slice(0, 6);
+const related = locale === 'en'
+  ? [...localTools.filter((tool) => tool.href !== path).slice(0, 4), ...GUIDES.filter((guide) => guide.href !== path)]
+  : localTools.filter((tool) => tool.href !== path).slice(0, 6);
 const homeUrl = new URL(copy.home, origin).toString();
 const jsonLd: object[] = [
   {
@@ -108,7 +116,10 @@ if (faq.length) {
     <h1>{heading}</h1>
     <p>{description}</p>
   </header>
-  <ShippingCalculator defaultTab={defaultTab} showMargin={showMargin} defaultPreset={defaultPreset} presetGroup={presetGroup} locale={locale} example={example} compactIntro />
+  {calculator === 'slot'
+    ? <slot name="calculator" />
+    : <ShippingCalculator defaultTab={defaultTab} showMargin={showMargin} defaultPreset={defaultPreset} presetGroup={presetGroup} locale={locale} example={example} compactIntro />}
+  {locale === 'en' && partners !== 'none' && <PartnerTools region={partners} />}
   <article class="content-section long">
     {explanation.length > 0 && (
       <>

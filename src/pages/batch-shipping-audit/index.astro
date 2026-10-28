@@ -1,15 +1,47 @@
 ---
 import ToolPage from '../../components/ToolPage.astro';
+
+const faq: [string, string][] = [
+  ['What format does the CSV need?', 'Six columns: sku, length, width, height, weight, quantity, with a header row. Commas or semicolons both work. You can download a template from the batch tab.'],
+  ['Can I use centimetres and kilograms?', 'Yes. Choose metric before running the audit, or write the unit in the header or the cell (for example “500g”, “1.2 kg”, “30 cm”). Mixed units are converted.'],
+  ['Is my file uploaded anywhere?', 'No. The file is read and calculated in your browser. Nothing is sent to ShippingMath or anyone else.'],
+  ['How big can the file be?', 'Up to 5 MB and 5,000 rows per run. Split larger catalogues into several files.'],
+  ['What does “air” mean in the results?', 'The extra weight you pay for when dimensional weight is higher than the actual weight. The summary adds it up across all rows and quantities.'],
+  ['Which carrier rules does it use?', 'The rule selected in the calculator: UPS, FedEx, USPS 2026, metric 5,000 or 6,000, or your own divisor.'],
+];
 ---
 <ToolPage
   title="Batch Shipping Audit: DIM Weight from CSV | ShippingMath"
   heading="Batch shipping audit"
   eyebrow="Private CSV package check"
-  description="Paste or choose a CSV to compare scale, dimensional and billable weight across a product catalogue. The file never leaves your browser."
-  explanation={[
-    'Use the six-column format shown in the workspace. ShippingMath calculates every valid row locally, highlights packages controlled by volume and totals the estimated empty-space weight.',
-    'Download the audited rows for packaging review. Customer addresses, names and order details are not required and should not be included in the file.',
-  ]}
+  description="Upload a CSV to check scale, dimensional and billable weight across your catalogue and find the products you overpay on. Runs privately in your browser."
   defaultTab="batch"
   path="/batch-shipping-audit/"
-/>
+  faq={faq}
+>
+  <p class="lead">Checking one box at a time is fine. Checking a whole catalogue shows you where the money goes. Paste your products into the batch tab and every row is calculated with the same carrier rule, with the ones billed on dimensional weight flagged.</p>
+
+  <h2>How to run an audit</h2>
+  <ol>
+    <li>Export your products with their <strong>packed</strong> dimensions and weight (from your store, spreadsheet or warehouse system).</li>
+    <li>Arrange the columns as <code>sku,length,width,height,weight,quantity</code>. Use quantity for monthly units shipped to see the real impact.</li>
+    <li>Pick the carrier rule in the single-package tab, then open the <strong>Batch CSV audit</strong> tab, paste or choose the file and press <strong>Audit packages</strong>.</li>
+    <li>Look at the rows marked <strong>Paying for air</strong>: they’re the products where a smaller box saves money.</li>
+    <li>Download the results as CSV for your packaging review.</li>
+  </ol>
+
+  <h2>Example</h2>
+  <pre class="csv-example"><code>sku,length,width,height,weight,quantity
+TSHIRT-M,12,10,3,1.2,240
+MUG-RED,8,6,5,2.1,120
+LAMP-01,18,14,12,6,40</code></pre>
+  <p>At UPS Daily Rates, the lamp’s 18 × 14 × 12 in box is billed at 22 lb instead of 6 lb. With 40 shipments a month, that’s 640 lb of air a month: the first product to repack.</p>
+
+  <h2>What to do with the results</h2>
+  <ul>
+    <li>Repack the worst rows first: try smaller boxes in the <a href="/box-margin-optimizer/">box optimizer</a>.</li>
+    <li>For USPS, see which boxes can drop to 1,728 in³ or less in the <a href="/usps-dimensional-weight-calculator/">USPS calculator</a>.</li>
+    <li>Read <a href="/how-to-reduce-dimensional-weight/">10 ways to reduce dimensional weight</a>.</li>
+  </ul>
+  <p>Don’t include customer names, addresses or order details. The audit only needs product sizes and weights.</p>
+</ToolPage>

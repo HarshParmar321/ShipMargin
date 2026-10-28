@@ -2,10 +2,26 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BoxOptimizer from '../../components/BoxOptimizer.astro';
 import { languagePaths } from '../../lib/locales';
-import { TOOLS } from '../../lib/tools';
+import { GUIDES, TOOLS } from '../../lib/tools';
+import PartnerTools from '../../components/PartnerTools.astro';
+
+const faq: [string, string][] = [
+  ['How does the box optimizer choose a box?', 'It drops every box the product can’t fit into, even after rotating it, then works out the billable weight and total cost (shipping plus packaging) for each remaining box and highlights the cheapest.'],
+  ['What should I enter as shipping cost per lb?', 'Your average label cost divided by the billed weight, for the service you use most. It doesn’t need to be exact: the optimizer uses it to compare boxes against each other.'],
+  ['Can I enter my own boxes?', 'Yes. Add each box with its size and packaging cost, or paste a list as CSV (name,length,width,height,cost).'],
+  ['How are monthly savings calculated?', 'The difference in cost per shipment between your current package and the chosen box, multiplied by your monthly orders.'],
+  ['Does it work in centimetres and kilograms?', 'Yes. Switch to metric and pick a metric carrier rule under carrier settings.'],
+];
+const jsonLd = [
+  { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'ShippingMath', item: 'https://shippingmath.com/' },
+    { '@type': 'ListItem', position: 2, name: 'Box optimizer', item: 'https://shippingmath.com/box-margin-optimizer/' },
+  ] },
+  { '@context': 'https://schema.org', '@type': 'FAQPage', inLanguage: 'en', mainEntity: faq.map(([question, answer]) => ({ '@type': 'Question', name: question, acceptedAnswer: { '@type': 'Answer', text: answer } })) },
+];
 ---
 
-<BaseLayout title="Shipping Box Optimizer: Compare Boxes | ShippingMath" description="Compare available shipping boxes, reduce billable weight, estimate monthly savings and calculate the selling price needed for your target margin." canonicalPath="/box-margin-optimizer/" languagePaths={languagePaths.optimizer}>
+<BaseLayout title="Shipping Box Optimizer: Compare Boxes | ShippingMath" description="Compare available shipping boxes, reduce billable weight, estimate monthly savings and calculate the selling price needed for your target margin." canonicalPath="/box-margin-optimizer/" languagePaths={languagePaths.optimizer} jsonLd={jsonLd}>
   <header class="tool-hero optimizer-hero">
     <div class="crumbs"><a href="/">ShippingMath</a> / Box optimizer</div>
     <span class="eyebrow">Free · local · mobile-first</span>
@@ -13,6 +29,7 @@ import { TOOLS } from '../../lib/tools';
     <p>Compare your available cartons by fit, billable weight and total packaging cost. See the best valid option immediately.</p>
   </header>
   <BoxOptimizer />
+  <PartnerTools region="us" />
   <article class="content-section optimizer-content">
     <h2>Why the cheapest box is not always the cheapest shipment</h2>
     <p>A low-cost carton can still increase dimensional weight. ShippingMath compares packaging cost and estimated shipping cost together, while rejecting boxes that cannot fit the product even after rotation.</p>
@@ -23,12 +40,31 @@ import { TOOLS } from '../../lib/tools';
       <li>Your estimated carrier cost for each billed weight unit.</li>
       <li>Product cost, other order fees and the target margin when supplied.</li>
     </ul>
-    <div class="notice"><strong>Planning estimate:</strong> carrier prices, surcharges, measurement methods and contract rules can differ. Confirm the selected box and actual label price before changing packaging.</div>
+    <h2>How to use it</h2>
+    <ol>
+      <li>Enter the product size and its current package, the scale weight and your average shipping cost per billed lb.</li>
+      <li>List the boxes you stock (or could buy) with their cost. Use “Load example” to see the format.</li>
+      <li>Optionally add monthly orders, product cost, other fees and a target margin.</li>
+      <li>Press <strong>Find my best box</strong>: the best-value box, the weight avoided per shipment and the estimated monthly savings appear on the right.</li>
+    </ol>
+    <h2>Example</h2>
+    <p>An 11 × 8 × 2 in product weighing 8 lb ships today in an 18 × 14 × 12 in box. At UPS Daily Rates that box is billed at 22 lb (3,024 ÷ 139 = 21.8, rounded up). A 14 × 10 × 6 in box fits the product and is billed at 8 lb, its actual weight, because its dimensional weight is only 6.04 → 7 lb. That’s 14 lb less on every label.</p>
+    <p>Want the numbers for standard sizes? See the <a href="/dimensional-weight-chart/">dimensional weight chart</a> and <a href="/how-to-reduce-dimensional-weight/">10 ways to reduce dimensional weight</a>.</p>
+    <h2 id="faq">Frequently asked questions</h2>
+    <div class="faq">
+      {faq.map(([question, answer]) => (
+        <details>
+          <summary><span>{question}</span><span class="faq-icon" aria-hidden="true"></span></summary>
+          <p>{answer}</p>
+        </details>
+      ))}
+    </div>
+    <div class="notice" style="margin-top: 40px"><strong>Planning estimate:</strong> carrier prices, surcharges, measurement methods and contract rules can differ. Confirm the selected box and actual label price before changing packaging.</div>
   </article>
   <section class="related-tools" aria-labelledby="related-heading">
     <h2 id="related-heading">More free shipping tools</h2>
     <div class="related-grid">
-      {TOOLS.filter((tool) => tool.href !== '/box-margin-optimizer/').slice(0, 6).map((tool) => <a href={tool.href}><strong>{tool.name}</strong><span>{tool.blurb}</span></a>)}
+      {[...TOOLS.filter((tool) => tool.href !== '/box-margin-optimizer/').slice(0, 4), ...GUIDES].map((tool) => <a href={tool.href}><strong>{tool.name}</strong><span>{tool.blurb}</span></a>)}
     </div>
   </section>
 </BaseLayout>

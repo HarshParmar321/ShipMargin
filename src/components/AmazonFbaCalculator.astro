@@ -1,0 +1,314 @@
+---
+import { FBA_US_PERIODS, FBA_US_SOURCES, FBA_US_REVIEWED_ON, fbaPeriodFor } from '../lib/amazonFba.mjs';
+
+interface Props {
+  example?: { length: number; width: number; height: number; weight: number; price: number };
+}
+const { example = { length: 13, width: 10, height: 6, weight: 1.6, price: 24.99 } } = Astro.props;
+// The build date picks the default rate card; the browser re-checks today's date when the page loads.
+const buildPeriod = fbaPeriodFor(new Date().toISOString()) ?? 'peak2026';
+const reviewedLabel = new Date(`${FBA_US_REVIEWED_ON}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+---
+
+<section class="calculator-shell" data-fba-calculator data-periods={JSON.stringify(FBA_US_PERIODS)}>
+  <div class="workspace-card">
+    <div class="workspace-panel">
+      <form class="input-panel" data-fba-form novalidate>
+        <div class="panel-heading">
+          <div>
+            <span class="step-label">Packaged unit · amazon.com</span>
+            <h3>Size, weight and price</h3>
+          </div>
+          <button class="text-button" type="button" data-fba-reset>Reset</button>
+        </div>
+
+        <fieldset class="segmented-control">
+          <legend class="sr-only">Measurement units</legend>
+          <label><input type="radio" name="dimUnit" value="in" checked /> Inches <small>in</small></label>
+          <label><input type="radio" name="dimUnit" value="cm" /> Centimetres <small>cm</small></label>
+        </fieldset>
+
+        <div class="dimension-grid">
+          <label class="field"><span>Length <b data-fba-dim-unit>in</b></span><input name="length" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={String(example.length)} /></label>
+          <label class="field"><span>Width <b data-fba-dim-unit>in</b></span><input name="width" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={String(example.width)} /></label>
+          <label class="field"><span>Height <b data-fba-dim-unit>in</b></span><input name="height" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={String(example.height)} /></label>
+        </div>
+
+        <div class="two-column-fields">
+          <label class="field"><span>Unit weight (packed)</span><input name="weight" inputmode="decimal" enterkeyhint="next" type="text" autocomplete="off" value={String(example.weight)} /></label>
+          <label class="field"><span>Weight unit</span>
+            <select name="weightUnit">
+              <option value="lb" selected>lb</option>
+              <option value="oz">oz</option>
+              <option value="kg">kg</option>
+              <option value="g">g</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="two-column-fields">
+          <label class="field"><span>Item price <b>USD</b></span><input name="price" inputmode="decimal" enterkeyhint="done" type="text" autocomplete="off" value={String(example.price)} placeholder="e.g. 24.99" /></label>
+          <label class="field"><span>Product type</span>
+            <select name="category">
+              <option value="core" selected>Most items</option>
+              <option value="apparel">Apparel</option>
+              <option value="dangerous">Hazmat</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="field full-field rule-field">
+          <span><label for="fba-period">Fee period</label></span>
+          <select name="period" id="fba-period">
+            {Object.entries(FBA_US_PERIODS).map(([value, period]) => <option value={value} selected={value === buildPeriod}>{period.label}</option>)}
+          </select>
+          <small class="rule-help" data-fba-period-note hidden>Amazon's 2027 rates aren't in this calculator yet. The 2026 rate card is shown; check the Revenue Calculator for current fees.</small>
+        </div>
+      </form>
+
+      <aside class="result-panel" aria-live="polite">
+        <div class="result-kicker"><span>FBA estimate · US</span><span class="status-dot">Live</span></div>
+        <div class="primary-result">
+          <span>Shipping weight Amazon uses</span>
+          <strong><b data-fba="shipping">–</b> <em>lb</em></strong>
+          <p data-fba="basis"></p>
+          <p class="fba-tier-line">Size tier: <b data-fba="tier">–</b></p>
+          <p class="rule-line"><span>Rules:</span> <b>Amazon US, divisor 139</b> · <a href={FBA_US_SOURCES.dimensionalWeight} target="_blank" rel="noopener">Source</a> · checked {reviewedLabel}</p>
+        </div>
+
+        <dl class="result-grid">
+          <div><dt>Unit weight</dt><dd><span data-fba="unit">–</span> <em>lb</em></dd></div>
+          <div><dt>Dimensional weight</dt><dd><span data-fba="dim">–</span> <em>lb</em> <em data-fba="dimNote"></em></dd></div>
+          <div><dt>Sides (longest · median · shortest)</dt><dd><span data-fba="sides">–</span> <em>in</em></dd></div>
+          <div><dt>Length + girth</dt><dd><span data-fba="girth">–</span> <em>in</em></dd></div>
+        </dl>
+
+        <div class="profit-card fba-fee-card">
+          <span>FBA fulfillment fee · <b data-fba="band">–</b></span>
+          <strong><span data-fba="fee">–</span></strong>
+          <small data-fba="feeDetail"></small>
+        </div>
+
+        <div class="recommendation" data-fba-warning hidden>
+          <span class="recommendation-icon" aria-hidden="true">!</span>
+          <div><strong data-fba="warningTitle"></strong><p data-fba="warningText"></p></div>
+        </div>
+
+        <div class="result-actions fba-actions">
+          <button class="primary-button" type="button" data-fba-copy>Copy result</button>
+          <button class="secondary-button" type="button" data-fba-share>Share link</button>
+        </div>
+        <p class="result-note">Estimate from Amazon's published 2026 US tables. It leaves out the Overmax, SIPP packaging, low-inventory-level and storage fees. Amazon's own measurements decide what you're charged; check the <a href={FBA_US_SOURCES.revenueCalculator} target="_blank" rel="noopener">Revenue Calculator</a> before you price.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+  // @ts-nocheck -- progressively enhanced form, guarded at runtime.
+  import { FBA_US_SURCHARGE, FBA_US_TIER_LABELS, calculateFba, fbaPeriodFor } from '../lib/amazonFba.mjs';
+  import { parseLocaleNumber } from '../lib/shipping.mjs';
+
+  const MAX = 100000;
+  const fmt = (value, digits = 2) => new Intl.NumberFormat('en-US', { maximumFractionDigits: digits, minimumFractionDigits: 0 }).format(value);
+  const money = (value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+  const BASIS = {
+    unit: 'Unit weight (heavier than the dimensional weight).',
+    dim: 'Dimensional weight (heavier than the unit weight).',
+    unitOnly: 'Unit weight. Amazon doesn’t use dimensional weight for this tier.',
+  };
+
+  document.querySelectorAll('[data-fba-calculator]').forEach((root) => {
+    const form = root.querySelector('[data-fba-form]');
+    if (!(form instanceof HTMLFormElement)) return;
+    const out = (name) => root.querySelector(`[data-fba="${name}"]`);
+    const set = (name, text) => { const el = out(name); if (el) el.textContent = text; };
+    const field = (name) => form.elements.namedItem(name);
+    const value = (name) => field(name)?.value ?? '';
+    // Converted values are shown rounded; the exact number is kept while the field still shows that text,
+    // so switching units back and forth never drifts.
+    const exact = new Map();
+    const num = (name) => {
+      const kept = exact.get(name);
+      if (kept && kept.text === value(name)) return kept.value;
+      // Allow a leading $ in the price ("$24.99").
+      const parsed = parseLocaleNumber(value(name).replace(/^\s*\$/, ''), '.');
+      return parsed === undefined || Number.isNaN(parsed) ? NaN : parsed;
+    };
+    const warning = root.querySelector('[data-fba-warning]');
+    const periodNote = root.querySelector('[data-fba-period-note]');
+    const defaults = Object.fromEntries(['length', 'width', 'height', 'weight', 'price', 'weightUnit', 'category', 'period'].map((name) => [name, value(name)]));
+
+    const today = new Date();
+    const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const todayPeriod = fbaPeriodFor(todayIso);
+    if (todayPeriod) { field('period').value = todayPeriod; defaults.period = todayPeriod; }
+    else if (todayIso > '2027-01-14' && periodNote) periodNote.hidden = false;
+
+    let last = null;
+    const showWarning = (title, text) => {
+      if (!warning) return;
+      warning.hidden = !title;
+      set('warningTitle', title || '');
+      set('warningText', text || '');
+    };
+
+    const render = () => {
+      const dimUnit = value('dimUnit') === 'cm' ? 'cm' : 'in';
+      root.querySelectorAll('[data-fba-dim-unit]').forEach((el) => { el.textContent = dimUnit; });
+      const dims = ['length', 'width', 'height'].map(num);
+      const weight = num('weight');
+      const priceRaw = value('price').trim();
+      const price = priceRaw === '' ? '' : num('price');
+      const invalid = [...dims, weight].some((n) => !Number.isFinite(n) || n <= 0 || n > MAX);
+      const result = invalid ? null : calculateFba({
+        length: dims[0], width: dims[1], height: dims[2], weight, dimUnit, weightUnit: value('weightUnit'),
+        price: Number.isFinite(price) && price <= 1e9 ? price : '', category: value('category'), period: value('period'),
+      });
+      last = result;
+      if (!result) {
+        ['shipping', 'tier', 'unit', 'dim', 'sides', 'girth', 'band', 'fee'].forEach((name) => set(name, '–'));
+        set('dimNote', '');
+        set('basis', 'Enter the packed length, width, height and weight.');
+        set('feeDetail', '');
+        showWarning('', '');
+        return;
+      }
+      const unitOnly = result.tier === 'smallStandard' || result.tier === 'xl150plus';
+      set('shipping', fmt(result.shippingWeight));
+      set('basis', unitOnly ? BASIS.unitOnly : BASIS[result.basis]);
+      set('tier', FBA_US_TIER_LABELS[result.tier] + (result.overmax ? ' · Overmax' : ''));
+      set('unit', fmt(result.unitWeight));
+      set('dim', fmt(result.dimWeight));
+      set('dimNote', result.minApplied ? '· 2 in min.' : '');
+      set('sides', `${fmt(result.longest)} · ${fmt(result.median)} · ${fmt(result.shortest)}`);
+      set('girth', fmt(result.lengthPlusGirth));
+
+      if (result.fee) {
+        set('band', result.fee.label);
+        set('fee', money(result.fee.fee));
+        const parts = [];
+        if (result.fee.intervals > 0) parts.push(`${money(result.fee.base)} + ${result.fee.intervals} × ${money(result.fee.perInterval)}.`);
+        parts.push(`About ${money(result.feeWithSurcharge)} with the ${fmt(FBA_US_SURCHARGE * 100, 1)}% fuel and logistics surcharge.`);
+        set('feeDetail', parts.join(' '));
+      } else {
+        set('band', '–');
+        set('fee', '–');
+        set('feeDetail', result.tier === 'xlUnclear' ? 'Amazon’s fee table doesn’t clearly cover this size and weight.' : 'Enter the item price to see the fee.');
+      }
+
+      if (result.tier === 'xlUnclear') {
+        showWarning('Check this one in Seller Central', 'The dimensional weight is over 150 lb but the unit weight isn’t. Amazon’s tables don’t say which Extra-Large rate applies, so use the Revenue Calculator.');
+      } else if (result.overmax) {
+        showWarning('Overmax handling fee applies', 'Extra-Large units over 96 in on the longest side, or over 130 in length + girth, pay an extra Overmax fee on top of this estimate.');
+      } else if (result.minApplied && result.basis === 'dim') {
+        showWarning('The 2-inch minimum is costing you', 'For Bulky and Extra-Large units Amazon counts any side under 2 in as 2 in. A thin, flat item can be billed far above its real weight.');
+      } else if (result.tier === 'largeStandard' && result.basis === 'dim') {
+        showWarning('You’re paying for air', `Dimensional weight is ${fmt(result.dimWeight - result.unitWeight)} lb above the unit weight. A smaller box or poly mailer could move this unit into a cheaper band.`);
+      } else {
+        showWarning('', '');
+      }
+    };
+
+    // Changing the unit converts the numbers already typed, so the package stays the same.
+    let dimUnitNow = value('dimUnit');
+    let weightUnitNow = value('weightUnit');
+    const toLb = { lb: 1, oz: 1 / 16, kg: 1 / 0.45359237, g: 1 / 453.59237 };
+    const rewrite = (name, factor) => {
+      const n = num(name);
+      if (!Number.isFinite(n)) return;
+      const converted = n * factor;
+      const text = String(Number(converted.toFixed(4)));
+      field(name).value = text;
+      exact.set(name, { text, value: converted });
+    };
+    form.addEventListener('change', (event) => {
+      const target = event.target;
+      if (target?.name === 'dimUnit' && value('dimUnit') !== dimUnitNow) {
+        const factor = value('dimUnit') === 'cm' ? 2.54 : 1 / 2.54;
+        ['length', 'width', 'height'].forEach((name) => rewrite(name, factor));
+        dimUnitNow = value('dimUnit');
+      }
+      if (target?.name === 'weightUnit' && value('weightUnit') !== weightUnitNow) {
+        rewrite('weight', toLb[weightUnitNow] / toLb[value('weightUnit')]);
+        weightUnitNow = value('weightUnit');
+      }
+      render();
+    });
+    form.addEventListener('input', render);
+    form.addEventListener('submit', (event) => event.preventDefault());
+
+    root.querySelector('[data-fba-reset]')?.addEventListener('click', () => {
+      Object.entries(defaults).forEach(([name, v]) => { field(name).value = v; });
+      form.querySelector('input[name="dimUnit"][value="in"]').checked = true;
+      dimUnitNow = 'in';
+      weightUnitNow = defaults.weightUnit;
+      history.replaceState(null, '', location.pathname);
+      render();
+    });
+
+    // Share links: ?l=&w=&h=&wt=&wu=&du=&p=&c=&per=
+    const params = new URLSearchParams(location.search);
+    if (params.has('l')) {
+      const pick = (key, allowed) => (allowed.includes(params.get(key)) ? params.get(key) : null);
+      ['l:length', 'w:width', 'h:height', 'wt:weight', 'p:price'].forEach((pair) => {
+        const [key, name] = pair.split(':');
+        const raw = params.get(key);
+        if (raw !== null && /^\d*\.?\d+$/.test(raw)) field(name).value = raw;
+        else if (key === 'p' && raw === '') field(name).value = '';
+      });
+      const du = pick('du', ['in', 'cm']);
+      if (du) { form.querySelector(`input[name="dimUnit"][value="${du}"]`).checked = true; dimUnitNow = du; }
+      const wu = pick('wu', ['lb', 'oz', 'kg', 'g']);
+      if (wu) { field('weightUnit').value = wu; weightUnitNow = wu; }
+      const c = pick('c', ['core', 'apparel', 'dangerous']);
+      if (c) field('category').value = c;
+      const per = pick('per', ['nonpeak2026', 'peak2026']);
+      if (per) field('period').value = per;
+    }
+
+    // Six decimals keep the exact value without float noise such as 9.999999999999998.
+    const clean = (n) => String(Number(n.toFixed(6)));
+    const shareUrl = () => {
+      const q = new URLSearchParams({
+        l: clean(num('length')), w: clean(num('width')), h: clean(num('height')), wt: clean(num('weight')),
+        du: value('dimUnit'), wu: value('weightUnit'), p: Number.isFinite(num('price')) ? clean(num('price')) : '', c: value('category'), per: value('period'),
+      });
+      return `${location.origin}${location.pathname}?${q}`;
+    };
+    const flash = (button, text) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      const original = button.textContent;
+      button.textContent = text;
+      setTimeout(() => { button.textContent = original; }, 1600);
+    };
+    const copyText = async (text) => {
+      try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
+    };
+    root.querySelector('[data-fba-share]')?.addEventListener('click', async (event) => {
+      if (!last) return;
+      const url = shareUrl();
+      history.replaceState(null, '', url);
+      if (navigator.share && matchMedia('(pointer: coarse)').matches) {
+        try { await navigator.share({ title: 'Amazon FBA estimate', url }); return; } catch { /* fall back to copy */ }
+      }
+      flash(event.currentTarget, (await copyText(url)) ? 'Link copied' : 'Copy the address bar');
+    });
+    root.querySelector('[data-fba-copy]')?.addEventListener('click', async (event) => {
+      if (!last) return;
+      const dimUnit = value('dimUnit');
+      const lines = [
+        `Amazon FBA (US) estimate`,
+        `Package: ${value('length')} × ${value('width')} × ${value('height')} ${dimUnit}, ${value('weight')} ${value('weightUnit')}`,
+        `Size tier: ${FBA_US_TIER_LABELS[last.tier]}${last.overmax ? ' (Overmax)' : ''}`,
+        `Dimensional weight: ${fmt(last.dimWeight)} lb${last.minApplied ? ' (2 in minimum applied)' : ''}`,
+        `Shipping weight: ${fmt(last.shippingWeight)} lb`,
+        last.fee ? `Fulfillment fee: ${money(last.fee.fee)} (${last.fee.label}), about ${money(last.feeWithSurcharge)} with the fuel surcharge` : 'Fulfillment fee: enter a price',
+        shareUrl(),
+      ];
+      flash(event.currentTarget, (await copyText(lines.join('\n'))) ? 'Copied' : 'Copy failed');
+    });
+
+    render();
+  });
+</script>

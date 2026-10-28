@@ -1,0 +1,40 @@
+---
+import { partnersFor, type PartnerRegion } from '../lib/partners';
+
+interface Props {
+  region?: PartnerRegion;
+  heading?: string;
+}
+const { region = 'us', heading = 'Now cut the label cost too' } = Astro.props;
+const partners = partnersFor(region);
+const anyAffiliate = partners.some((partner) => partner.affiliateUrl);
+---
+{partners.length > 0 && (
+  <section class="partner-tools" aria-labelledby="partner-heading">
+    <div class="partner-head">
+      <span class="eyebrow">Ship it cheaper</span>
+      <h2 id="partner-heading">{heading}</h2>
+      <p>Billable weight is half the bill. The other half is your rate. These tools compare carrier rates and print labels.</p>
+    </div>
+    <div class="partner-grid">
+      {partners.map((partner) => (
+        <a
+          class="partner-card"
+          href={partner.affiliateUrl || partner.url}
+          target="_blank"
+          rel={partner.affiliateUrl ? 'sponsored noopener' : 'noopener'}
+          data-partner={partner.key}
+        >
+          <strong>{partner.name}</strong>
+          <span>{partner.pitch}</span>
+          <em>{partner.cta} ↗</em>
+        </a>
+      ))}
+    </div>
+    <p class="partner-note">
+      {anyAffiliate
+        ? 'Some of these are affiliate links: if you sign up, ShippingMath may earn a commission at no extra cost to you. We only list tools we think are useful.'
+        : 'Independent suggestions. ShippingMath isn’t paid to list these tools.'}
+    </p>
+  </section>
+)}

@@ -35,7 +35,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .site-header nav a { padding: 8px 0; border-bottom: 2px solid transparent; }
 .site-header nav a:hover { border-color: var(--ink); }
 .header-actions { justify-self: end; display: flex; align-items: center; gap: 8px; }
-.privacy-pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; font-size: 0.76rem; font-weight: 700; background: var(--surface); }
+.privacy-pill { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; font-size: 0.76rem; font-weight: 700; background: var(--surface); }
 .privacy-pill i { width: 7px; height: 7px; border-radius: 50%; background: #38a568; box-shadow: 0 0 0 4px rgba(56, 165, 104, 0.12); }
 .language-switcher { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
 .language-switcher a { display: grid; place-items: center; min-width: 31px; min-height: 29px; border-radius: 999px; color: var(--ink-soft); font-size: .64rem; font-weight: 800; }
@@ -594,3 +594,35 @@ th { color: var(--ink-soft); font-size: .64rem; text-transform: uppercase; lette
   .batch-panel table { font-size: .75rem; }
   .batch-panel tr { break-inside: avoid; }
 }
+
+/* Amazon FBA calculator */
+.fba-tier-line { margin: 12px 0 0 !important; color: rgba(255,255,255,.74); }
+.fba-tier-line b { display: inline-block; margin-left: 4px; padding: 3px 9px; border-radius: 999px; background: var(--acid); color: var(--ink); font-size: .85rem; font-weight: 800; }
+.fba-fee-card span b { color: var(--ink); }
+.fba-fee-card strong span { display: block; }
+.fba-fee-card small { margin-top: 2px; line-height: 1.45; }
+.fba-actions { grid-template-columns: 1fr 1fr; }
+.result-note a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* Five header links: tighten spacing on narrow desktops so the pill and language menu stay on one line. */
+@media (min-width: 981px) and (max-width: 1180px) { .site-header { gap: 18px; } .site-header nav { gap: 20px; } }
+
+/* Shipping software suggestions */
+.partner-tools { max-width: 1500px; margin: -18px auto 0; padding: 0 5vw 48px; }
+.partner-head { max-width: 760px; }
+.partner-head h2 { font-size: clamp(1.4rem, 2.6vw, 2rem); margin: 6px 0 6px; }
+.partner-head p { margin: 0 0 16px; color: var(--ink-soft); }
+.partner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.partner-card { display: flex; flex-direction: column; gap: 6px; padding: 18px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); transition: border-color .18s, transform .18s; }
+.partner-card:hover { border-color: var(--violet); transform: translateY(-2px); }
+.partner-card strong { font-size: 1.02rem; }
+.partner-card span { color: var(--ink-soft); font-size: .88rem; line-height: 1.45; flex: 1; }
+.partner-card em { font-style: normal; font-weight: 800; font-size: .82rem; color: #5d45c4; }
+.partner-note { margin: 10px 0 0; color: var(--ink-soft); font-size: .74rem; }
+@media (max-width: 620px) { .partner-tools { padding-left: 12px; padding-right: 12px; margin-top: -10px; } }
+@media print { .partner-tools { display: none !important; } }
+
+.footer-heading-gap { margin-top: 18px !important; }
+.home-guides-heading { margin-top: 36px !important; }
+.csv-example { margin: 14px 0; padding: 14px 16px; border-radius: 14px; background: var(--ink); color: #e9f7c4; font-size: .82rem; line-height: 1.6; overflow-x: auto; }
+.csv-example code { background: none; color: inherit; padding: 0; }

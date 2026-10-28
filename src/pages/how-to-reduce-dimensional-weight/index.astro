@@ -1,0 +1,72 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, calculatePackage } from '../../lib/shipping.mjs';
+
+const path = '/how-to-reduce-dimensional-weight/';
+type Key = 'ups139' | 'ups166' | 'usps139';
+const billed = (key: Key, l: number, w: number, h: number, wt: number) => calculatePackage({ length: l, width: w, height: h, actualWeight: wt, ...PRESETS[key], unit: 'imperial' }).billableWeight;
+
+// Worked numbers, calculated from the same engine the calculators use.
+const rightSize = { before: billed('ups139', 14, 12, 10, 3), after: billed('ups139', 12, 10, 8, 3) };
+const cube = { at: billed('usps139', 12, 12, 12, 3), over: billed('usps139', 12.1, 12, 12, 3) };
+const fraction = { before: billed('ups139', 16.2, 12.1, 10.1, 4), after: billed('ups139', 16, 12, 10, 4) };
+const retail = { daily: billed('ups139', 18, 14, 12, 8), retail: billed('ups166', 18, 14, 12, 8) };
+const flat = { box: billed('ups139', 12, 10, 4, 1), mailer: billed('ups139', 13, 10, 1, 1) };
+
+const faq: [string, string][] = [
+  ['What is the fastest way to reduce dimensional weight?', `Use a smaller box. Dimensional weight is volume divided by a fixed number, so cutting volume cuts it directly: moving a 3 lb item from a 14 × 12 × 10 in box to 12 × 10 × 8 in drops the UPS billed weight from ${rightSize.before} lb to ${rightSize.after} lb.`],
+  ['Do poly mailers avoid dimensional weight?', 'They often help because a filled mailer is small and flat, so its volume is low. Carriers still measure it, and at USPS anything up to 1,728 in³ is priced by actual weight anyway.'],
+  ['Can I negotiate the dimensional weight divisor?', 'Businesses with enough volume sometimes negotiate a higher divisor or other terms in their carrier contract. A higher divisor means a lower dimensional weight for the same box.'],
+  ['Does void fill add to dimensional weight?', 'Not directly. Dimensional weight depends only on the outside size of the box. But extra void fill usually means you used a bigger box than you need, which is what costs you.'],
+  ['How do I find which products are worst?', 'Run your catalogue through the batch shipping audit. It flags every SKU that is billed on dimensional weight and how much “air” you pay for.'],
+];
+---
+<ToolPage
+  title="How to Reduce Dimensional Weight: 10 Ways | ShippingMath"
+  heading="How to reduce dimensional weight"
+  crumb="Reduce DIM weight"
+  eyebrow="Stop paying for air"
+  description="10 practical ways to lower dimensional weight and shipping costs, with worked UPS, FedEx and USPS examples. Check your own box with the free calculator."
+  path={path}
+  defaultPreset="ups139"
+  example={{ length: 14, width: 12, height: 10, actualWeight: 3 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">Dimensional weight is <strong>length × width × height ÷ a divisor</strong>. You can’t change the divisor on a label, but you can change the box. Every tip below lowers one of those three numbers, or stops the rule from applying at all.</p>
+
+  <h2>1. Right-size the box</h2>
+  <p>The biggest win. A 3 lb product in a 14 × 12 × 10 in box is billed at <strong>{rightSize.before} lb</strong> at UPS (1,680 ÷ 139 = 12.09, rounded up). In a 12 × 10 × 8 in box it’s billed at <strong>{rightSize.after} lb</strong>. Same product, {rightSize.before - rightSize.after} lb less on every label.</p>
+
+  <h2>2. Stay at or under one cubic foot for USPS</h2>
+  <p>USPS only uses dimensional weight for parcels over 1,728 in³. A 12 × 12 × 12 in box with a 3 lb item is billed at <strong>{cube.at} lb</strong>. Make one side 12.1 in and USPS rounds it up to 13 in: the parcel is now over the limit and billed at <strong>{cube.over} lb</strong>. See the <a href="/usps-dimensional-weight-calculator/">USPS 2026 calculator</a>.</p>
+
+  <h2>3. Kill the fractions</h2>
+  <p>UPS and USPS round every side up to the next inch. A 16.2 × 12.1 × 10.1 in box is measured as 17 × 13 × 11 and billed at <strong>{fraction.before} lb</strong> for a 4 lb product at UPS; a true 16 × 12 × 10 in box is billed at <strong>{fraction.after} lb</strong>. Tape the flaps flat and don’t let the box bulge.</p>
+
+  <h2>4. Use mailers for soft goods</h2>
+  <p>Clothing, textiles and other items that don’t need a rigid box can go in a poly or padded mailer. At UPS, a 1 lb shirt in a 12 × 10 × 4 in box is billed at <strong>{flat.box} lb</strong>. In a filled 13 × 10 × 1 in mailer it’s billed at <strong>{flat.mailer} lb</strong>, its actual weight.</p>
+
+  <h2>5. Know your divisor</h2>
+  <p>UPS uses 139 for Daily Rates but 166 at Retail. An 18 × 14 × 12 in box with an 8 lb product is billed at <strong>{retail.daily} lb</strong> at 139 and <strong>{retail.retail} lb</strong> at 166. A lower billed weight doesn’t always mean a cheaper label, so compare the final price, not just the weight. Large shippers sometimes negotiate a higher divisor in their contract.</p>
+
+  <h2>6. Keep a small range of box sizes</h2>
+  <p>Three to six well-chosen sizes cover most catalogues. Enter the boxes you stock in the <a href="/box-margin-optimizer/">box optimizer</a> to see which one gives each product the lowest total cost.</p>
+
+  <h2>7. Pack multi-item orders together, then check</h2>
+  <p>Two items in one box often cost less than two parcels, but not always: a bigger box can jump to a much higher dimensional weight. Run both options through the <a href="/dimensional-weight-calculator/">calculator</a> before you decide.</p>
+
+  <h2>8. Ship by the right carrier for the size</h2>
+  <p>Small, light parcels usually suit USPS because of its one-cubic-foot rule. Boxes with fractional sides can bill lower at FedEx, which rounds to the nearest inch. Compare the rules in <a href="/ups-vs-fedex-vs-usps-dimensional-weight/">UPS vs FedEx vs USPS</a>.</p>
+
+  <h2>9. Audit the whole catalogue once</h2>
+  <p>Paste or upload your SKUs into the <a href="/batch-shipping-audit/">batch shipping audit</a>. It flags every product that is billed on dimensional weight, so you fix the worst offenders first. It runs in your browser; nothing is uploaded.</p>
+
+  <h2>10. Re-check when rules change</h2>
+  <p>Carriers do change divisors and rounding, as USPS did on 12 July 2026. Keep the <a href="/dimensional-weight-chart/">dimensional weight chart</a> handy and re-check your main boxes after each change.</p>
+
+  <div class="callout-cliff">
+    <strong>Quick check</strong>
+    <p>If your product’s weight in pounds is lower than the box volume in cubic inches ÷ 139, you’re paying for air at UPS and FedEx. Shrink the box until the two are close.</p>
+  </div>
+</ToolPage>

@@ -1,16 +1,49 @@
 ---
 import ToolPage from '../../components/ToolPage.astro';
+
+const faq: [string, string][] = [
+  ['How do I calculate profit margin on an order?', 'Profit = sale price − product cost − packaging − shipping − fees. Margin = profit ÷ sale price × 100. A $40 sale with $30.70 of costs leaves $9.30, a 23.3% margin.'],
+  ['What should I put under fees?', 'Everything the marketplace or payment provider takes for the order: referral or commission fees, payment processing, and any fulfillment fee you pay per order. Use your real fee rate for the price you sell at.'],
+  ['What price do I need for a target margin?', 'Divide your total costs by (1 − target margin). With $30.70 of costs and a 30% target: 30.70 ÷ 0.70 = $43.86. If your fees are a percentage of the price, they rise with the price, so recheck after changing it.'],
+  ['Why does the box size matter for margin?', 'Carriers bill the greater of actual and dimensional weight. A box that is too big can raise the billed weight, and the label cost, without changing anything else about the order.'],
+  ['Is this an accounting report?', 'No. It’s a planning estimate for one order. Taxes, returns, discounts, duties and overheads are not included.'],
+];
 ---
 <ToolPage
   title="Shipping Margin Calculator: Order Profit | ShippingMath"
   heading="Shipping margin calculator"
   eyebrow="Order profit after shipping"
-  description="Combine package measurements with product, packaging, shipping and marketplace costs to see the estimated profit left on an order."
+  description="See the profit left on an order after product, packaging, shipping and marketplace fees, with the package’s billable weight checked in the same place."
   formula="Profit = sale price − product − packaging − shipping − fees"
-  explanation={[
-    'A sale can look profitable until packaging, carrier cost and marketplace fees are included. Enter the known costs to see an order-level estimate alongside the package audit.',
-    'This is a planning workspace, not an accounting or tax report. Use actual settled costs for financial reporting, and consider returns, discounts, duties and taxes separately.',
-  ]}
   showMargin
   path="/shipping-margin-calculator/"
-/>
+  faq={faq}
+>
+  <p class="lead">A sale can look profitable until packaging, the label and marketplace fees come off. Open <strong>“Profit and cost details”</strong> in the calculator, enter what you know, and the result shows the profit and margin next to the billable weight.</p>
+
+  <h2>Worked example</h2>
+  <div class="example-card">
+    <h3>A $40 order</h3>
+    <ul>
+      <li>Product cost: $14.00</li>
+      <li>Packaging: $1.20</li>
+      <li>Shipping label: $9.50</li>
+      <li>Marketplace and payment fees (15%): $6.00</li>
+    </ul>
+    <p>Total costs: $30.70. Profit: $40.00 − $30.70 = $9.30. Margin: 9.30 ÷ 40 = 23.3%.</p>
+    <p class="answer">Profit <b>$9.30</b> · margin <b>23.3%</b></p>
+  </div>
+  <p>The figures are an example; use your own costs and rates.</p>
+
+  <h2>Where shipping eats margin</h2>
+  <ul>
+    <li><strong>Oversized boxes.</strong> If the billed weight is dimensional weight, a smaller box can lower the label cost. Compare your boxes in the <a href="/box-margin-optimizer/">box optimizer</a>.</li>
+    <li><strong>Free shipping thresholds.</strong> Build the shipping cost into the price, then check the margin at the threshold order value.</li>
+    <li><strong>Percentage fees.</strong> Marketplace fees grow with the price, so a price rise doesn’t all go to profit.</li>
+    <li><strong>Packaging.</strong> Boxes, mailers, tape and inserts add up; include them per order.</li>
+  </ul>
+
+  <h2>Price for a target margin</h2>
+  <div class="formula-box">Price needed = total costs ÷ (1 − target margin)</div>
+  <p>With $30.70 of costs and a 30% target margin, you need $43.86. The <a href="/box-margin-optimizer/">box optimizer</a> works this out for each box you stock.</p>
+</ToolPage>

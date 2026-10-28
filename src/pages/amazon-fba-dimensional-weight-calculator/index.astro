@@ -1,0 +1,114 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import AmazonFbaCalculator from '../../components/AmazonFbaCalculator.astro';
+import { FBA_US_SOURCES } from '../../lib/amazonFba.mjs';
+
+const path = '/amazon-fba-dimensional-weight-calculator/';
+const tryLink = (l: number, w: number, h: number, wt: number, p: number, per = 'nonpeak2026') =>
+  `${path}?${new URLSearchParams({ l: String(l), w: String(w), h: String(h), wt: String(wt), du: 'in', wu: 'lb', p: String(p), c: 'core', per })}#main`;
+
+const faq: [string, string][] = [
+  ['What is the Amazon FBA dimensional weight formula?', 'Length × width × height of the packaged unit in inches, divided by 139. The result is in pounds. For Small Bulky, Large Bulky and Extra-Large units, Amazon counts any width or height under 2 inches as 2 inches.'],
+  ['Does Amazon use dimensional weight for every product?', 'No. Small standard-size units and Extra-Large units over 150 lb are charged on unit weight only. Large standard-size, Small Bulky, Large Bulky and the other Extra-Large tiers are charged on whichever is greater: unit weight or dimensional weight.'],
+  ['What is the 2-inch minimum?', 'For Small Bulky, Large Bulky, Overmax and Extra-Large units, Amazon assumes a minimum width and height of 2 inches when it works out dimensional weight. A 40 × 25 × 1 inch board is calculated as 40 × 25 × 2, so its dimensional weight is 14.4 lb instead of 7.2 lb. Standard-size units do not get this minimum.'],
+  ['Is the FBA divisor 139 or 166?', 'For amazon.com FBA fees the divisor is 139, according to Amazon’s Seller Central help pages. 166 is a divisor some carriers use for retail rates; Amazon doesn’t use it for FBA fulfillment fees.'],
+  ['What changed in Amazon’s size tiers in 2026?', 'From 15 January 2026 Amazon split the old Large Bulky tier into Small Bulky (up to 37 × 28 × 20 in) and Large Bulky (up to 59 × 33 × 33 in), both up to 50 lb and 130 in length plus girth. It also added an Overmax handling fee for Extra-Large units over 96 in long or over 130 in length plus girth.'],
+  ['How is the fee weight rounded?', 'Amazon doesn’t round dimensional weight up to a whole pound. Instead, the shipping weight falls into a fee band. Small standard units use 2-oz bands. Large standard units use 4-oz bands up to 1 lb, quarter-pound bands up to 3 lb, then 4-oz steps (half-pound steps for apparel). Bulky and Extra-Large units use whole-pound steps.'],
+  ['Are the fees on this page exact?', 'They follow Amazon’s published 2026 US rate cards for core products, apparel and dangerous goods, for the price you enter. They don’t include the Overmax, SIPP packaging, low-inventory-level, storage or inbound placement fees, and Amazon’s own measurements decide what you are charged. Use Amazon’s Revenue Calculator to confirm before you set a price.'],
+  ['Does this work for Amazon UK, Canada, India or Brazil?', 'No, this calculator uses the amazon.com (US) rules only. Other Amazon marketplaces use different size tiers and divisors. For Amazon India Easy Ship and Amazon Brazil FBA, use the India and Brazil calculators on this site.'],
+];
+---
+<ToolPage
+  title="Amazon FBA Dimensional Weight Calculator | ShippingMath"
+  heading="Amazon FBA dimensional weight"
+  crumb="Amazon FBA DIM weight"
+  eyebrow="2026 amazon.com rules"
+  description="Check Amazon FBA dimensional weight, size tier and shipping weight with the 2026 US rules: divisor 139, 2-inch minimum and the fulfillment fee band."
+  path={path}
+  faq={faq}
+  calculator="slot"
+>
+  <AmazonFbaCalculator slot="calculator" />
+
+  <p class="lead">Amazon charges FBA fulfillment fees on a unit’s <strong>shipping weight</strong>. For most products that’s the greater of what the packed unit weighs and its dimensional weight. Enter the packed size and weight above to see the size tier, the weight Amazon uses and the fee band it falls into.</p>
+
+  <ul class="key-facts">
+    <li><b>÷ 139</b><span>L × W × H in inches, divided by 139 = dimensional weight in lb</span></li>
+    <li><b>2 in</b><span>Minimum width and height for Bulky and Extra-Large units</span></li>
+    <li><b>Greater of</b><span>Unit or dimensional weight, for every tier except Small standard and Extra-Large 150+ lb</span></li>
+    <li><b>+3.5%</b><span>Fuel and logistics surcharge on fulfillment fees since 17 Apr 2026</span></li>
+  </ul>
+
+  <h2>How Amazon calculates FBA dimensional weight</h2>
+  <ol>
+    <li>Measure the <strong>packaged unit</strong>: longest side (length), median side (width) and shortest side (height), in inches.</li>
+    <li>Work out the size tier from the sides, the length plus girth (longest side + 2 × median + 2 × shortest) and the weight.</li>
+    <li>Multiply the three sides and divide by <strong>139</strong>. For Small Bulky, Large Bulky and Extra-Large units, count any width or height under 2 in as 2 in first.</li>
+    <li>Compare it with the unit weight. Small standard and Extra-Large 150+ lb units always use unit weight; every other tier uses the <strong>heavier</strong> of the two.</li>
+    <li>Find that shipping weight’s band in Amazon’s fee table for your price range (under $10, $10–$50 or over $50).</li>
+  </ol>
+
+  <h2>Which size tiers use dimensional weight</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Size tier (2026)</th><th>Largest package</th><th>Weight Amazon uses</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Tier">Small standard-size</td><td data-label="Largest">15 × 12 × 0.75 in, up to 16 oz</td><td data-label="Weight used">Unit weight</td></tr>
+        <tr><td data-label="Tier">Large standard-size</td><td data-label="Largest">18 × 14 × 8 in, up to 20 lb</td><td data-label="Weight used">Greater of unit or dimensional</td></tr>
+        <tr><td data-label="Tier">Small Bulky</td><td data-label="Largest">37 × 28 × 20 in, 130 in length + girth, up to 50 lb</td><td data-label="Weight used">Greater of unit or dimensional (2 in minimum)</td></tr>
+        <tr><td data-label="Tier">Large Bulky</td><td data-label="Largest">59 × 33 × 33 in, 130 in length + girth, up to 50 lb</td><td data-label="Weight used">Greater of unit or dimensional (2 in minimum)</td></tr>
+        <tr><td data-label="Tier">Extra-Large 0–50, 50+–70, 70+–150 lb</td><td data-label="Largest">Anything bigger or heavier</td><td data-label="Weight used">Greater of unit or dimensional (2 in minimum)</td></tr>
+        <tr><td data-label="Tier">Extra-Large 150+ lb</td><td data-label="Largest">Unit weight over 150 lb</td><td data-label="Weight used">Unit weight</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">The weight limits for Large standard and above apply to the greater of unit and dimensional weight. Extra-Large units up to 150 lb that are over 96 in long or over 130 in length plus girth are Overmax and pay an extra handling fee. Sources: Amazon Seller Central <a href={FBA_US_SOURCES.sizeTiers} rel="noopener">Product size tiers</a>, <a href={FBA_US_SOURCES.dimensionalWeight} rel="noopener">Dimensional weight</a>, <a href={FBA_US_SOURCES.shippingWeight} rel="noopener">Shipping weight</a> and <a href={FBA_US_SOURCES.fees2026} rel="noopener">2026 US FBA fulfillment fee changes</a>.</p>
+
+  <h2>Worked examples</h2>
+  <p>These use the products from Amazon’s own help pages, with 2026 non-peak fees for core (non-apparel, non-hazmat) products. Fees are before the 3.5% surcharge.</p>
+  <div class="example-card">
+    <h3>Iron: unit weight wins</h3>
+    <p>12.6 × 6.6 × 5.5 in, 3.35 lb, sold for $10–$50. Dimensional weight 457.4 ÷ 139 = 3.29 lb, so the 3.35 lb unit weight is used. Large standard-size, 3.25+ to 3.5 lb band: $6.97 + 2 × $0.08.</p>
+    <p class="answer">Fee: <b>$7.13</b> non-peak · <b>$7.67</b> holiday peak</p>
+    <a class="try-link" href={tryLink(12.6, 6.6, 5.5, 3.35, 30)} rel="nofollow">Open this example →</a>
+  </div>
+  <div class="example-card">
+    <h3>Baby cot: the new Small Bulky tier</h3>
+    <p>24 × 7.5 × 6 in, 7.9 lb, sold for over $50. Dimensional weight 7.77 lb, unit weight 7.9 lb. Small Bulky, 7+ to 8 lb band: $7.55 + 7 × $0.38.</p>
+    <p class="answer">Fee: <b>$10.21</b> non-peak · <b>$11.25</b> holiday peak</p>
+    <a class="try-link" href={tryLink(24, 7.5, 6, 7.9, 80)} rel="nofollow">Open this example →</a>
+  </div>
+  <div class="example-card">
+    <h3>Monitor: dimensional weight wins</h3>
+    <p>54 × 35 × 3.5 in, 41 lb, sold for $10–$50. The 35 in side is over the Bulky limit of 33 in, so it is Extra-Large. Dimensional weight 6,615 ÷ 139 = 47.59 lb, which beats the 41 lb unit weight: $26.33 + 47 × $0.38. Its length plus girth is 131 in, just over 130 in, so Amazon’s separate Overmax handling fee would apply on top.</p>
+    <p class="answer">Fee: <b>$44.19</b> non-peak · <b>$46.92</b> holiday peak</p>
+    <a class="try-link" href={tryLink(54, 35, 3.5, 41, 40)} rel="nofollow">Open this example →</a>
+  </div>
+
+  <div class="callout-cliff">
+    <strong>The 2-inch minimum on flat, bulky items</strong>
+    <p>A 40 × 25 × 1 in dry-erase board weighing 4.5 lb is too long for standard size (40 in is over 18 in) and for Small Bulky (over 37 in), so it is Large Bulky. Amazon counts the 1 in side as 2 in: 40 × 25 × 2 ÷ 139 = 14.39 lb instead of 7.19 lb. At $10–$50 that’s $14.67 instead of $12.01 in non-peak fees.</p>
+    <a class="try-link" href={tryLink(40, 25, 1, 4.5, 30)} rel="nofollow">Open this example →</a>
+  </div>
+
+  <h2>2026 fee changes to know</h2>
+  <ul>
+    <li><strong>New Small Bulky tier (15 Jan 2026).</strong> Units up to 37 × 28 × 20 in and 50 lb now have their own, cheaper rates than Large Bulky.</li>
+    <li><strong>3.5% fuel and logistics surcharge (17 Apr 2026)</strong> on FBA fulfillment fees in the US. The calculator shows the fee with and without it.</li>
+    <li><strong>Holiday peak (15 Oct 2026 – 14 Jan 2027).</strong> Higher fulfillment fees apply to units shipped from a fulfillment centre in this window, even if they were ordered earlier.</li>
+    <li><strong>Price bands.</strong> Items priced under $10 get Low-Price FBA rates; $10 and $50 exactly use the $10–$50 rates; over $50 pays the highest standard-size rates.</li>
+    <li><strong>Overmax handling fee</strong> on Extra-Large units over 96 in long or 130 in length plus girth.</li>
+  </ul>
+
+  <h2>How to lower your FBA shipping weight</h2>
+  <ul>
+    <li><strong>Check the band, not just the weight.</strong> Large standard fees step every 4 oz above 3 lb, so a box a fraction of an inch smaller can drop a band.</li>
+    <li><strong>Keep inside 18 × 14 × 8 in</strong> if you can. Moving from Large standard to Small Bulky raises the base fee and brings in the 2-inch minimum.</li>
+    <li><strong>Avoid thin-but-wide packaging for bulky items</strong>: a side under 2 in is charged as 2 in anyway, so it saves nothing on fees.</li>
+    <li><strong>Measure the packaged unit yourself</strong> and compare it with the dimensions in Seller Central. If Amazon measured it wrongly, you can ask for a re-measurement.</li>
+    <li><strong>Try different boxes</strong> with the <a href="/box-margin-optimizer/">box optimizer</a>, and check carrier billable weight with the <a href="/dimensional-weight-calculator/">dimensional weight calculator</a> for the orders you ship yourself.</li>
+  </ul>
+
+  <h2>Selling on other Amazon marketplaces?</h2>
+  <p>This page uses amazon.com (US) rules. Amazon India Easy Ship and Amazon Brazil FBA use metric divisors; you can find them in the <a href="/india/volumetric-weight-calculator/">India volumetric weight calculator</a> and the <a href="/pt-br/calculadora-peso-cubado/" hreflang="pt-BR">Brazil calculadora de peso cubado</a>.</p>
+</ToolPage>

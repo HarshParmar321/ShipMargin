@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { languagePaths } from '../../lib/locales';
 import { PRESETS, PRESET_SOURCES } from '../../lib/shipping.mjs';
+import { FBA_US_SOURCES } from '../../lib/amazonFba.mjs';
 
 type Rule = { label: string; unit: string; divisor: number; dimThreshold: number; dimRounding: string; billableStep: number; dimExemptBelowWeight?: number; dimExemptInclusive?: boolean; dimMinLongestSide?: number; packagingWeight?: number };
 const presetRows = Object.entries(PRESETS as Record<string, Rule>).map(([key, rule]) => {
@@ -51,6 +52,8 @@ const presetRows = Object.entries(PRESETS as Record<string, Rule>).map(([key, ru
         </tbody>
       </table>
     </div>
+    <h2 id="amazon-fba">Amazon FBA (US) calculator</h2>
+    <p>The <a href="/amazon-fba-dimensional-weight-calculator/">Amazon FBA calculator</a> uses Amazon's 2026 amazon.com rules: dimensional weight is length × width × height in inches ÷ 139, with a 2 in minimum width and height for Small Bulky, Large Bulky and Extra-Large units. Small standard and Extra-Large 150+ lb units use unit weight; every other tier uses the greater of unit and dimensional weight. Fees come from the 2026 non-peak and holiday peak rate cards for core products, apparel and dangerous goods, checked against Amazon's worked examples. Sources: <a href={FBA_US_SOURCES.sizeTiers} rel="noopener">Product size tiers</a>, <a href={FBA_US_SOURCES.dimensionalWeight} rel="noopener">Dimensional weight</a>, <a href={FBA_US_SOURCES.shippingWeight} rel="noopener">Shipping weight</a>, <a href={FBA_US_SOURCES.fees2026} rel="noopener">2026 US FBA fulfillment fee changes</a>.</p>
     <p class="notice">Found a rule that has changed? Please report it through the <a href="/contact/">contact page</a> with a link to the carrier's published rule.</p>
   </article>
 </BaseLayout>

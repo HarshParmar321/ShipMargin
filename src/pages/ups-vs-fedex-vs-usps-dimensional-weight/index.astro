@@ -1,0 +1,94 @@
+---
+import ToolPage from '../../components/ToolPage.astro';
+import { PRESETS, calculatePackage, encodeShareParams } from '../../lib/shipping.mjs';
+
+const path = '/ups-vs-fedex-vs-usps-dimensional-weight/';
+type Key = 'ups139' | 'ups166' | 'fedex139' | 'usps139';
+const billable = (key: Key, l: number, w: number, h: number, wt: number) => {
+  const rule = PRESETS[key];
+  return calculatePackage({ length: l, width: w, height: h, actualWeight: wt, ...rule, unit: 'imperial' });
+};
+const tryLink = (key: Key, l: number, w: number, h: number, wt: number) => {
+  const rule = PRESETS[key];
+  return `/dimensional-weight-calculator/?${encodeShareParams({ length: l, width: w, height: h, actualWeight: wt, quantity: 1, preset: key, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
+};
+
+const examples = [
+  { title: 'A one-cubic-foot box', l: 12, w: 12, h: 12, wt: 3, note: 'USPS only charges dimensional weight above 1,728 in³; this box is exactly 1,728 in³.' },
+  { title: 'Fractional measurements', l: 12.4, w: 10.4, h: 8.4, wt: 2, note: 'FedEx rounds each side to the nearest inch (12 × 10 × 8); UPS and USPS round up (13 × 11 × 9). USPS still uses actual weight because 1,287 in³ is under 1,728 in³.' },
+  { title: 'A large, light box', l: 18, w: 14, h: 12, wt: 8, note: 'All three use divisor 139 for this size, so the dimensional weight is the same. UPS Retail (166) is lower.' },
+].map((example) => ({
+  ...example,
+  ups: billable('ups139', example.l, example.w, example.h, example.wt),
+  fedex: billable('fedex139', example.l, example.w, example.h, example.wt),
+  usps: billable('usps139', example.l, example.w, example.h, example.wt),
+  retail: billable('ups166', example.l, example.w, example.h, example.wt),
+}));
+
+const faq: [string, string][] = [
+  ['Which carrier has the lowest dimensional weight?', 'For parcels of one cubic foot (1,728 in³) or less, USPS, because it doesn’t apply dimensional weight to them at all. Above that size, UPS Daily Rates, FedEx and USPS all divide by 139, so the dimensional weight is usually the same; FedEx can come out lower when your sides have fractions, because it rounds to the nearest inch instead of up.'],
+  ['Does lower dimensional weight mean a cheaper label?', 'Not always. Dimensional weight decides the billed weight; the price for that weight depends on the carrier, service, zone and any discounts or surcharges. Compare actual quotes for your billed weight.'],
+  ['Is the UPS divisor 139 or 166?', 'Both. UPS uses 139 for Daily Rates (account holders) and 166 for Retail Rates (the price at a UPS Store or counter).'],
+  ['How does UPS round measurements?', 'UPS’s own guide says to round up to the nearest whole number when measuring, but its FAQ on the same page says to round each measurement to the nearest whole number. ShippingMath rounds up for UPS so the estimate is never too low.'],
+  ['What changed at USPS in 2026?', 'From 12 July 2026 USPS divides by 139 instead of 166 and rounds every side up to the next whole inch, but still only for parcels over 1,728 in³.'],
+  ['What are the maximum sizes?', 'UPS and FedEx Ground: 150 lb, 108 in long and 165 in length plus girth. USPS: 70 lb and 108 in length plus girth, except USPS Ground Advantage, which takes up to 130 in (with an oversized price above 108 in).'],
+];
+---
+<ToolPage
+  title="UPS vs FedEx vs USPS Dimensional Weight | ShippingMath"
+  heading="UPS vs FedEx vs USPS DIM weight"
+  crumb="UPS vs FedEx vs USPS"
+  eyebrow="2026 carrier rules compared"
+  description="Compare UPS, FedEx and USPS dimensional weight rules for 2026: divisors, how each rounds measurements, the USPS 1,728 in³ rule and size limits, with examples."
+  path={path}
+  defaultPreset="fedex139"
+  example={{ length: 12.4, width: 10.4, height: 8.4, actualWeight: 2 }}
+  faq={faq}
+  showReviewed
+>
+  <p class="lead">UPS, FedEx and USPS all use dimensional weight, but not in the same way. The divisor, how each side is rounded and when the rule kicks in can change the billed weight of the same box by several pounds.</p>
+
+  <h2>The rules side by side</h2>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Rule</th><th>UPS</th><th>FedEx (US)</th><th>USPS</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Rule">Divisor</td><td data-label="UPS">139 Daily Rates · 166 Retail</td><td data-label="FedEx">139</td><td data-label="USPS">139 (since 12 Jul 2026)</td></tr>
+        <tr><td data-label="Rule">Each side</td><td data-label="UPS">Rounded up (UPS’s guide is inconsistent; we round up)</td><td data-label="FedEx">Rounded to the nearest inch</td><td data-label="USPS">Rounded up to the next inch</td></tr>
+        <tr><td data-label="Rule">Weight</td><td data-label="UPS">Up to the next whole lb</td><td data-label="FedEx">Up to the next whole lb</td><td data-label="USPS">Up to the next whole lb</td></tr>
+        <tr><td data-label="Rule">When DIM applies</td><td data-label="UPS">Every package</td><td data-label="FedEx">Every package</td><td data-label="USPS">Only over 1,728 in³ (1 ft³)</td></tr>
+        <tr><td data-label="Rule">Max weight</td><td data-label="UPS">150 lb</td><td data-label="FedEx">150 lb (Ground)</td><td data-label="USPS">70 lb</td></tr>
+        <tr><td data-label="Rule">Max size</td><td data-label="UPS">108 in long, 165 in length + girth</td><td data-label="FedEx">108 in long, 165 in length + girth (Ground)</td><td data-label="USPS">108 in length + girth; 130 in for Ground Advantage</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Sources: <a href="https://www.ups.com/us/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS size and weight guide</a>, <a href="https://www.fedex.com/en-us/shipping/packaging/what-is-dimensional-weight.html" rel="noopener">FedEx dimensional weight</a>, <a href="https://www.fedex.com/en-us/shipping/ground.html" rel="noopener">FedEx Ground</a>, <a href="https://about.usps.com/postal-bulletin/2026/pb22705/html/updt_001.htm" rel="noopener">USPS Postal Bulletin 22705</a> and <a href="https://faq.usps.com/articles/Knowledge/Parcel-Size-Weight-Fee-Standards" rel="noopener">USPS parcel size standards</a>. Large-package and additional-handling surcharges start well below the maximums; check each carrier’s current service guide.</p>
+
+  <h2>Same box, three carriers</h2>
+  {examples.map((example) => (
+    <div class="example-card">
+      <h3>{example.title}: {example.l} × {example.w} × {example.h} in, {example.wt} lb</h3>
+      <div class="rule-table-wrap">
+        <table class="rule-table">
+          <thead><tr><th>Carrier</th><th>Sides used</th><th>DIM weight</th><th>Billed weight</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Carrier"><a href={tryLink('ups139', example.l, example.w, example.h, example.wt)} rel="nofollow">UPS Daily</a></td><td data-label="Sides">{example.ups.dimensions.join(' × ')}</td><td data-label="DIM">{example.ups.dimWeight} lb</td><td data-label="Billed"><b>{example.ups.billableWeight} lb</b></td></tr>
+            <tr><td data-label="Carrier"><a href={tryLink('ups166', example.l, example.w, example.h, example.wt)} rel="nofollow">UPS Retail</a></td><td data-label="Sides">{example.retail.dimensions.join(' × ')}</td><td data-label="DIM">{example.retail.dimWeight} lb</td><td data-label="Billed"><b>{example.retail.billableWeight} lb</b></td></tr>
+            <tr><td data-label="Carrier"><a href={tryLink('fedex139', example.l, example.w, example.h, example.wt)} rel="nofollow">FedEx</a></td><td data-label="Sides">{example.fedex.dimensions.join(' × ')}</td><td data-label="DIM">{example.fedex.dimWeight} lb</td><td data-label="Billed"><b>{example.fedex.billableWeight} lb</b></td></tr>
+            <tr><td data-label="Carrier"><a href={tryLink('usps139', example.l, example.w, example.h, example.wt)} rel="nofollow">USPS</a></td><td data-label="Sides">{example.usps.dimensions.join(' × ')}</td><td data-label="DIM">{example.usps.dimApplies ? `${example.usps.dimWeight} lb` : 'Not applied'}</td><td data-label="Billed"><b>{example.usps.billableWeight} lb</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="table-note">{example.note}</p>
+    </div>
+  ))}
+
+  <h2>Which carrier should you use?</h2>
+  <ul>
+    <li><strong>Small parcels (1,728 in³ or less):</strong> USPS ignores dimensional weight, so a light item in a 12 × 12 × 12 box is billed by its actual weight. UPS and FedEx bill the same box at {examples[0].ups.dimWeight} lb or more.</li>
+    <li><strong>Boxes measured with fractions:</strong> FedEx’s nearest-inch rounding can bill a few pounds less than carriers that round up.</li>
+    <li><strong>Heavy or very long items:</strong> USPS stops at 70 lb; UPS and FedEx Ground go to 150 lb.</li>
+    <li><strong>Price, not just weight:</strong> once you know the billed weight, compare real quotes. Rate-comparison tools like the ones above show several carriers at once.</li>
+  </ul>
+  <p>Want the numbers for your own boxes? See the <a href="/dimensional-weight-chart/">dimensional weight chart</a>, or read <a href="/how-to-reduce-dimensional-weight/">how to reduce dimensional weight</a>.</p>
+</ToolPage>
