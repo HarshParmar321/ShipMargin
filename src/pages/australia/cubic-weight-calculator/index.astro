@@ -1,6 +1,6 @@
 ---
 import ToolPage from '../../../components/ToolPage.astro';
-import { PRESETS, encodeShareParams } from '../../../lib/shipping.mjs';
+import { PRESETS, calculatePackage, encodeShareParams } from '../../../lib/shipping.mjs';
 import { VOLUMETRIC_CLUSTER } from '../../../lib/alternates';
 
 const path = '/australia/cubic-weight-calculator/';
@@ -9,7 +9,19 @@ const tryLink = (preset: keyof typeof PRESETS, pkg: { length: number; width: num
   return `${path}?${encodeShareParams({ ...pkg, quantity: 1, preset, unit: rule.unit, divisor: rule.divisor, dimThreshold: rule.dimThreshold, dimRounding: rule.dimRounding, billableStep: rule.billableStep })}#main`;
 };
 
+const chartBoxes: [number, number, number][] = [[20, 15, 10], [25, 20, 10], [30, 20, 15], [30, 30, 30], [35, 25, 15], [40, 30, 20], [40, 30, 30], [45, 35, 25], [50, 40, 30], [60, 40, 30]];
+const st = (key: 'startrack' | 'startrackFpp', l: number, w: number, h: number) => calculatePackage({ length: l, width: w, height: h, actualWeight: 0, ...PRESETS[key], unit: 'metric' }).dimWeight;
+const chartRows = chartBoxes.map(([l, w, h]) => ({
+  box: `${l} × ${w} × ${h}`,
+  m3: (l * w * h) / 1e6,
+  cubic: (l * w * h) / 4000,
+  startrack: st('startrack', l, w, h),
+  fpp: st('startrackFpp', l, w, h),
+}));
+const kg = (n: number) => n.toLocaleString('en-AU', { maximumFractionDigits: 2 });
+
 const faq: [string, string][] = [
+  ['What is the cubic weight of a 30 × 30 × 30 cm box?', '0.3 × 0.3 × 0.3 m = 0.027 m³, and 0.027 × 250 = 6.75 kg. If the parcel weighs less than that, Australia Post charges 6.75 kg (unless it weighs under 1 kg on a non-contract account); StarTrack rounds it up to 7 kg.'],
   ['What is cubic weight?', 'Cubic weight is the weight a carrier assigns to a parcel based on its size. In Australia it is usually the volume in cubic metres multiplied by 250. You pay for the greater of the cubic weight and the actual (dead) weight.'],
   ['How do I calculate cubic weight for Australia Post?', 'Convert length, width and height to metres, multiply them, then multiply by 250. For example, 0.5 × 0.4 × 0.3 m = 0.06 m³, and 0.06 × 250 = 15 kg. In centimetres, that is the same as L × W × H ÷ 4,000.'],
   ['Does Australia Post charge cubic weight on every parcel?', 'No. Cubic weight does not apply to eligible Australia Post packaging, and for non-contract MyPost Business customers it generally does not apply to parcels under 1 kg actual weight, although Australia Post may still apply it to large, irregular or cylindrical items.'],
@@ -21,7 +33,7 @@ const faq: [string, string][] = [
 <ToolPage
   partners="intl"
   title="Australia Post Cubic Weight Calculator | ShippingMath"
-  heading="Cubic weight calculator Australia"
+  heading="Australia Post cubic weight calculator"
   crumb="Cubic weight (Australia)"
   eyebrow="Australia Post · StarTrack · Aramex · Sendle"
   description="Calculate cubic weight for Australian parcels with the 250 kg/m³ factor used by Australia Post, StarTrack and Aramex, and compare it with dead weight."
@@ -66,6 +78,20 @@ const faq: [string, string][] = [
     <a class="try-link" href={tryLink('auspost', { length: 50, width: 40, height: 30, actualWeight: 0.5 })} rel="nofollow">Open with Australia Post →</a>
     <a class="try-link" style="margin-left: 16px" href={tryLink('startrack', { length: 50, width: 40, height: 30, actualWeight: 0.5 })} rel="nofollow">Open with StarTrack →</a>
   </div>
+
+  <h2>Cubic weight chart for common box sizes</h2>
+  <p>The cubic weight of each box at 250 kg/m³ (Australia Post, StarTrack, Aramex). If your parcel weighs less than this, this is the weight you pay for.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Box (cm)</th><th>Volume (m³)</th><th>Cubic weight (250)</th><th>StarTrack charged (whole kg)</th><th>StarTrack Fixed Price Premium (190)</th></tr></thead>
+      <tbody>
+        {chartRows.map((row) => (
+          <tr><td data-label="Box">{row.box}</td><td data-label="Volume">{row.m3.toLocaleString('en-AU', { maximumFractionDigits: 4 })}</td><td data-label="Cubic weight">{kg(row.cubic)} kg</td><td data-label="StarTrack">{row.startrack} kg</td><td data-label="FPP">{row.fpp} kg</td></tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="table-note">Australia Post doesn't publish a rounding rule, so its column is exact. Non-contract Australia Post parcels under 1 kg actual weight are generally not cubed. StarTrack rounds partial kilograms up per consignment; the chart shows a single-parcel consignment. For US and international boxes, see the <a href="/dimensional-weight-chart/">dimensional weight chart</a>.</p>
 
   <h2>Australian carrier rules</h2>
   <div class="rule-table-wrap">
