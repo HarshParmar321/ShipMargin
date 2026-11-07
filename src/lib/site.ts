@@ -12,6 +12,12 @@ export const SUPPORT_EMAIL = 'support@shippingmath.com';
 export const CLOUDFLARE_ANALYTICS_TOKEN = '';
 
 /**
+ * Public Google AdSense publisher ID. The verification script is loaded on
+ * indexable pages only; ad placements stay disabled until the account is approved.
+ */
+export const ADSENSE_PUBLISHER_ID = 'ca-pub-3679983774922242';
+
+/**
  * Cloudflare Web Analytics is on through Cloudflare's automatic setup (it injects the
  * beacon itself), so no token is needed. This flag keeps the privacy pages accurate.
  */

@@ -1,7 +1,8 @@
 /**
  * Writes dist/_headers (Cloudflare static assets) after `astro build`.
  * The Content Security Policy allows only our own files, the hashes of our small inline
- * scripts, and Cloudflare Web Analytics. Hashes are recalculated on every build.
+ * scripts, Google AdSense verification, and Cloudflare Web Analytics. Hashes are
+ * recalculated on every build.
  */
 import { createHash } from 'node:crypto';
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
@@ -26,7 +27,7 @@ for (const file of htmlFiles) {
 
 const csp = [
   "default-src 'self'",
-  `script-src 'self' ${[...hashes].sort().join(' ')} https://static.cloudflareinsights.com`,
+  `script-src 'self' ${[...hashes].sort().join(' ')} https://pagead2.googlesyndication.com https://static.cloudflareinsights.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
