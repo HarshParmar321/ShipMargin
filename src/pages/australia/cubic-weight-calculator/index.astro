@@ -32,11 +32,11 @@ const faq: [string, string][] = [
 ---
 <ToolPage
   partners="intl"
-  title="Australia Post Cubic Weight Calculator | ShippingMath"
+  title="Cubic Weight Calculator Australia Post – 2026 Rules"
   heading="Australia Post cubic weight calculator"
   crumb="Cubic weight (Australia)"
   eyebrow="Australia Post · StarTrack · Aramex · Sendle"
-  description="Calculate cubic weight for Australian parcels with the 250 kg/m³ factor used by Australia Post, StarTrack and Aramex, and compare it with dead weight."
+  description="Use this Australia Post cubic weight calculator with the 250 kg/m³ factor. Compare dead and cubic weight for Australia Post, StarTrack and Aramex—free."
   path={path}
   htmlLang="en-AU"
   alternates={VOLUMETRIC_CLUSTER}
@@ -46,7 +46,15 @@ const faq: [string, string][] = [
   faq={faq}
   showReviewed
   showCountries
+  relatedTools={[
+    { href: '/volumetric-weight-calculator/', name: 'International volumetric weight calculator', blurb: 'Compare 5,000 and 6,000 metric divisors for international shipping.' },
+    { href: '/dimensional-weight-calculator/', name: 'Dimensional weight calculator', blurb: 'Calculate UPS, FedEx and USPS billable weight in inches and pounds.' },
+    { href: '/box-margin-optimizer/', name: 'Shipping box optimizer', blurb: 'Compare cartons by fit, cubic weight and estimated shipping cost.' },
+    { href: '/shipping-margin-calculator/', name: 'Shipping margin calculator', blurb: 'Check the profit left after shipping, packaging and selling fees.' },
+    { href: '/package-girth-calculator/', name: 'Parcel size and girth calculator', blurb: 'Check package dimensions and oversize measurements.' },
+  ]}
 >
+  <h2>What is Australia Post cubic weight?</h2>
   <p class="lead">Cubic weight is the weight Australian carriers charge for based on a parcel's size. If a light parcel takes up a lot of space, you pay for its cubic weight rather than its dead weight.</p>
 
   <ul class="key-facts">

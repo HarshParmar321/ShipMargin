@@ -19,17 +19,25 @@ const faq: [string, string][] = [
 ---
 <ToolPage
   partners="intl"
-  title="Volumetric Weight Calculator (kg, 5000/6000) | ShippingMath"
-  heading="Volumetric weight calculator"
+  title="Volumetric Weight Calculator (kg) – 5000/6000 Tool 2026"
+  heading="Volumetric weight calculator for 5,000 & 6,000 divisors"
   crumb="Volumetric weight (kg)"
   eyebrow="Metric · international shipping"
-  description="Calculate volumetric weight in kg from cm with a 5,000 or 6,000 cm³/kg divisor, and see whether volume or real weight sets your shipping charge."
+  description="Use this volumetric weight calculator to compare chargeable weight in kg with 5,000 or 6,000 divisors. Get an instant, accurate result—free, no signup."
   path={path}
   defaultPreset="metric5000"
   example={{ length: 40, width: 30, height: 20, actualWeight: 3 }}
   faq={faq}
   showReviewed
+  relatedTools={[
+    { href: '/dimensional-weight-calculator/', name: 'Dimensional weight calculator', blurb: 'Calculate US billable weight with UPS, FedEx and USPS rules.' },
+    { href: '/uk/volumetric-weight-calculator/', name: 'UK volumetric weight calculator', blurb: 'Compare DHL Parcel, UPS and Royal Mail size rules.' },
+    { href: '/india/volumetric-weight-calculator/', name: 'India volumetric weight calculator', blurb: 'Check Delhivery, Blue Dart, Amazon and UPS India rules.' },
+    { href: '/box-margin-optimizer/', name: 'Shipping box optimizer', blurb: 'Find the carton with the lowest dimensional shipping cost.' },
+    { href: '/package-girth-calculator/', name: 'Parcel size and girth calculator', blurb: 'Check package dimensions and length-plus-girth limits.' },
+  ]}
 >
+  <h2>What is volumetric weight?</h2>
   <p class="lead">Volumetric weight turns the size of a parcel into kilograms. International carriers charge for whichever is higher, the volumetric weight or the real weight, so a large, light parcel can cost far more than its weight suggests.</p>
 
   <ul class="key-facts">
@@ -63,6 +71,19 @@ const faq: [string, string][] = [
   </div>
   <p class="table-note">Results rounded up to the next 0.5 kg.</p>
 
+  <h2>Which volumetric divisor should you use?</h2>
+  <p>Use the divisor printed in the carrier's current rate guide, quote or contract. The same carrier can apply different rules by country, service or account, so the calculator lets you switch between common divisors or enter a custom rule.</p>
+  <div class="rule-table-wrap">
+    <table class="rule-table">
+      <thead><tr><th>Service or rule</th><th>Metric divisor</th><th>Billing guidance</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td data-label="Service">DHL Express</td><td data-label="Divisor">5,000 cm³/kg</td><td data-label="Guidance">Compare volumetric and actual weight; charge the greater value</td><td data-label="Source"><a href="https://www.dhl.com/discover/en-global/ship-with-dhl/services/get-a-rate-quote-and-transit-time" rel="noopener">DHL Express</a></td></tr>
+        <tr><td data-label="Service">UPS international metric parcels</td><td data-label="Divisor">5,000 cm³/kg</td><td data-label="Guidance">UPS India rounds measurements to whole centimetres and billable weight to the next 0.5 kg</td><td data-label="Source"><a href="https://www.ups.com/in/en/support/shipping-support/shipping-dimensions-weight" rel="noopener">UPS India</a></td></tr>
+        <tr><td data-label="Service">Other air, economy or contracted service</td><td data-label="Divisor">Often 5,000 or 6,000</td><td data-label="Guidance">Select 6,000 only when the service guide or your contract specifies it</td><td data-label="Source">Confirm with the carrier</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <h2>Worked example</h2>
   <div class="example-card">
     <h3>A 40 × 30 × 20 cm parcel weighing 3 kg</h3>
@@ -74,6 +95,19 @@ const faq: [string, string][] = [
     <p class="answer">Chargeable weight: <b>5.0 kg</b> (or 4.0 kg with a 6,000 divisor)</p>
     <a class="try-link" href={tryLink('metric5000', { length: 40, width: 30, height: 20, actualWeight: 3 })} rel="nofollow">Open with 5,000 →</a>
     <a class="try-link" style="margin-left: 16px" href={tryLink('metric6000', { length: 40, width: 30, height: 20, actualWeight: 3 })} rel="nofollow">Open with 6,000 →</a>
+  </div>
+  <div class="example-card">
+    <h3>A compact 30 × 20 × 15 cm parcel weighing 2 kg</h3>
+    <p>Its volume is 9,000 cm³. With a 5,000 divisor the volumetric weight is 1.8 kg, rounded to 2.0 kg. With a 6,000 divisor it is 1.5 kg. The real 2 kg weight is therefore charged under either rule.</p>
+    <p class="answer">Chargeable weight: <b>2.0 kg</b></p>
+    <a class="try-link" href={tryLink('metric5000', { length: 30, width: 20, height: 15, actualWeight: 2 })} rel="nofollow">Open this compact parcel →</a>
+  </div>
+  <div class="example-card">
+    <h3>A bulky 60 × 40 × 40 cm parcel weighing 8 kg</h3>
+    <p>Its volume is 96,000 cm³. Dividing by 5,000 gives 19.2 kg, rounded to 19.5 kg; dividing by 6,000 gives 16.0 kg. Both results are higher than the real weight.</p>
+    <p class="answer">Chargeable weight: <b>19.5 kg at 5,000</b> or <b>16.0 kg at 6,000</b></p>
+    <a class="try-link" href={tryLink('metric5000', { length: 60, width: 40, height: 40, actualWeight: 8 })} rel="nofollow">Open with 5,000 →</a>
+    <a class="try-link" style="margin-left: 16px" href={tryLink('metric6000', { length: 60, width: 40, height: 40, actualWeight: 8 })} rel="nofollow">Open with 6,000 →</a>
   </div>
 
   <h2>Volumetric weight vs dimensional weight</h2>

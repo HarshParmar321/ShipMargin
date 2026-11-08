@@ -18,17 +18,25 @@ const faq: [string, string][] = [
 ];
 ---
 <ToolPage
-  title="USPS Dimensional Weight Calculator (2026) | ShippingMath"
-  heading="USPS dimensional weight calculator"
+  title="USPS Dimensional Weight Calculator – Updated 2026 Rules"
+  heading="USPS dimensional weight calculator for 2026 rules"
   crumb="USPS DIM weight (2026)"
   eyebrow="Updated for 12 July 2026"
-  description="Check USPS dimensional weight under the 2026 rules: divisor 139, measurements rounded up, and DIM pricing only for parcels over 1,728 cubic inches."
+  description="Use this USPS dimensional weight calculator with the July 2026 divisor 139, round-up rule and 1,728 in³ threshold. Check billable weight—free, no signup."
   path={path}
   defaultPreset="usps139"
   example={{ length: 16, width: 12, height: 10, actualWeight: 4 }}
   faq={faq}
   showReviewed
+  relatedTools={[
+    { href: '/dimensional-weight-calculator/', name: 'UPS, FedEx and USPS dimensional weight', blurb: 'Compare current divisors, thresholds and rounding rules.' },
+    { href: '/box-margin-optimizer/', name: 'USPS shipping box optimizer', blurb: 'Compare your cartons using the 1,728 in³ USPS threshold.' },
+    { href: '/shipping-margin-calculator/', name: 'Shipping margin calculator', blurb: 'See the profit left after postage, packaging and marketplace fees.' },
+    { href: '/dimensional-weight-chart/', name: 'Dimensional weight chart', blurb: 'Compare common box sizes at USPS, UPS and FedEx.' },
+    { href: '/package-girth-calculator/', name: 'USPS parcel size and girth calculator', blurb: 'Check package dimensions before purchasing a USPS label.' },
+  ]}
 >
+  <h2>What is USPS dimensional weight?</h2>
   <p class="lead">On 12 July 2026 USPS changed how it calculates dimensional weight. The divisor dropped from 166 to 139, and every measurement is now rounded up. Parcels larger than one cubic foot got more expensive; smaller parcels are still priced by weight.</p>
 
   <ul class="key-facts">

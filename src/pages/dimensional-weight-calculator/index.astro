@@ -21,11 +21,11 @@ const faq: [string, string][] = [
 ];
 ---
 <ToolPage
-  title="Dimensional Weight Calculator (2026 Rules) | ShippingMath"
-  heading="Dimensional weight calculator"
+  title="Dimensional Weight Calculator – UPS, FedEx & USPS 2026"
+  heading="Free dimensional weight calculator for UPS, FedEx & USPS"
   crumb="DIM weight calculator"
   eyebrow="UPS · FedEx · USPS · 2026 rules"
-  description="Calculate dimensional (DIM) and billable weight with current UPS, FedEx and USPS divisors and rounding rules, and see how much you pay for empty space."
+  description="Use this dimensional weight calculator with 2026 UPS, FedEx and USPS rules. Check billable weight, divisors, rounding and empty-space cost—free, no signup."
   path={path}
   defaultPreset="ups139"
   faq={faq}
@@ -33,7 +33,15 @@ const faq: [string, string][] = [
   showCountries
   htmlLang="en-US"
   alternates={VOLUMETRIC_CLUSTER}
+  relatedTools={[
+    { href: '/usps-dimensional-weight-calculator/', name: 'USPS dimensional weight calculator', blurb: 'Use the July 2026 divisor, round-up rule and one-cubic-foot threshold.' },
+    { href: '/volumetric-weight-calculator/', name: 'Volumetric weight calculator in kg', blurb: 'Calculate metric chargeable weight with 5,000 and 6,000 divisors.' },
+    { href: '/billable-weight-calculator/', name: 'Billable weight calculator', blurb: 'See whether scale or dimensional weight controls the shipment.' },
+    { href: '/box-margin-optimizer/', name: 'Shipping box optimizer', blurb: 'Compare cartons by fit, billable weight and estimated shipping cost.' },
+    { href: '/package-girth-calculator/', name: 'Parcel size and girth calculator', blurb: 'Check length plus girth and oversize limits before buying a label.' },
+  ]}
 >
+  <h2>What is dimensional weight?</h2>
   <p class="lead">Dimensional weight is the weight a carrier charges for based on the size of your box, not what it weighs. If a big, light box takes up more space than its weight pays for, you're billed for the DIM weight instead.</p>
 
   <ul class="key-facts">
